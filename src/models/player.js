@@ -161,6 +161,7 @@ const Player = new Schema(
             createdAt: { type: Date, default: Date.now },
             lastCollectedAt: { type: Date, default: Date.now },
             lastActiveAt: { type: Date, default: Date.now },
+            lastSoldAt: { type: Date, default: null },
         },
 
         // Economy
