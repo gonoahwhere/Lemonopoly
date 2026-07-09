@@ -15,14 +15,14 @@ export const RECIPES = [
             { id: 'water', amount: 1 },
             { id: 'ice', amount: 1 },
         ],
-        marketPrice: 50
+        marketPrice: null
     },
     {
         id: 'sweet_lemonade',
         name: 'Sweet Lemonade',
         description: 'A drizzle of honey gives this refreshing classic a naturally sweet finish.',
         rarity: 'Common',
-        sellPrice: 7,
+        sellPrice: 6.5,
         image: 'sweet_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -34,7 +34,7 @@ export const RECIPES = [
             { id: 'water', amount: 4 },
             { id: 'ice', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 150
     },
     {
         id: 'extra_sour_lemonade',
@@ -53,14 +53,14 @@ export const RECIPES = [
             { id: 'water', amount: 3 },
             { id: 'ice', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 190
     },
     {
         id: 'light_lemonade',
         name: 'Light Lemonade',
         description: 'Sparkling water and stevia create a crisp, lighter alternative.',
         rarity: 'Common',
-        sellPrice: 8,
+        sellPrice: 7.5,
         image: 'light_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -72,14 +72,14 @@ export const RECIPES = [
             { id: 'water', amount: 4 },
             { id: 'ice', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 250
     },
     {
         id: 'strawberry_lemonade',
         name: 'Strawberry Lemonade',
         description: 'Juicy strawberries bring a fruity twist to the original favourite.',
         rarity: 'Common',
-        sellPrice: 9,
+        sellPrice: 8,
         image: 'strawberry_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -92,14 +92,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 }
         ],
-        marketPrice: 50
+        marketPrice: 330
     },
     {
         id: 'blueberry_lemonade',
         name: 'Blueberry Lemonade',
         description: 'Sweet blueberries balance perfectly with sharp citrus notes.',
         rarity: 'Common',
-        sellPrice: 10,
+        sellPrice: 8.5,
         image: 'blueberry_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -112,14 +112,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 420
     },
     {
         id: 'raspberry_lemonade',
         name: 'Raspberry Lemonade',
         description: 'A vibrant berry blend with a pleasantly tart finish.',
         rarity: 'Common',
-        sellPrice: 10,
+        sellPrice: 9,
         image: 'raspberry_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -132,14 +132,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 550
     },
     {
         id: 'cherry_lemonade',
         name: 'Cherry Lemonade',
         description: 'Rich cherries add a smooth sweetness to every sip.',
         rarity: 'Common',
-        sellPrice: 11,
+        sellPrice: 9.5,
         image: 'cherry_lemonade.png',
         unlock: {
             type: 'customersServed',
@@ -152,14 +152,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 710
     },
     {
         id: 'peach_lemonade',
         name: 'Peach Lemonade',
         description: 'Fresh peaches and honey make for a mellow summer refreshment.',
         rarity: 'Common',
-        sellPrice: 12,
+        sellPrice: 10.5,
         image: 'peach_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -172,14 +172,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 910
     },
     {
         id: 'mango_lemonade',
         name: 'Mango Lemonade',
         description: 'Tropical mango transforms lemonade into a sunny delight.',
         rarity: 'Common',
-        sellPrice: 12,
+        sellPrice: 11,
         image: 'mango_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -192,14 +192,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 1200
     },
     {
         id: 'pineapple_lemonade',
         name: 'Pineapple Lemonade',
         description: 'Bright pineapple adds an island-inspired sweetness.',
         rarity: 'Common',
-        sellPrice: 13,
+        sellPrice: 12,
         image: 'pineapple_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -212,14 +212,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 1500
     },
     {
         id: 'watermelon_lemonade',
         name: 'Watermelon Lemonade',
         description: 'Cool watermelon keeps customers refreshed on the hottest days.',
         rarity: 'Common',
-        sellPrice: 13,
+        sellPrice: 12.5,
         image: 'watermelon_lemonade.png',
         unlock: {
             type: 'upgradeSpeed',
@@ -232,14 +232,14 @@ export const RECIPES = [
             { id: 'ice', amount: 4 },
             { id: 'water', amount: 1 },
         ],
-        marketPrice: 50
+        marketPrice: 2000
     },
     {
         id: 'kiwi_lemonade',
         name: 'Kiwi Lemonade',
         description: 'Tangy kiwi creates a vibrant, refreshing flavour.',
         rarity: 'Common',
-        sellPrice: 14,
+        sellPrice: 13.5,
         image: 'kiwi_lemonade.png',
         unlock: {
             type: 'customersServed',
@@ -252,14 +252,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 2600
     },
     {
         id: 'passion_fruit_lemonade',
         name: 'Passion Fruit Lemonade',
         description: 'Exotic passionfruit pairs beautifully with honey and citrus.',
         rarity: 'Common',
-        sellPrice: 15,
+        sellPrice: 14.5,
         image: 'passion_fruit_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -272,14 +272,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 3300
     },
     {
         id: 'dragon_fruit_lemonade',
         name: 'Dragon Fruit Lemonade',
         description: 'A colourful tropical recipe that\'s as striking as it is refreshing.',
         rarity: 'Common',
-        sellPrice: 16,
+        sellPrice: 15.5,
         image: 'dragon_fruit_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -292,14 +292,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 4300
     },
     {
         id: 'limeade',
         name: 'Limeade',
         description: 'A sharp, zesty alternative made entirely with fresh limes.',
         rarity: 'Common',
-        sellPrice: 16,
+        sellPrice: 16.5,
         image: 'limeade.png',
         unlock: {
             type: 'upgradeStorage',
@@ -311,14 +311,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 4 },
         ],
-        marketPrice: 50
+        marketPrice: 5600
     },
     {
         id: 'orange_lemonade',
         name: 'Orange Lemonade',
         description: 'Sweet oranges soften the lemon\'s bite for a balanced drink.',
         rarity: 'Common',
-        sellPrice: 17,
+        sellPrice: 17.5,
         image: 'orange_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -331,14 +331,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 7200
     },
     {
         id: 'triple_citrus',
         name: 'Triple Citrus',
         description: 'Lemon, lime and orange combine for the ultimate citrus explosion.',
         rarity: 'Common',
-        sellPrice: 18,
+        sellPrice: 19,
         image: 'triple_citrus.png',
         unlock: {
             type: 'playerLevel',
@@ -352,14 +352,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 9300
     },
     {
         id: 'mint_lemonade',
         name: 'Mint Lemonade',
         description: 'Cooling mint leaves make this recipe wonderfully refreshing.',
         rarity: 'Common',
-        sellPrice: 18,
+        sellPrice: 20.5,
         image: 'mint_lemonade.png',
         unlock: {
             type: 'customersServed',
@@ -372,14 +372,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 12000
     },
     {
         id: 'lavender_lemonade',
         name: 'Lavender Lemonade',
         description: 'Delicate floral notes create a calming, elegant drink.',
         rarity: 'Common',
-        sellPrice: 19,
+        sellPrice: 21.5,
         image: 'lavender_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -392,14 +392,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 4 },
         ],
-        marketPrice: 50
+        marketPrice: 16000
     },
     {
         id: 'rosemary_lemonade',
         name: 'Rosemary Lemonade',
         description: 'Aromatic rosemary gives this lemonade a sophisticated flavour.',
         rarity: 'Common',
-        sellPrice: 20,
+        sellPrice: 23,
         image: 'rosemary_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -412,14 +412,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 4 },
         ],
-        marketPrice: 50
+        marketPrice: 20000
     },
     {
         id: 'basil_lemonade',
         name: 'Basil Lemonade',
         description: 'Fresh basil adds a subtle herbal freshness to every glass.',
         rarity: 'Common',
-        sellPrice: 20,
+        sellPrice: 25,
         image: 'basil_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -432,14 +432,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 26000
     },
     {
         id: 'arnold_palmer',
         name: 'Arnold Palmer',
         description: 'The famous combination of iced tea and lemonade.',
         rarity: 'Common',
-        sellPrice: 21,
+        sellPrice: 26.5,
         image: 'arnold_palmer.png',
         unlock: {
             type: 'customersServed',
@@ -452,14 +452,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 34000
     },
     {
         id: 'peach_tea_lemonade',
         name: 'Peach Tea Lemonade',
         description: 'Sweet peach tea meets citrus for a smooth afternoon favourite.',
         rarity: 'Common',
-        sellPrice: 22,
+        sellPrice: 28.5,
         image: 'peach_tea_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -472,14 +472,14 @@ export const RECIPES = [
             { id: 'white_sugar', amount: 2 },
             { id: 'ice', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 44000
     },
     {
         id: 'green_tea_lemonade',
         name: 'Green Tea Lemonade',
         description: 'Refreshing green tea keeps this recipe light and balanced.',
         rarity: 'Common',
-        sellPrice: 22,
+        sellPrice: 30.5,
         image: 'green_tea_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -492,14 +492,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 57000
     },
     {
         id: 'hibiscus_lemonade',
         name: 'Hibiscus Lemonade',
         description: 'Floral hibiscus creates a beautifully vibrant lemonade.',
         rarity: 'Common',
-        sellPrice: 23,
+        sellPrice: 32.5,
         image: 'hibiscus_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -512,14 +512,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 73000
     },
     {
         id: 'island_splash',
         name: 'Island Splash',
         description: 'Mango, pineapple and coconut water bring tropical paradise to your stand.',
         rarity: 'Common',
-        sellPrice: 24,
+        sellPrice: 35,
         image: 'island_splash.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -532,14 +532,14 @@ export const RECIPES = [
             { id: 'mango', amount: 2 },
             { id: 'ice', amount: 4 },
         ],
-        marketPrice: 50
+        marketPrice: 95000
     },
     {
         id: 'tropical_sunrise',
         name: 'Tropical Sunrise',
         description: 'Layers of citrus and tropical fruit create a stunning flavour.',
         rarity: 'Common',
-        sellPrice: 25,
+        sellPrice: 37.5,
         image: 'tropical_sunrise.png',
         unlock: {
             type: 'playerLevel',
@@ -552,14 +552,14 @@ export const RECIPES = [
             { id: 'pomegranate', amount: 3 },
             { id: 'ice', amount: 4 },
         ],
-        marketPrice: 50
+        marketPrice: 125000
     },
     {
         id: 'coconut_lemonade',
         name: 'Coconut Lemonade',
         description: 'Coconut water gives this lemonade a smooth island finish.',
         rarity: 'Common',
-        sellPrice: 25,
+        sellPrice: 40,
         image: 'coconut_lemonade.png',
         unlock: {
             type: 'customersServed',
@@ -572,14 +572,14 @@ export const RECIPES = [
             { id: 'white_sugar', amount: 1 },
             { id: 'ice', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 160000
     },
     {
         id: 'pink_lemonade',
         name: 'Pink Lemonade',
         description: 'A colourful blend of strawberries and raspberries loved by every customer.',
         rarity: 'Common',
-        sellPrice: 26,
+        sellPrice: 43,
         image: 'pink_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
@@ -592,14 +592,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 1 },
         ],
-        marketPrice: 50
+        marketPrice: 205000
     },
     {
         id: 'creamy_lemonade',
         name: 'Creamy Lemonade',
         description: 'Cream and vanilla create an indulgent dessert-inspired drink.',
         rarity: 'Common',
-        sellPrice: 27,
+        sellPrice: 46,
         image: 'creamy_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -612,14 +612,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 1 },
         ],
-        marketPrice: 50
+        marketPrice: 265000
     },
     {
         id: 'vanilla_lemonade',
         name: 'Vanilla Lemonade',
         description: 'Sweet vanilla softens the citrus into a smooth refreshment.',
         rarity: 'Common',
-        sellPrice: 27,
+        sellPrice: 49,
         image: 'vanilla_lemonade.png',
         unlock: {
             type: 'sellCups',
@@ -632,18 +632,18 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 345000
     },
     {
         id: 'caramel_lemonade',
         name: 'Caramel Lemonade',
         description: 'Rich caramel adds a surprisingly delicious twist to lemonade.',
         rarity: 'Common',
-        sellPrice: 28,
+        sellPrice: 52.5,
         image: 'caramel_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
-            value: 100000000
+            value: 3500000
         },
         ingredients: [
             { id: 'lemon', amount: 2 },
@@ -652,14 +652,14 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: 50
+        marketPrice: 450000
     },
     {
         id: 'ginger_lemonade',
         name: 'Ginger Lemonade',
         description: 'Fresh ginger delivers a warming zing with every sip.',
         rarity: 'Common',
-        sellPrice: 29,
+        sellPrice: 56,
         image: 'ginger_lemonade.png',
         unlock: {
             type: 'playerLevel',
@@ -672,14 +672,14 @@ export const RECIPES = [
             { id: 'ice', amount: 2 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 580000
     },
     {
         id: 'spiced_lemonade',
         name: 'Spiced Lemonade',
         description: 'Cinnamon and cloves make this the perfect cosy lemonade.',
         rarity: 'Common',
-        sellPrice: 30,
+        sellPrice: 60,
         image: 'spiced_lemonade.png',
         unlock: {
             type: 'customersServed',
@@ -693,7 +693,7 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: 50
+        marketPrice: 750000
     },
     {
         id: 'royal_lemonade',

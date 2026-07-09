@@ -4,6 +4,7 @@ import { INGREDIENTS } from "../data/ingredients.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
+import { getActiveIngredientDiscount } from '../helpers/masteryDiscount.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -30,7 +31,7 @@ export function computeIngredientPrice(basePrice, discount = 0) {
 }
 
 export function getMarketIngredients(player) {
-    const discount = player?.prestige?.lifetimeMultiplier?.ingredientDiscount ?? 0;
+    const discount = getActiveIngredientDiscount(player);
     return Object.entries(INGREDIENTS).map(([id, data]) => ({
         id,
         name: data.name,
@@ -94,7 +95,7 @@ function getTypeBorder(type) {
 }
 
 export async function renderIngredientMarket(player, page = 1) {
-    const discount = player?.prestige?.lifetimeMultiplier?.ingredientDiscount ?? 0;
+    const discount = getActiveIngredientDiscount(player);
 
     const allIngredients = Object.entries(INGREDIENTS).map(([id, data]) => ({ id, ...data }));
     const typePages = buildTypePages(allIngredients, INGREDIENTS_PER_PAGE);
