@@ -3,3 +3,5 @@ node_modules/
 .env.local
 .env.*.local
 src/commands/dev/
+.DS_Store
+**/.DS_Store
