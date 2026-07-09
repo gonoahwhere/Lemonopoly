@@ -1,0 +1,38 @@
+{
+  "name": "lemonopoly",
+  "version": "1.0.0",
+  "description": "Turning childhood nostalgia into a ruthless monopoly, one cup at a time.",
+  "license": "ISC",
+  "author": "gonoahwhere",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "deploy": "node deploy-commands.js",
+    "test": "node deploy-commands.js && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gonoahwhere/Lemonopoly.git"
+  },
+  "keywords": [
+    "tycoon",
+    "summer",
+    "lemonade"
+  ],
+  "bugs": {
+    "url": "https://github.com/gonoahwhere/Lemonopoly/issues"
+  },
+  "homepage": "https://github.com/gonoahwhere/Lemonopoly#readme",
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.2",
+    "common-tags": "^1.8.2",
+    "discord.js": "^14.26.4",
+    "dotenv": "^16.6.1",
+    "fluident": "^1.0.2",
+    "moment": "^2.30.1",
+    "mongoose": "^9.7.3",
+    "silent-container": "^1.0.2"
+  }
+}
