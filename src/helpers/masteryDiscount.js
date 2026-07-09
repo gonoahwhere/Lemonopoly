@@ -4,16 +4,20 @@ export function getActiveRecipe(player) {
     return player?.recipes?.unlocked?.find((r) => r.isActive) ?? null;
 }
 
-// Ingredient discount is tied to mastery of whatever recipe is currently active.
+// Ingredient discount is now the sum of every unlocked recipe's mastery contribution
 export function getActiveIngredientDiscount(player) {
-    const active = getActiveRecipe(player);
-    if (!active) return 0;
+    const unlocked = player?.recipes?.unlocked ?? [];
+    if (unlocked.length === 0) return 0;
 
-    const def = MASTERY_DEFS[active.rarity];
-    if (!def) return 0;
+    let totalDiscount = 0;
 
-    const stars = active.stars ?? 0;
-    const discount = def.ingredientDiscountPerStar * stars;
+    for (const recipe of unlocked) {
+        const def = MASTERY_DEFS[recipe.rarity];
+        if (!def) continue;
 
-    return Math.min(0.9, Math.max(0, discount));
+        const stars = recipe.stars ?? 0;
+        totalDiscount += def.ingredientDiscountPerStar * stars;
+    }
+
+    return Math.min(0.9, Math.max(0, totalDiscount));
 }

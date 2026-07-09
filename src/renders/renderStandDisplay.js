@@ -254,8 +254,8 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
 function drawStatRow(ctx, width, profile, y) {
     const h = STAT_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4; // = 183.5
 
     drawStatChip(ctx, startX, y, chipW, h, 'level', 'Level', `Lv. ${profile.stand.level}`);
     drawStatChip(ctx, startX + (chipW + gap), y, chipW, h, 'heart', 'Health', `${profile.stand.health}/100`, profile.stand.health < 40 ? COLOURS.red : COLOURS.text);
@@ -272,8 +272,8 @@ function drawStatRow(ctx, width, profile, y) {
 function drawUpgradesRow(ctx, width, profile, y) {
     const h = UPGRADES_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4;
     const keys = ['speed', 'storage', 'resilience', 'appeal'];
 
     keys.forEach((key, i) => {
@@ -324,8 +324,8 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
 function drawEconomyRow(ctx, width, profile, y) {
     const h = ECONOMY_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4;
 
     drawEconomyChip(ctx, startX, y, chipW, h, 'cash', 'Cash Earned', profile.economy.lifetimeEarned.cash, COLOURS.green, '$');
     drawEconomyChip(ctx, startX + (chipW + gap), y, chipW, h, 'cash', 'Cash Spent', profile.economy.lifetimeSpent.cash, COLOURS.red, '$');
@@ -577,7 +577,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const def = RECIPES.find((r) => r.id === entry.key);
     entry.stars = calculateStars(entry);
     const bonuses = getMasteryBonuses(entry);
-    const effectivePrice = def ? Math.round(def.sellPrice * bonuses.sellPriceMultiplier) : null;
+    const effectivePrice = def ? (def.sellPrice * bonuses.sellPriceMultiplier) : null;
 
     const imgSize = 96;
     const imgX = x + 26;

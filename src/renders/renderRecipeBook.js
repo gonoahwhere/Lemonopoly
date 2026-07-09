@@ -5,7 +5,7 @@ import { getRecipeUnlock } from "../data/recipeUnlocks.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -234,7 +234,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.fillStyle = rarity.text;
     ctx.fillText(rarityLabel, textX + 10, y + 74);
 
-    const priceLabel = `$${recipe.sellPrice}`;
+    const priceLabel = `$${formatNumber(recipe.sellPrice)}`;
     const priceX = textX + rarityW + 10;
     const priceW = ctx.measureText(priceLabel).width + 20;
     roundedRect(ctx, priceX, y + 56, priceW, 26, 13, COLOURS.greenSoft);

@@ -4,6 +4,8 @@ import { RECIPES } from "../data/recipes.js";
 import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { getIconFromCache } from "../data/iconImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
+import { getMasteryBonuses, calculateStars } from "../utils/recipeMastery.js";
+import { formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -252,13 +254,13 @@ function drawTimezoneChip(ctx, x, y, w, h, timezone) {
 }
 
 function drawRarityPill(ctx, x, y, rarity) {
-    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.common;
     const label = rarity.toUpperCase();
-    ctx.font = '13px FredokaOne';
-    const w = ctx.measureText(label).width + 16;
-    const h = 22;
+    ctx.font = '14px FredokaOne';
+    const w = ctx.measureText(label).width + 20;
+    const h = 26;
+    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.common;
 
-    roundedRectPath(ctx, x, y, w, h, h / 2);
+    roundedRectPath(ctx, x, y, w, h, 13);
     if (def.gradient) {
         const grad = ctx.createLinearGradient(x, y, x + w, y);
         grad.addColorStop(0, def.gradient[0]);
@@ -272,14 +274,87 @@ function drawRarityPill(ctx, x, y, rarity) {
         ctx.fillStyle = def.bg;
         ctx.fill();
     }
+
     ctx.strokeStyle = def.border;
-    ctx.lineWidth = 1.1;
-    roundedRectPath(ctx, x, y, w, h, h / 2);
+    ctx.lineWidth = 1.2;
+    roundedRectPath(ctx, x, y, w, h, 13);
     ctx.stroke();
 
-    ctx.fillStyle = def.text ?? def.border;
-    ctx.fillText(label, x + 8, y + h / 2 + 4);
+    ctx.fillStyle = def.gradient
+        ? (() => {
+              const textGrad = ctx.createLinearGradient(x, y, x + w, y);
+              textGrad.addColorStop(0, def.gradient[0]);
+              textGrad.addColorStop(1, def.gradient[1]);
+              return textGrad;
+          })()
+        : def.text;
+    ctx.fillText(label, x + 10, y + h / 2 + 5);
+
     return w;
+}
+
+function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
+    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.common;
+    if (def.gradient) {
+        const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+        grad.addColorStop(0, def.gradient[0]);
+        grad.addColorStop(1, def.gradient[1]);
+        return grad;
+    }
+    return def.text;
+}
+
+function drawPuffyStarShape(ctx, cx, cy, outerR, innerR, roundness = 0.65) {
+    const points = 5;
+    const verts = [];
+    for (let i = 0; i < points * 2; i++) {
+        const r = i % 2 === 0 ? outerR : innerR;
+        const angle = (Math.PI / points) * i - Math.PI / 2;
+        verts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
+    }
+
+    ctx.beginPath();
+    const n = verts.length;
+    for (let i = 0; i < n; i++) {
+        const curr = verts[i];
+        const next = verts[(i + 1) % n];
+        const prev = verts[(i - 1 + n) % n];
+
+        const distPrev = Math.hypot(curr.x - prev.x, curr.y - prev.y);
+        const distNext = Math.hypot(next.x - curr.x, next.y - curr.y);
+        const rPrev = distPrev * roundness * 0.5;
+        const rNext = distNext * roundness * 0.5;
+
+        const startX = curr.x + ((prev.x - curr.x) / distPrev) * rPrev;
+        const startY = curr.y + ((prev.y - curr.y) / distPrev) * rPrev;
+        const endX = curr.x + ((next.x - curr.x) / distNext) * rNext;
+        const endY = curr.y + ((next.y - curr.y) / distNext) * rNext;
+
+        if (i === 0) ctx.moveTo(startX, startY);
+        else ctx.lineTo(startX, startY);
+        ctx.quadraticCurveTo(curr.x, curr.y, endX, endY);
+    }
+    ctx.closePath();
+}
+
+function drawStarsRow(ctx, x, y, rarity, stars) {
+    const outerR = 12;
+    const innerR = 6.5;
+    const spacing = 27;
+    const fill = getRarityFill(ctx, rarity, x, y - outerR, x + spacing * 4 + outerR, y + outerR);
+
+    for (let i = 0; i < 5; i++) {
+        const cx = x + i * spacing + outerR;
+        drawPuffyStarShape(ctx, cx, y, outerR, innerR);
+        if (i < stars) {
+            ctx.fillStyle = fill;
+            ctx.fill();
+        } else {
+            ctx.strokeStyle = COLOURS.starEmpty;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
+    }
 }
 
 function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
@@ -294,6 +369,10 @@ function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.fillText(`SLOT ${slotNumber}`, x + 18, y + 22);
 
     const def = RECIPES.find((r) => r.id === entry.key);
+    entry.stars = calculateStars(entry);
+    const bonuses = getMasteryBonuses(entry);
+    const effectivePrice = def ? (def.sellPrice * bonuses.sellPriceMultiplier) : null;
+
     const imgSize = 64;
     const imgX = x + 18;
     const imgY = y + 32;
@@ -322,7 +401,25 @@ function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText(def?.name ?? entry.key, textX, imgY + 22);
 
-    drawRarityPill(ctx, textX, imgY + 34, entry.rarity);
+    const rarityPillW = drawRarityPill(ctx, textX, imgY + 34, entry.rarity);
+
+    let priceW = 0;
+    if (effectivePrice != null) {
+        ctx.font = '13px FredokaOne';
+        const priceLabel = `$${formatNumber(effectivePrice)}`;
+        const priceX = textX + rarityPillW + 10;
+        priceW = ctx.measureText(priceLabel).width + 20;
+        roundedRect(ctx, priceX, imgY + 34, priceW, 26, 13, COLOURS.greenSoft);
+        ctx.strokeStyle = COLOURS.green + '99';
+        ctx.lineWidth = 1.2;
+        roundedRectPath(ctx, priceX, imgY + 34, priceW, 26, 13);
+        ctx.stroke();
+        ctx.fillStyle = '#2E8B39';
+        ctx.fillText(priceLabel, priceX + 10, imgY + 52);
+    }
+
+    const starsX = textX + rarityPillW + (priceW ? priceW + 20 : 10);
+    drawStarsRow(ctx, starsX, imgY + 47, entry.rarity, entry.stars);
 }
 
 function drawEmptySlotCard(ctx, x, y, w, h, slotNumber) {
