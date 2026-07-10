@@ -134,7 +134,7 @@ function drawHeader(ctx, width, page, totalPages, player) {
     ctx.font = "58px FredokaOne";
 
     const title = 'YOUR INGREDIENTS';
-    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
+    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
     const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
     const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
     const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;

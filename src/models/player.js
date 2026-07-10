@@ -296,14 +296,14 @@ const Player = new Schema(
         customization: { type: Customization, default: () => ({}) },
 
         premiumBonuses: {
-            recipeTickets: { type: Boolean, default: 0 },
-            premiumTokens: { type: Boolean, default: 0 },
-            storageExpansion: { type: Boolean, default: 0 },
-            standRepair: { type: Boolean, default: 0 },
-            levelSkip: { type: Boolean, default: 0 },
-            ingredientCrate: { type: Boolean, default: 0 },
-            giftToken: { type: Boolean, default: 0 },
-            freeStaff: { type: Boolean, default: 0 },
+            recipeTickets: { type: Number, default: 0 },
+            premiumTokens: { type: Number, default: 0 },
+            storageExpansion: { type: Number, default: 0 },
+            standRepair: { type: Number, default: 0 },
+            ingredientCrate: { type: Number, default: 0 },
+            giftToken: { type: Number, default: 0 },
+            freeStaff: { type: Number, default: 0 },
+            lastClaimedAt: { type: Date, default: null },
         },
 
         // Settings
