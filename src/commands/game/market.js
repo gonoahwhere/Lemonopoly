@@ -6,6 +6,7 @@ import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
+import { formatNumber } from '../../helpers/renderHelper.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';
@@ -172,7 +173,7 @@ export default {
                 const price = recipe.marketPrice;
                 if (profile.economy.cash < price) {
                     return interaction.editReply({
-                        components: [errorEmbed('Insufficient funds!', `You need **$${price}** to purchase the recipe for **${recipe.name}**, but you only have **${profile.economy.cash}**.`)],
+                        components: [errorEmbed('Insufficient funds!', `You need **$${formatNumber(price)}** to purchase the recipe for **${recipe.name}**, but you only have **${formatNumber(profile.economy.cash)}**.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
@@ -187,7 +188,7 @@ export default {
 
                 await profile.save();
                 return interaction.editReply({
-                    components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${price}**! It's been added to \`/my-recipes\`.`)],
+                    components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${formatNumber(price)}**! It's been added to \`/my-recipes\`.`)],
                     flags: MessageFlags.IsComponentsV2,
                 });
             }
@@ -222,7 +223,7 @@ export default {
 
                 if (profile.economy.cash < totalPrice) {
                     return interaction.editReply({
-                        components: [errorEmbed('Insufficient funds!', `You need **$${totalPrice}** to purchase the ingredient **${ingredient.name}**, but you only have **${profile.economy.cash}**.`)],
+                        components: [errorEmbed('Insufficient funds!', `You need **$${formatNumber(totalPrice)}** to purchase the ingredient **${ingredient.name}**, but you only have **${profile.economy.cash}**.`)],
                         flags: MessageFlags.IsComponentsV2
                     });
                 }
@@ -243,7 +244,7 @@ export default {
                 await profile.save();
 
                 return interaction.editReply({
-                    components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${totalPrice}**! This has been added to \`/ingredient-stock\`.`)],
+                    components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${formatNumber(totalPrice)}**! This has been added to \`/ingredient-stock\`.`)],
                     flags: MessageFlags.IsComponentsV2,
                 });
             }

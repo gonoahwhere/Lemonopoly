@@ -112,13 +112,13 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', PAD, 78);
+    ctx.strokeText('LEADERBOARD', PAD, 78);
 
     const titleGrad = ctx.createLinearGradient(PAD, 30, PAD + 470, 30);
     titleGrad.addColorStop(0, COLOURS.title);
     titleGrad.addColorStop(1, '#FFDD70');
     ctx.fillStyle = titleGrad;
-    ctx.fillText('LEMONOPOLY', PAD, 78);
+    ctx.fillText('LEADERBOARD', PAD, 78);
 
     // Leaderboard type line — icon + "{Label} Leaderboard"
     const iconR = 18;
@@ -128,7 +128,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
 
     ctx.font = '26px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
-    ctx.fillText(`${label} Leaderboard`, iconCx + iconR + 12, 113);
+    ctx.fillText(`${label}`, iconCx + iconR + 12, 113);
 
     // "YOU" pill, top-right — shows the viewer's standing regardless of page.
     if (viewer) {
@@ -169,7 +169,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     ctx.stroke();
 }
 
-function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
+function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer, showBadge }) {
     const x = PAD;
     const w = WIDTH - PAD * 2;
 
@@ -184,7 +184,6 @@ function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     const badgeCx = x + 34;
     const badgeCy = y + ROW_H / 2;
 
-    // Rank badge: medal PNG for 1-3, number-tile PNG for 4-10, drawn circle as a fallback.
     const isMedal = Boolean(MEDAL_KEYS[rank]);
     const rankKey = MEDAL_KEYS[rank] ?? String(rank).padStart(2, '0');
     const rankImg = getIconFromCache(rankKey);
@@ -215,7 +214,18 @@ function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     ctx.fillText(valueLabel, x + w - 24, badgeCy + 8);
     ctx.textAlign = 'left';
 
-    const nameX = badgeCx + badgeR + 18;
+    let nameX = badgeCx + badgeR + 18;
+
+    // Premium badge — small icon right before the name
+    const premiumSize = 20;
+    if (showBadge) {
+        const premiumIcon = getIconFromCache('premium');
+        if (premiumIcon) {
+            ctx.drawImage(premiumIcon, nameX, badgeCy - premiumSize / 2, premiumSize, premiumSize);
+        }
+        nameX += premiumSize + 6;
+    }
+
     let nameMaxW = x + w - 24 - valueW - 20 - nameX;
 
     if (isViewer) {

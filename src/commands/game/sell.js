@@ -2,6 +2,7 @@ import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from '../../data/recipes.js';
 import { calculateStars } from '../../utils/recipeMastery.js';
+import { formatNumber } from '../../helpers/renderHelper.js';
 
 const BASE_SELL_COOLDOWN_MS = 10_000;
 
@@ -61,6 +62,7 @@ export default {
         if (stock.quantity === 0) {
             profile.drinks = profile.drinks.filter((d) => d.key !== activeRecipe.key);
         }
+
         profile.economy.cash += earnings;
         profile.economy.lifetimeEarned.cash += earnings;
         profile.stand.lastSoldAt = new Date();
@@ -72,7 +74,7 @@ export default {
         await profile.save();
 
         return interaction.reply({
-            components: [successEmbed('Drink sold!', `You sold a **${recipe.name}** for **$${earnings.toFixed(2)}**.\nYou now have **$${profile.economy.cash.toFixed(2)}**.`)],
+            components: [successEmbed('Drink sold!', `You sold a **${recipe.name}** for **$${formatNumber(earnings)}**.\nYou now have **$${formatNumber(profile.economy.cash)}**.`)],
             flags: MessageFlags.IsComponentsV2,
         });
     }

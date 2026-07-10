@@ -30,6 +30,11 @@ export function computeIngredientPrice(basePrice, discount = 0) {
     return Math.max(0, Math.round(basePrice * (1 - discount) * 100) / 100);
 }
 
+function formatDiscountPercent(discount) {
+    const pct = Math.round(discount * 100 * 100) / 100;
+    return pct % 1 === 0 ? pct.toString() : pct.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+
 export function getMarketIngredients(player) {
     const discount = getActiveIngredientDiscount(player);
     return Object.entries(INGREDIENTS).map(([id, data]) => ({
@@ -138,7 +143,7 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
 }
 
 function drawHeader(ctx, width, page, totalPages, discount) {
-    ctx.font = "58px FredokaOne";
+    ctx.font = "48px FredokaOne";
     const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
     titleGrad.addColorStop(0, COLOURS.title);
     titleGrad.addColorStop(1, '#FFDD70');
@@ -146,10 +151,10 @@ function drawHeader(ctx, width, page, totalPages, discount) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('BUY INGREDIENTS', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("BUY INGREDIENTS", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -171,7 +176,7 @@ function drawHeader(ctx, width, page, totalPages, discount) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     if (discount > 0) {
-        const discLabel = `-${Math.round(discount * 100)}% DISCOUNT`;
+        const discLabel = `-${formatDiscountPercent(discount)}% DISCOUNT`;
         const discW = ctx.measureText(discLabel).width + pillPadX * 2;
         const discX = pillX - 14 - discW;
         roundedRect(ctx, discX, pillY, discW, pillH, pillH / 2, hexToRgba(COLOURS.green, 0.15));
@@ -367,7 +372,7 @@ function drawFooter(ctx, width, height, discount) {
     ctx.font = '22px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.textAlign = 'center';
-    const label = discount > 0 ? `\u2022 prices shown include your ${Math.round(discount * 100)}% discount \u2022` : `\u2022 stock up before your next rush \u2022`;
+    const label = discount > 0 ? `\u2022 prices shown include your ${formatDiscountPercent(discount)}% discount \u2022` : `\u2022 stock up before your next rush \u2022`;
     ctx.fillText(label, width / 2, height - 24);
     ctx.textAlign = 'left';
 }

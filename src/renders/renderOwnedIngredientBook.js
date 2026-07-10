@@ -3,7 +3,7 @@ import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -139,10 +139,10 @@ function drawHeader(ctx, width, page, totalPages) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('YOUR INGREDIENTS', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("YOUR INGREDIENTS", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -283,26 +283,20 @@ function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
 }
 
 function drawQuantityBadge(ctx, cx, cy, size, quantity) {
-    const label = `x${quantity}`;
-    ctx.font = '13px FredokaOne';
+    const label = `x${formatNumber(quantity)}`;
+    ctx.font = '15px FredokaOne';
     const textW = ctx.measureText(label).width;
-    const badgeR = Math.max(16, textW / 2 + 8);
+    const padX = 8;
+    const pillW = textW + padX * 2;
+    const pillH = 22;
+    const pillX = cx + size / 2 - pillW + 4;
+    const pillY = cy + size / 2 - pillH + 4;
 
-    const bx = cx + size / 2 * 0.72;
-    const by = cy - size / 2 * 0.72;
-
-    ctx.beginPath();
-    ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
-    ctx.fillStyle = COLOURS.card;
-    ctx.fill();
-    ctx.strokeStyle = COLOURS.title;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.font = '13px FredokaOne';
-    ctx.fillStyle = COLOURS.title;
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, COLOURS.title);
+    ctx.fillStyle = '#FFFDF6';
+    ctx.font = '15px FredokaOne';
     ctx.textAlign = 'center';
-    ctx.fillText(label, bx, by + 4);
+    ctx.fillText(label, pillX + pillW / 2, pillY + pillH / 2 + 5);
     ctx.textAlign = 'left';
 }
 

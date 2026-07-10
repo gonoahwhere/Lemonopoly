@@ -5,15 +5,13 @@ import { getRecipeUnlock } from "../data/recipeUnlocks.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const COLOURS = {
     ...BASE_COLOURS,
     progressBg: '#F1E6BE',
-    progressFillA: '#B7E75A',
-    progressFillB: '#5FCB4F',
     locked: 'rgba(74, 58, 26, 0.55)',
 };
 
@@ -99,10 +97,10 @@ function drawHeader(ctx, width, page, totalRecipes, perPage) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('ALL RECIPES', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("ALL RECIPES", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -155,6 +153,11 @@ function drawRecipes(ctx, recipes, player) {
         const y = cardYStart + i * (cardHeight + gap);
         drawRecipeCard(ctx, recipe, player, cardX, y, cardWidth, cardHeight);
     });
+}
+
+function getRarityFill(rarity) {
+    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.Common;
+    return def.text;
 }
 
 function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
@@ -234,7 +237,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.fillStyle = rarity.text;
     ctx.fillText(rarityLabel, textX + 10, y + 74);
 
-    const priceLabel = `$${recipe.sellPrice}`;
+    const priceLabel = `$${formatNumber(recipe.sellPrice)}`;
     const priceX = textX + rarityW + 10;
     const priceW = ctx.measureText(priceLabel).width + 20;
     roundedRect(ctx, priceX, y + 56, priceW, 26, 13, COLOURS.greenSoft);
@@ -294,17 +297,15 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
 
     const percent = Math.max(0, Math.min(1, unlock.progress / 100));
     if (percent > 0) {
-        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
-        fillGrad.addColorStop(0, COLOURS.progressFillA);
-        fillGrad.addColorStop(1, COLOURS.progressFillB);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
-        ctx.fillStyle = fillGrad;
+        ctx.fillStyle = getRarityFill(recipe.rarity);
         ctx.fillRect(barX, barY, barW * percent, barH);
         ctx.restore();
     }
-    ctx.strokeStyle = COLOURS.border;
+    const rarityDef = RARITY_COLOURS[recipe.rarity] || RARITY_COLOURS.Common;
+    ctx.strokeStyle = rarityDef.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();

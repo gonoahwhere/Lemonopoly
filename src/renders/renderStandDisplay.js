@@ -7,7 +7,7 @@ import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { UPGRADE_ICON_KEYS } from "../data/iconKeys.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber, strokeCardBorder } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -157,13 +157,37 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
     ctx.restore();
 }
 
+function shadeHex(hex, percent) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, Math.max(0, (n >> 16) + Math.round(255 * percent)));
+    const g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + Math.round(255 * percent)));
+    const b = Math.min(255, Math.max(0, (n & 0xff) + Math.round(255 * percent)));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+}
+
+function blendHex(hexA, hexB) {
+    const a = parseInt(hexA.slice(1), 16);
+    const b = parseInt(hexB.slice(1), 16);
+    const r = Math.round(((a >> 16) + (b >> 16)) / 2);
+    const g = Math.round((((a >> 8) & 0xff) + ((b >> 8) & 0xff)) / 2);
+    const bl = Math.round(((a & 0xff) + (b & 0xff)) / 2);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1).toUpperCase()}`;
+}
+
 function drawHeader(ctx, width, profile) {
     ctx.font = "50px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
 
-    ctx.strokeStyle = COLOURS.text;
+    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+
+    const nameWidth = ctx.measureText(profile.stand.name).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
     ctx.strokeText(profile.stand.name, 50, 70);
@@ -254,8 +278,8 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
 function drawStatRow(ctx, width, profile, y) {
     const h = STAT_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4; // = 183.5
 
     drawStatChip(ctx, startX, y, chipW, h, 'level', 'Level', `Lv. ${profile.stand.level}`);
     drawStatChip(ctx, startX + (chipW + gap), y, chipW, h, 'heart', 'Health', `${profile.stand.health}/100`, profile.stand.health < 40 ? COLOURS.red : COLOURS.text);
@@ -272,8 +296,8 @@ function drawStatRow(ctx, width, profile, y) {
 function drawUpgradesRow(ctx, width, profile, y) {
     const h = UPGRADES_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4;
     const keys = ['speed', 'storage', 'resilience', 'appeal'];
 
     keys.forEach((key, i) => {
@@ -324,8 +348,8 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
 function drawEconomyRow(ctx, width, profile, y) {
     const h = ECONOMY_ROW_H;
     const gap = 22;
-    const chipW = 176;
-    const startX = (width - (chipW * 4 + gap * 3)) / 2;
+    const startX = 50;
+    const chipW = (800 - gap * 3) / 4;
 
     drawEconomyChip(ctx, startX, y, chipW, h, 'cash', 'Cash Earned', profile.economy.lifetimeEarned.cash, COLOURS.green, '$');
     drawEconomyChip(ctx, startX + (chipW + gap), y, chipW, h, 'cash', 'Cash Spent', profile.economy.lifetimeSpent.cash, COLOURS.red, '$');
@@ -558,10 +582,8 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const entry = profile.recipes.unlocked.find((r) => r.isActive);
 
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
-    ctx.strokeStyle = COLOURS.border;
-    ctx.lineWidth = 1.5;
-    roundedRectPath(ctx, x, y, w, h, 22);
-    ctx.stroke();
+    const borderColours = profile.entitlements?.premium ? profile.customization?.cardBorderColours : null;
+    strokeCardBorder(ctx, x, y, w, h, 22, roundedRectPath, COLOURS.border, borderColours);
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -577,7 +599,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const def = RECIPES.find((r) => r.id === entry.key);
     entry.stars = calculateStars(entry);
     const bonuses = getMasteryBonuses(entry);
-    const effectivePrice = def ? Math.round(def.sellPrice * bonuses.sellPriceMultiplier) : null;
+    const effectivePrice = def ? (def.sellPrice * bonuses.sellPriceMultiplier) : null;
 
     const imgSize = 96;
     const imgX = x + 26;
@@ -687,9 +709,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
 
     const fraction = getStarProgressFraction(entry);
     if (fraction > 0) {
-        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
-        fillGrad.addColorStop(0, COLOURS.progressFillA);
-        fillGrad.addColorStop(1, COLOURS.progressFillB);
+        const fillGrad = getRarityFill(ctx, entry.rarity, barX, 0, barX + barW, 0);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
@@ -697,7 +717,8 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         ctx.fillRect(barX, barY, barW * fraction, barH);
         ctx.restore();
     }
-    ctx.strokeStyle = COLOURS.border;
+    const rarityDef = RARITY_COLOURS[entry.rarity] || RARITY_COLOURS.common;
+    ctx.strokeStyle = rarityDef.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();
