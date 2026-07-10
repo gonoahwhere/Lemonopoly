@@ -7,7 +7,7 @@ import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { UPGRADE_ICON_KEYS } from "../data/iconKeys.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber, strokeCardBorder } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -558,10 +558,8 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const entry = profile.recipes.unlocked.find((r) => r.isActive);
 
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
-    ctx.strokeStyle = COLOURS.border;
-    ctx.lineWidth = 1.5;
-    roundedRectPath(ctx, x, y, w, h, 22);
-    ctx.stroke();
+    const borderColours = profile.entitlements?.premium ? profile.customization?.cardBorderColours : null;
+    strokeCardBorder(ctx, x, y, w, h, 22, roundedRectPath, COLOURS.border, borderColours);
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -687,9 +685,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
 
     const fraction = getStarProgressFraction(entry);
     if (fraction > 0) {
-        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
-        fillGrad.addColorStop(0, COLOURS.progressFillA);
-        fillGrad.addColorStop(1, COLOURS.progressFillB);
+        const fillGrad = getRarityFill(ctx, entry.rarity, barX, 0, barX + barW, 0);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
@@ -697,7 +693,8 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         ctx.fillRect(barX, barY, barW * fraction, barH);
         ctx.restore();
     }
-    ctx.strokeStyle = COLOURS.border;
+    const rarityDef = RARITY_COLOURS[entry.rarity] || RARITY_COLOURS.common;
+    ctx.strokeStyle = rarityDef.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();

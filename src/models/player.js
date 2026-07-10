@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
+const HEX_COLOUR_RE = /^#[0-9A-Fa-f]{6}$/;
 
 const IngredientStock = new Schema(
     {
@@ -133,6 +134,22 @@ const CompletedQuest = new Schema(
     { _id: false }
 );
 
+const Customization = new Schema(
+    {
+        cardBorderColours: {
+            type: [String],
+            default: [],
+            validate: {
+                validator: function (arr) {
+                    return arr.length <= 3 && arr.every((c) => HEX_COLOUR_RE.test(c));
+                },
+                message: 'cardBorderColours must contain 1-3 valid hex colours (e.g. "#FF6B00")',
+            },
+        },
+    },
+    { _id: false },
+)
+
 const Player = new Schema(
     {
         // Identity
@@ -264,6 +281,9 @@ const Player = new Schema(
             active: { type: [ActiveQuest], default: [] },
             completed: { type: [CompletedQuest], default: [] },
         },
+
+        // Customization
+        customization: { type: Customization, default: () => ({}) },
 
         // Settings
         settings: {

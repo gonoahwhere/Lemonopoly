@@ -5,6 +5,13 @@ import { renderConfigDisplay } from '../../renders/renderConfigDisplay.js';
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
 
+const HEX_RE = /^#?[0-9A-Fa-f]{6}$/;
+
+function normaliseHex(input) {
+    const clean = input.trim().replace(/^#/, '');
+    return `#${clean.toUpperCase()}`;
+}
+
 export default {
     devOnly: false,
     cooldown: 5,
@@ -26,8 +33,34 @@ export default {
                     .setAutocomplete(true)
                 )
             )
+            .addSubcommand((sub) => sub
+                .setName('card_border')
+                .setDescription('Change the border colour around your recipe cards.')
+                .addStringOption((opt) => opt
+                    .setName('colour_1')
+                    .setDescription('Primary colour (hex, e.g. #FF6B00)')
+                    .setRequired(true)
+                )
+                .addStringOption((opt) => opt
+                    .setName('colour_2')
+                    .setDescription('Secondary colour (2 colour gradient)')
+                    .setRequired(false)
+                )
+                .addStringOption((opt) => opt
+                    .setName('colour_3')
+                    .setDescription('Tertiary colour (3 colour gradient)')
+                    .setRequired(false)
+                )
+            )
         )
-    ,
+        .addSubcommandGroup((group) => group
+            .setName('reset')
+            .setDescription('Reset one or more of the configuration settings for your game.')
+            .addSubcommand((sub) => sub
+                .setName('colour_border')
+                .setDescription('Clear your active colour/s for your card borders.')
+            )
+        ),
     async autocomplete(interaction) {
         const profile = interaction.playerProfile;
         const focused = interaction.options.getFocused().toLowerCase()
@@ -91,6 +124,59 @@ export default {
                     flags: MessageFlags.IsComponentsV2,
                 });
             }
+
+            if (subcommand === 'card_border') {
+                if (!profile.entitlements?.premium) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Premium pass required!', 'Custom card borders are a premium perk. Use `/premium-perks` to learn more.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+
+                const raw = [
+                    interaction.options.getString('colour_1'),
+                    interaction.options.getString('colour_2'),
+                    interaction.options.getString('colour_3'),
+                ].filter(Boolean);
+
+                for (const c of raw) {
+                    if (!HEX_RE.test(c)) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Unsupported colour!', `\`${c}\` isn't a valid hex colour. Use format #RRGGBB`)],
+                            flags: MessageFlags.IsComponentsV2,
+                        });
+                    }
+                }
+
+                profile.customization = profile.customization ?? {};
+                profile.customization.cardBorderColours = raw.map(normaliseHex);
+
+                await profile.save();
+                return interaction.editReply({
+                    components: [successEmbed('Card border updated!', `Your recipe cards now have a ${raw.length === 1 ? 'solid' : 'gradient'} border!`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
+        }
+
+        if (group === 'reset') {
+            if (subcommand === 'colour_border') {
+                if (!profile.entitlements?.premium) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Premium pass required!', 'Custom card borders are a premium perk. Use `/premium-perks` to learn more.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+            }
+
+            profile.customization = profile.customization ?? {};
+            profile.customization.cardBorderColours = [];
+
+            await profile.save();
+            return interaction.editReply({
+                components: [successEmbed('Card border updated!', `The border for your recipe cards has been reset!`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
         }
     }
 }

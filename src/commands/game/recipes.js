@@ -67,7 +67,7 @@ export default {
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === 1);
 
-                const recipePage = new ButtonBuilder()
+                const myRecipesPage = new ButtonBuilder()
                     .setCustomId(`recipe_view_page`)
                     .setLabel(`${page} / ${totalPages}`)
                     .setStyle(ButtonStyle.Secondary)
@@ -79,7 +79,7 @@ export default {
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === totalPages);
 
-                components.push(new ActionRowBuilder().addComponents(previousPage, recipePage, nextPage));
+                components.push(new ActionRowBuilder().addComponents(previousPage, myRecipesPage, nextPage));
             }
 
             await interaction.editReply({ files: [attachment], components });

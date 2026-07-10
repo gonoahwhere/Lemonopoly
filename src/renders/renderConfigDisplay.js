@@ -5,7 +5,7 @@ import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { getIconFromCache } from "../data/iconImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { getMasteryBonuses, calculateStars } from "../utils/recipeMastery.js";
-import { formatNumber } from '../helpers/renderHelper.js';
+import { formatNumber, strokeCardBorder } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -357,12 +357,10 @@ function drawStarsRow(ctx, x, y, rarity, stars) {
     }
 }
 
-function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
+function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber, profile) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
-    ctx.strokeStyle = COLOURS.border;
-    ctx.lineWidth = 1.2;
-    roundedRectPath(ctx, x, y, w, h, 18);
-    ctx.stroke();
+    const borderColours = profile.entitlements?.premium ? profile.customization?.cardBorderColours : null;
+    strokeCardBorder(ctx, x, y, w, h, 18, roundedRectPath, COLOURS.border, borderColours);
 
     ctx.font = '13px FredokaOne';
     ctx.fillStyle = COLOURS.muted;
@@ -501,7 +499,7 @@ export async function renderConfigDisplay(profile) {
     for (let i = 0; i < maxActiveSlots; i++) {
         const entry = activeEntries[i];
         if (entry) {
-            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
+            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1, profile);
         } else {
             drawEmptySlotCard(ctx, 50, y, 800, SLOT_CARD_H, i + 1);
         }

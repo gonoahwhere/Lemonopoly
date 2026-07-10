@@ -25,7 +25,8 @@ export default async function handleRecipeBook(interaction) {
     }
 
     let page = ownRecipeMap.get(interaction.user.id) ?? 1;
-    const totalPages = Math.max(1, Math.ceil(RECIPES.length / RECIPES_PER_PAGE));
+    const unlockedCount = profile.recipes.unlocked.length;
+    const totalPages = Math.max(1, Math.ceil(unlockedCount / RECIPES_PER_PAGE));
 
     if (interaction.customId === 'recipe_view_previous') {
         page = Math.max(1, page - 1);
@@ -45,7 +46,7 @@ export default async function handleRecipeBook(interaction) {
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
     
-    const recipePage = new ButtonBuilder()
+    const myRecipesPage = new ButtonBuilder()
         .setCustomId(`recipe_view_page`)
         .setLabel(`${page} / ${totalPages}`)
         .setStyle(ButtonStyle.Secondary)
@@ -57,7 +58,7 @@ export default async function handleRecipeBook(interaction) {
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
     
-    const row = new ActionRowBuilder().addComponents(previousPage, recipePage, nextPage)
+    const row = new ActionRowBuilder().addComponents(previousPage, myRecipesPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;
 }
