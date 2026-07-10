@@ -112,10 +112,10 @@ function drawHeader(ctx, width, page, totalRecipes, perPage) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('BUY RECIPES', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("BUY RECIPES", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;

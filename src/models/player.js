@@ -146,6 +146,16 @@ const Customization = new Schema(
                 message: 'cardBorderColours must contain 1-3 valid hex colours (e.g. "#FF6B00")',
             },
         },
+        nameGradientColours: {
+            type: [String],
+            default: [],
+            validate: {
+                validator: function (arr) {
+                    return (arr.length === 0 || arr.length === 2) && arr.every((c) => HEX_COLOUR_RE.test(c));
+                },
+                message: 'nameGradientColours must be empty or contain exactly 2 valid hex colours (e.g. "#FF6B00")',
+            },
+        },
     },
     { _id: false },
 )
@@ -287,7 +297,7 @@ const Player = new Schema(
 
         // Settings
         settings: {
-            containerColor: { type: Boolean, default: true },
+            visibleLeaderboardBadge: { type: Boolean, default: true },
             notificationsEnabled: { type: Boolean, default: false },
             timezone: { type: String, default: 'UTC' },
             leaderboardOptIn: { type: Boolean, default: false },

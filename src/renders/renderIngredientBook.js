@@ -127,10 +127,10 @@ function drawHeader(ctx, width, page, totalPages) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('ALL INGREDIENTS', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("ALL INGREDIENTS", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;

@@ -52,13 +52,35 @@ export default {
                     .setRequired(false)
                 )
             )
+            .addSubcommand((sub) => sub
+                .setName('name_gradient')
+                .setDescription('Set a 2-colour gradient for your stand name.')
+                .addStringOption((opt) => opt
+                    .setName('colour_1')
+                    .setDescription('Primary colour (hex, e.g. #FF6B00)')
+                    .setRequired(true)
+                )
+                .addStringOption((opt) => opt
+                    .setName('colour_2')
+                    .setDescription('Secondary colour (2 colour gradient)')
+                    .setRequired(true)
+                )
+            )
         )
         .addSubcommandGroup((group) => group
             .setName('reset')
             .setDescription('Reset one or more of the configuration settings for your game.')
             .addSubcommand((sub) => sub
+                .setName('all_customization')
+                .setDescription('Reset all customization settings in a single command.')
+            )
+            .addSubcommand((sub) => sub
                 .setName('colour_border')
                 .setDescription('Clear your active colour/s for your card borders.')
+            )
+            .addSubcommand((sub) => sub
+                .setName('name_gradient')
+                .setDescription('Clear your active gradient for your stand name.')
             )
         ),
     async autocomplete(interaction) {
@@ -157,9 +179,58 @@ export default {
                     flags: MessageFlags.IsComponentsV2,
                 });
             }
+
+            if (subcommand === 'name_gradient') {
+                if (!profile.entitlements?.premium) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Premium pass required!', 'Gradient stand names are a premium perk. Use `/premium-perks` to learn more.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+
+                const colour_1 = interaction.options.getString('colour_1', true);
+                const colour_2 = interaction.options.getString('colour_2', true);
+
+                for (const c of [colour_1, colour_2]) {
+                    if (!HEX_RE.test(c)) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Unsupported colour!', `\`${c}\` isn't a valid hex colour. Use format #RRGGBB`)],
+                            flags: MessageFlags.IsComponentsV2,
+                        });
+                    }
+                }
+
+                profile.customization = profile.customization ?? {};
+                profile.customization.nameGradientColours = [colour_1, colour_2].map(normaliseHex);
+
+                await profile.save();
+                return interaction.editReply({
+                    components: [successEmbed('Stand name gradient updated!', `Your stand name now has a custom gradient!`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
         }
 
         if (group === 'reset') {
+            if (subcommand === 'all_customization') {
+                if (!profile.entitlements?.premium) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Premium pass required!', 'Customization settings are a premium perk. Use `/premium-perks` to learn more.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+
+                profile.customization = profile.customization ?? {};
+                profile.customization.cardBorderColours = [];
+                profile.customization.nameGradientColours = [];
+
+                await profile.save();
+                return interaction.editReply({
+                    components: [successEmbed('Customization settings reset!', `All customization settings have been reset back to their default values!`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
+
             if (subcommand === 'colour_border') {
                 if (!profile.entitlements?.premium) {
                     return interaction.editReply({
@@ -167,16 +238,34 @@ export default {
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
+
+                profile.customization = profile.customization ?? {};
+                profile.customization.cardBorderColours = [];
+
+                await profile.save();
+                return interaction.editReply({
+                    components: [successEmbed('Card border rest!', `The border colour for your recipe cards is back to the default colour!`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
             }
 
-            profile.customization = profile.customization ?? {};
-            profile.customization.cardBorderColours = [];
+            if (subcommand === 'name_gradient') {
+                if (!profile.entitlements?.premium) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Premium pass required!', 'Gradient stand names are a premium perk. Use `/premium-perks` to learn more.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
 
-            await profile.save();
-            return interaction.editReply({
-                components: [successEmbed('Card border updated!', `The border for your recipe cards has been reset!`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
+                profile.customization = profile.customization ?? {};
+                profile.customization.nameGradientColours = [];
+
+                await profile.save();
+                return interaction.editReply({
+                    components: [successEmbed('Stand name gradient reset!', `Your stand name is back to the default colour!`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
         }
     }
 }

@@ -143,7 +143,7 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
 }
 
 function drawHeader(ctx, width, page, totalPages, discount) {
-    ctx.font = "58px FredokaOne";
+    ctx.font = "48px FredokaOne";
     const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
     titleGrad.addColorStop(0, COLOURS.title);
     titleGrad.addColorStop(1, '#FFDD70');
@@ -151,10 +151,10 @@ function drawHeader(ctx, width, page, totalPages, discount) {
     ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEMONOPOLY', 50, 78);
+    ctx.strokeText('BUY INGREDIENTS', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("LEMONOPOLY", 50, 78);
+    ctx.fillText("BUY INGREDIENTS", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;

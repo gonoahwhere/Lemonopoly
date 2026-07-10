@@ -7,7 +7,7 @@ export const PREMIUM_PERKS = [
     'Custom gradient stand names',
     'Ability to gift ingredients to other players',
     'Access to premium only leaderboards',
-    'Visible preium badge in the leaderboards',
+    'Visible premium badge in the leaderboards',
     'Premium only channels in the Community Discord',
     'Customisation for recipe card borders',
     'Early access opportunities',

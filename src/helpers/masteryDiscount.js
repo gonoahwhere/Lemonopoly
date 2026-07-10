@@ -10,7 +10,7 @@ export function getActiveIngredientDiscount(player) {
     if (unlocked.length === 0) return 0;
 
     let totalDiscount = 0;
-
+    
     for (const recipe of unlocked) {
         const def = MASTERY_DEFS[recipe.rarity];
         if (!def) continue;
@@ -18,6 +18,9 @@ export function getActiveIngredientDiscount(player) {
         const stars = recipe.stars ?? 0;
         totalDiscount += def.ingredientDiscountPerStar * stars;
     }
+
+    const premiumMulti = player?.entitlements?.premium ? 2 : 1;
+    totalDiscount *= premiumMulti
 
     return Math.min(0.9, Math.max(0, totalDiscount));
 }

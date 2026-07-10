@@ -157,13 +157,37 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
     ctx.restore();
 }
 
+function shadeHex(hex, percent) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, Math.max(0, (n >> 16) + Math.round(255 * percent)));
+    const g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + Math.round(255 * percent)));
+    const b = Math.min(255, Math.max(0, (n & 0xff) + Math.round(255 * percent)));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+}
+
+function blendHex(hexA, hexB) {
+    const a = parseInt(hexA.slice(1), 16);
+    const b = parseInt(hexB.slice(1), 16);
+    const r = Math.round(((a >> 16) + (b >> 16)) / 2);
+    const g = Math.round((((a >> 8) & 0xff) + ((b >> 8) & 0xff)) / 2);
+    const bl = Math.round(((a & 0xff) + (b & 0xff)) / 2);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1).toUpperCase()}`;
+}
+
 function drawHeader(ctx, width, profile) {
     ctx.font = "50px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
 
-    ctx.strokeStyle = COLOURS.text;
+    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+
+    const nameWidth = ctx.measureText(profile.stand.name).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
     ctx.strokeText(profile.stand.name, 50, 70);
