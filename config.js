@@ -69,21 +69,6 @@ export default {
     ],
 
     emojis: {
-        leaderboard: {
-            bronze: '<:bronze:1523568636156182558>',
-            silver: '<:silver:1523568638576033863>',
-            gold: '<:gold:1523568637301096478>',
-            one: '<:01:1523582308706156646>',
-            two: '<:02:1523582307531751595>',
-            three: '<:03:1523582306399424602>',
-            four: '<:04:1523582286036078652>',
-            five: '<:05:1523582271079190568>',
-            six: '<:06:1523582171707609158>',
-            seven: '<:07:1523582170071830579>',
-            eight: '<:08:1523582168381784146>',
-            nine: '<:09:1523582167131619419>',
-            ten: '<:10:1523582165806219285>',
-        },
         ingredients: {
             base: {
                 water: '<:water:1523556395419435018>',
@@ -189,19 +174,38 @@ export default {
                 prism_dust: '<:pride_confetti:1524582177092927630>'
             }
         },
+        leaderboard: {
+            bronze: '<:bronze:1523568636156182558>',
+            silver: '<:silver:1523568638576033863>',
+            gold: '<:gold:1523568637301096478>',
+        },
+        numbers: {
+            one: '<:01:1523582308706156646>',
+            two: '<:02:1523582307531751595>',
+            three: '<:03:1523582306399424602>',
+            four: '<:04:1523582286036078652>',
+            five: '<:05:1523582271079190568>',
+            six: '<:06:1523582171707609158>',
+            seven: '<:07:1523582170071830579>',
+            eight: '<:08:1523582168381784146>',
+            nine: '<:09:1523582167131619419>',
+            ten: '<:10:1523582165806219285>',
+        },
         currency: {
             cash: '<:cash:1523558886714380328>',
             coins: '<:coins:1523558882247573636>',
+        },
+        upgrades: {
+            appeal: '<:appeal:1524583544020795553>',
+            resilience: '<:resilience:1524583545299800167>',
+            storage: '<:storage:1524583547409797282>',
+            speed: '<:speed:1524583546310754314>',
         },
         stand: {
             recipe: '<:recipe:1523558887792447498>',
             location: '<:location:1523562275305427086>',
             heart: '<:heart:1524583738401620210>',
             level: '<:level:1524618274694893589>',
-            appeal: '<:appeal:1524583544020795553>',
-            resilience: '<:resilience:1524583545299800167>',
-            storage: '<:storage:1524583547409797282>',
-            speed: '<:speed:1524583546310754314>',
             prestige: '<:prestige:1524617686221328405>',
         },
         misc: {
@@ -221,9 +225,19 @@ export default {
             leaderboard: '<:leaderboard:1524582440021004590>',
             mix_all: '<:mix_all:1524582441040482586>',
             notifications: '<:notifications:1524582442483056660>',
-            premium: '<:premium:1524582447839187145>',
             seasonal: '<:seasonal:1524582448955002940>',
             timezone: '<:timezone:1524582450758549554>',
+        },
+        premium: {
+            free_staff: '',
+            gift_token: '',
+            ingredient_crate: '',
+            level_skip: '',
+            premium: '<:premium:1524582447839187145>',
+            stand_repair: '',
+            storage_expand: '',
+            ticket: '',
+            token: '',
         }
     }
 }

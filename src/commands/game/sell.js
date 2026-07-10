@@ -67,7 +67,10 @@ export default {
         profile.economy.cash += earnings;
         profile.economy.lifetimeEarned.cash += earnings;
         profile.stand.lastSoldAt = new Date();
+        profile.customers.cupsSold += 1;
+        profile.customers.totalServed += 1;
 
+        activeRecipe.progress.timesServed += 1;
         activeRecipe.progress.customersServed += 1;
         activeRecipe.progress.revenueEarned += earnings;
         activeRecipe.stars = calculateStars(activeRecipe);

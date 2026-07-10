@@ -3,7 +3,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { PREMIUM_PERKS } from '../data/passBenefits.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -83,19 +83,28 @@ function drawStarBullet(ctx, cx, cy, outerR = 9) {
     ctx.fill();
 }
 
-function drawHeader(ctx, width, isPremium) {
+function drawHeader(ctx, width, profile) {
     ctx.font = "42px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 20, 450, 20);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
+    
+    const title = 'PREMIUM PASS';
+    const isPremium = Boolean(profile?.entitlements?.premium);
+    const customColours = isPremium ? profile.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
 
-    ctx.strokeStyle = COLOURS.text;
+    const nameWidth = ctx.measureText(title).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
-    ctx.strokeText('PREMIUM PASS', 50, 62);
+    ctx.strokeText(title, 50, 62);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText('PREMIUM PASS', 50, 62);
+    ctx.fillText(title, 50, 62);
 
     ctx.font = '20px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -155,7 +164,9 @@ function drawPill(ctx, x, y, label, colour, bg, borderColour, fontSize = 13, pad
     return w;
 }
 
-export async function renderPremiumPerks(isPremium = false) {
+export async function renderPremiumPerks(profile) {
+    const isPremium = Boolean(profile?.entitlements?.premium);
+
     const width = 700;
     const HEADER_H = 130;
     const CARD_X = 50;
@@ -180,14 +191,12 @@ export async function renderPremiumPerks(isPremium = false) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, isPremium);
+    drawHeader(ctx, width, profile);
 
     const cardY = HEADER_H;
     roundedRectWithShadow(ctx, CARD_X, cardY, CARD_W, cardH, 20, COLOURS.card, COLOURS.cardShadow);
-    ctx.strokeStyle = COLOURS.premium + '55';
-    ctx.lineWidth = 1.2;
-    roundedRectPath(ctx, CARD_X, cardY, CARD_W, cardH, 20);
-    ctx.stroke();
+    const borderColours = isPremium ? profile?.customization?.cardBorderColours : null;
+    strokeCardBorder(ctx, CARD_X, cardY, CARD_W, cardH, 20, roundedRectPath, COLOURS.premium + '55', borderColours);
 
     let rowY = cardY + CARD_PAD_TOP;
     PREMIUM_PERKS.forEach((perk, i) => {
@@ -198,10 +207,7 @@ export async function renderPremiumPerks(isPremium = false) {
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.textAlign = 'center';
-    ctx.fillText(
-        isPremium ? 'thanks for being a premium pass member!' : 'unlock the premium pass to enjoy these perks',
-        width / 2, height - FOOTER_H / 2 + 5
-    );
+    ctx.fillText(isPremium ? 'thanks for being a premium pass member!' : 'unlock the premium pass to enjoy these perks', width / 2, height - FOOTER_H / 2 + 5);
     ctx.textAlign = 'left';
 
     return canvas.toBuffer('image/png');

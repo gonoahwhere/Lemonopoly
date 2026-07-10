@@ -3,7 +3,7 @@ import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -120,11 +120,18 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
 
 function drawHeader(ctx, width, page, totalPages) {
     ctx.font = "58px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
 
-    ctx.strokeStyle = COLOURS.text;
+    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+
+    const nameWidth = ctx.measureText(profile.stand.name).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
     ctx.strokeText('ALL INGREDIENTS', 50, 78);

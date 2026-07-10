@@ -7,7 +7,7 @@ import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { UPGRADE_ICON_KEYS } from "../data/iconKeys.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber, strokeCardBorder } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -155,23 +155,6 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
     ctx.fillStyle = fill;
     ctx.fill();
     ctx.restore();
-}
-
-function shadeHex(hex, percent) {
-    const n = parseInt(hex.slice(1), 16);
-    const r = Math.min(255, Math.max(0, (n >> 16) + Math.round(255 * percent)));
-    const g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + Math.round(255 * percent)));
-    const b = Math.min(255, Math.max(0, (n & 0xff) + Math.round(255 * percent)));
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
-}
-
-function blendHex(hexA, hexB) {
-    const a = parseInt(hexA.slice(1), 16);
-    const b = parseInt(hexB.slice(1), 16);
-    const r = Math.round(((a >> 16) + (b >> 16)) / 2);
-    const g = Math.round((((a >> 8) & 0xff) + ((b >> 8) & 0xff)) / 2);
-    const bl = Math.round(((a & 0xff) + (b & 0xff)) / 2);
-    return `#${((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1).toUpperCase()}`;
 }
 
 function drawHeader(ctx, width, profile) {
@@ -325,7 +308,7 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(UPGRADE_ICON_KEYS[key]);
+    const icon = getIconFromCache(key);
     if (icon) {
         ctx.save();
         ctx.beginPath();

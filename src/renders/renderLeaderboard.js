@@ -2,7 +2,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { getIconFromCache } from "../data/iconImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -84,7 +84,7 @@ const ROWS_TOP_GAP = 14;
 const FOOTER_H = 60;
 
 export async function renderLeaderboard(data) {
-    const { label, prefix, iconKey, accent, total, rows, viewer } = data;
+    const { label, prefix, iconKey, accent, total, rows, viewer, viewerProfile } = data;
 
     const rowsBlockH = rows.length * ROW_H + Math.max(0, rows.length - 1) * ROW_GAP;
     const height = HEADER_H + ROWS_TOP_GAP + rowsBlockH + ROWS_TOP_GAP + FOOTER_H;
@@ -93,7 +93,7 @@ export async function renderLeaderboard(data) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, WIDTH, height);
-    drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
+    drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile });
 
     let cursorY = HEADER_H + ROWS_TOP_GAP;
     for (const row of rows) {
@@ -106,19 +106,29 @@ export async function renderLeaderboard(data) {
     return canvas.toBuffer('image/png');
 }
 
-function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
+function drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile }) {
     // Brand title
     ctx.font = '58px FredokaOne';
-    ctx.strokeStyle = COLOURS.text;
+ 
+    const title = 'LEADERBOARD';
+    const isPremium = Boolean(viewerProfile?.entitlements?.premium);
+    const customColours = isPremium ? viewerProfile?.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+
+    const nameWidth = ctx.measureText(title).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('LEADERBOARD', PAD, 78);
+    ctx.strokeText(title, PAD, 78);
 
-    const titleGrad = ctx.createLinearGradient(PAD, 30, PAD + 470, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
     ctx.fillStyle = titleGrad;
-    ctx.fillText('LEADERBOARD', PAD, 78);
+    ctx.fillText(title, PAD, 78);
 
     // Leaderboard type line — icon + "{Label} Leaderboard"
     const iconR = 18;

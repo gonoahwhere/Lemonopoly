@@ -3,7 +3,7 @@ import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
 import { getIngredientFromCache } from "../data/ingredientImages.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText } from '../helpers/renderHelper.js';
+import { wrapText, shadeHex, blendHex } from '../helpers/renderHelper.js';
 import { getActiveIngredientDiscount } from '../helpers/masteryDiscount.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
@@ -114,7 +114,7 @@ export async function renderIngredientMarket(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, totalPages, discount);
+    drawHeader(ctx, width, page, totalPages, discount, player);
     const gridStartY = drawTypePill(ctx, width, current.type, current.pageInType, current.totalPagesInType);
     drawMarketGrid(ctx, current.items, width, gridStartY, discount);
     drawFooter(ctx, width, height, discount);
@@ -142,19 +142,27 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
     ctx.fill();
 }
 
-function drawHeader(ctx, width, page, totalPages, discount) {
+function drawHeader(ctx, width, page, totalPages, discount, player) {
     ctx.font = "48px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
+    
+    const title = 'BUY INGREDIENTS';
+    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
 
-    ctx.strokeStyle = COLOURS.text;
+    const nameWidth = ctx.measureText(title).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('BUY INGREDIENTS', 50, 78);
+    ctx.strokeText(title, 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("BUY INGREDIENTS", 50, 78);
+    ctx.fillText(title, 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;

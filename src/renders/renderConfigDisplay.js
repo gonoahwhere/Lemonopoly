@@ -5,7 +5,7 @@ import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { getIconFromCache } from "../data/iconImages.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { getMasteryBonuses, calculateStars } from "../utils/recipeMastery.js";
-import { formatNumber, strokeCardBorder } from '../helpers/renderHelper.js';
+import { formatNumber, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -115,11 +115,18 @@ function drawPill(ctx, x, y, label, colour, bg, borderColour) {
 
 function drawHeader(ctx, width, profile) {
     ctx.font = "42px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 20, 450, 20);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
+    
+    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
 
-    ctx.strokeStyle = COLOURS.text;
+    const nameWidth = ctx.measureText(profile.stand.name).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.strokeText('STAND CONFIGURATION', 50, 62);

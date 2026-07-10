@@ -16,7 +16,7 @@ export default {
         const profile = interaction.playerProfile;
         const isPremium = Boolean(profile?.entitlements?.premium);
     
-        const buffer = await renderPremiumPerks(isPremium);
+        const buffer = await renderPremiumPerks(profile);
         const attachment = new AttachmentBuilder(buffer, { name: 'premium-perks.png' });
 
         await interaction.editReply({ files: [attachment ]});
