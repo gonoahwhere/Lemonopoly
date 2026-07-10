@@ -12,3 +12,54 @@ export const PREMIUM_PERKS = [
     'Customisation for recipe card borders',
     'Early access opportunities',
 ]
+
+export const MONTHLY_CLAIMS = [
+    {
+        name: 'Premium Tokens',
+        id: 'premium_tokens',
+        icon: 'cash',
+        quantity: 1000,
+    },
+    {
+        name: 'Recipe Tickets',
+        id: 'recipe_tickets',
+        icon: 'cash',
+        quantity: 10,
+    },
+    {
+        name: 'Premium Tokens',
+        id: 'premium_tokens_2',
+        icon: 'cash',
+        quantity: 1000,
+    },
+    {
+        name: 'Recipe Tickets',
+        id: 'recipe_tickets_2',
+        icon: 'cash',
+        quantity: 10,
+    },
+    {
+        name: 'Premium Tokens',
+        id: 'premium_tokens_3',
+        icon: 'cash',
+        quantity: 1000,
+    },
+    {
+        name: 'Recipe Tickets',
+        id: 'recipe_tickets_3',
+        icon: 'cash',
+        quantity: 10,
+    },
+    {
+        name: 'Premium Tokens',
+        id: 'premium_tokens_4',
+        icon: 'cash',
+        quantity: 1000,
+    },
+    {
+        name: 'Recipe Tickets',
+        id: 'recipe_tickets_4',
+        icon: 'cash',
+        quantity: 10,
+    },
+]

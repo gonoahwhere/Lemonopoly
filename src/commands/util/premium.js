@@ -4,6 +4,9 @@ import { renderPremiumPerks } from '../../renders/renderPremiumBenefits.js';
 import PlayerProfile from '../../models/player.js';
 
 export default {
+    devOnly: false,
+    cooldown: 5,
+    category: 'Util',
     data: new SlashCommandBuilder()
         .setName('premium-perks')
         .setDescription('View the perks you get with the Premium Pass'),
