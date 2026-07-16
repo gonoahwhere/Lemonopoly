@@ -4,6 +4,7 @@ import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from "../../data/ingredients.js";
+import { getStorageCapacity } from "../../data/upgrades.js";
 
 function getIngredientEmoji(id) {
     const categories = config.emojis.ingredients;
@@ -63,9 +64,12 @@ export default {
         const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
         const quantityOf = (id) => ingredientStock.get(id)?.quantity || 0;
         const maxCraftable = recipe.ingredients.reduce((max, req) => Math.min(max, Math.floor(quantityOf(req.id) / req.amount)), 25);
-        const count = amount === 'all' ? maxCraftable : amount;
 
-        if (count < 1) {
+        const drinkCap = getStorageCapacity(player);
+        const currentDrinks = player.drinks.find((d) => d.key === recipe.id)?.quantity ?? 0;
+        const drinkSpace = Math.max(0, drinkCap - currentDrinks);
+
+        if (maxCraftable < 1) {
             const shortList = recipe.ingredients
                 .filter((req) => quantityOf(req.id) < req.amount)
                 .map((req) => `- ${getIngredientEmoji(req.id)} **(${quantityOf(req.id)}/${req.amount})**`)
@@ -77,9 +81,26 @@ export default {
             });
         }
 
+        if (drinkSpace < 1) {
+            return interaction.reply({
+                components: [errorEmbed('Storage full!', `Your storage is already holding **${currentDrinks}/${drinkCap}** ${recipe.name}. Sell some with \`/sell\` or upgrade Storage with \`/upgrade\`.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        const craftLimit = Math.min(maxCraftable, drinkSpace);
+        const count = amount === 'all' ? craftLimit : amount;
+
         if (count > maxCraftable) {
             return interaction.reply({
                 components: [errorEmbed('Not enough ingredients!', `You can only mix **${maxCraftable}** ${recipe.name}${maxCraftable === 1 ? '' : 's'} with your current stock, not **${count}**.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        if (count > drinkSpace) {
+            return interaction.reply({
+                components: [errorEmbed('Not enough storage!', `You can only store **${drinkSpace}** more ${recipe.name} (**${currentDrinks}/${drinkCap}**). Sell some or upgrade Storage with \`/upgrade\`.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }

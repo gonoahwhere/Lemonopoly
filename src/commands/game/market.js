@@ -7,6 +7,7 @@ import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
+import { getStorageCapacity } from '../../data/upgrades.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';
@@ -127,7 +128,6 @@ export default {
 
             if (choice === 'ingredient_market') {
                 let page = 1;
-                
                 const totalPages = getIngredientMarketPageCount(profile);
                 const buffer = await renderIngredientMarket(profile);
                 const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
@@ -210,11 +210,11 @@ export default {
                 const stock = profile.ingredients.find((i) => i.key === ingredient.id);
 
                 const currentQuantity = stock?.quantity ?? 0;
-                const capacity = stock?.capacity ?? 40;
+                const capacity = getStorageCapacity(profile);
 
                 if (currentQuantity + amount > capacity) {
                     return interaction.editReply({
-                        components: [errorEmbed('Exceeds storage capacity!', `You can only purchase **${capacity - currentQuantity}** more **${ingredient.name}**.`)],
+                        components: [errorEmbed('Exceeds storage capacity!', `You can only purchase **${capacity - currentQuantity}** more **${ingredient.name}** (storage holds **${capacity}**). Upgrade Storage with \`/upgrade\`.`)],
                         flags: MessageFlags.IsComponentsV2
                     });
                 }
@@ -237,7 +237,7 @@ export default {
                     profile.ingredients.push({
                         key: ingredient.id,
                         quantity: amount,
-                        capacity: 40,
+                        capacity,
                     });
                 }
 

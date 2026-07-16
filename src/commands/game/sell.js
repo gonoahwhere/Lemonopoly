@@ -3,14 +3,7 @@ import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from '../../data/recipes.js';
 import { calculateStars } from '../../utils/recipeMastery.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
-
-const BASE_SELL_COOLDOWN_MS = 10_000;
-
-function getSellCooldownMs(profile) {
-    if (profile.upgrades.speed.level === 0) {
-        return BASE_SELL_COOLDOWN_MS;
-    }
-}
+import { getSellCooldownMs, getTipChance, getDoubleChance, TIP_RATE } from '../../data/upgrades.js';
 
 export default {
     devOnly: false,
@@ -57,9 +50,16 @@ export default {
             });
         }
 
-        const earnings = recipe.sellPrice;
-        stock.quantity -= 1;
-        if (stock.quantity === 0) {
+        const doubled = stock.quantity >= 2 && Math.random() < getDoubleChance(profile);
+        const cupsSold = doubled ? 2 : 1;
+
+        const saleValue = recipe.sellPrice * cupsSold;
+        const tipped = Math.random() < getTipChance(profile);
+        const tip = tipped ? Math.round(saleValue * TIP_RATE) : 0;
+        const earnings = saleValue + tip;
+
+        stock.quantity -= cupsSold;
+        if (stock.quantity <= 0) {
             profile.drinks = profile.drinks.filter((d) => d.key !== activeRecipe.key);
         }
 
@@ -67,14 +67,24 @@ export default {
         profile.economy.lifetimeEarned.cash += earnings;
         profile.stand.lastSoldAt = new Date();
 
-        activeRecipe.progress.customersServed += 1;
+        profile.customers.cupsSold += cupsSold;
+        profile.customers.totalServed += cupsSold;
+        if (tip > 0) profile.customers.totalTipsEarned += tip;
+
+        activeRecipe.timesServed += cupsSold;
+        activeRecipe.progress.customersServed += cupsSold;
         activeRecipe.progress.revenueEarned += earnings;
         activeRecipe.stars = calculateStars(activeRecipe);
 
         await profile.save();
 
+        const title = doubled ? 'Double sale!' : 'Drink sold!';
+        let detail = `You sold **${cupsSold}× ${recipe.name}** for **$${formatNumber(earnings)}**`;
+        if (tip > 0) detail += ` *(+$${formatNumber(tip)} tip!)*`;
+        detail += `.\nYou now have **$${formatNumber(profile.economy.cash)}**.`;
+
         return interaction.reply({
-            components: [successEmbed('Drink sold!', `You sold a **${recipe.name}** for **$${formatNumber(earnings)}**.\nYou now have **$${formatNumber(profile.economy.cash)}**.`)],
+            components: [successEmbed(title, detail)],
             flags: MessageFlags.IsComponentsV2,
         });
     }
