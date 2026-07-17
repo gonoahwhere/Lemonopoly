@@ -43,10 +43,7 @@ export async function renderDrinkStock(player, page = 1) {
     const stockByKey = new Map(stockList.map(stock => [stock.key, stock]));
 
     const ownedDrinks = RECIPES
-        .map(recipe => ({
-            ...recipe,
-            quantity: stockByKey.get(recipe.id)?.quantity || 0,
-        }))
+        .map(recipe => ({ ...recipe, quantity: stockByKey.get(recipe.id)?.quantity || 0 }))
         .filter(drink => drink.quantity > 0);
 
     const start = (page - 1) * OWNED_DRINKS_PER_PAGE;

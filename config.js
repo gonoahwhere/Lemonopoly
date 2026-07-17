@@ -229,15 +229,15 @@ export default {
             timezone: '<:timezone:1524582450758549554>',
         },
         premium: {
-            free_staff: '',
-            gift_token: '',
-            ingredient_crate: '',
-            level_skip: '',
+            free_staff: '<:free_staff:1527717355273064650>',
+            gift_token: '<:gift_token:1527717356355457265>',
+            ingredient_crate: '<:ingredient_crate:1527717358788153510>',
+            level_skip: '<:level_skip:1527717360054829237>',
             premium: '<:premium:1524582447839187145>',
-            stand_repair: '',
-            storage_expand: '',
-            ticket: '',
-            token: '',
+            stand_repair: '<:stand_repair:1527717362579542167>',
+            storage_expand: '<:storage_expand:1527717363678711838>',
+            ticket: '<:ticket:1527717364634751128>',
+            token: '<:token:1527717365830258758>',
         }
     }
 }

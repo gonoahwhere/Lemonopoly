@@ -16,7 +16,7 @@ const COLOURS = {
     premiumSoft: 'rgba(155,79,209,0.12)',
     seasonal: '#3B82C4',
     seasonalSoft: 'rgba(59,130,196,0.12)',
-    beta: '#F0664E',
+    beta: '#AA2014',
     betaSoft: 'rgba(240,102,78,0.12)',
     lockedGrey: '#A1A1AA',
     lockedGreySoft: 'rgba(161,161,170,0.12)',

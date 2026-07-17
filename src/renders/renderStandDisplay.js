@@ -19,7 +19,7 @@ const COLOURS = {
     starEmpty: 'rgba(138,117,72,0.35)',
     premium: '#9B4FD1',
     seasonal: '#3B82C4',
-    beta: '#F0664E',
+    beta: '#AA2014',
     eventBg: 'rgba(240,102,78,0.10)',
     eventBorder: 'rgba(240,102,78,0.4)',
 };
@@ -86,7 +86,6 @@ export function fillTextWithKernedDollars(ctx, text, x, y, align = 'left', kernP
     }
 }
 
-// layout constants
 const HEADER_H = 150;
 const STAT_ROW_H = 76;
 const UPGRADES_ROW_H = 76;
@@ -184,27 +183,40 @@ function drawHeader(ctx, width, profile) {
     ctx.fillText(subtitle, 54, 100);
 
     const badges = [];
-    if (profile.entitlements?.premium) badges.push({ label: 'PREMIUM', colour: COLOURS.premium });
-    if (profile.entitlements?.seasonal) badges.push({ label: 'SEASONAL', colour: COLOURS.seasonal });
-    if (profile.entitlements?.betaTester) badges.push({ label: 'BETA', colour: COLOURS.beta });
+    if (profile.entitlements?.premium) badges.push({ label: 'PREMIUM', colour: COLOURS.premium, iconKey: 'premium' });
+    if (profile.entitlements?.betaTester) badges.push({ label: 'BETA', colour: COLOURS.beta, iconKey: 'beta' });
 
     if (badges.length) {
-        ctx.font = '13px FredokaOne';
+        ctx.font = '20px FredokaOne';
+        const iconSize = 24;
+        const gap = 8;
+        const padX = 14;
+        const pillH = 40;
         let bx = width - 50;
-        const by = 34;
-        const bh = 26;
+        const by = 22;
+
         for (let i = badges.length - 1; i >= 0; i--) {
-            const { label, colour } = badges[i];
-            const bw = ctx.measureText(label).width + 20;
+            const { label, colour, iconKey } = badges[i];
+            const icon = getIconFromCache(iconKey);
+            const textW = ctx.measureText(label).width;
+            const bw = padX + (icon ? iconSize + gap : 0) + textW + padX;
             bx -= bw;
-            roundedRect(ctx, bx, by, bw, bh, bh / 2, colour + '1F');
+
+            roundedRect(ctx, bx, by, bw, pillH, pillH / 2, colour + '1F');
             ctx.strokeStyle = colour + '77';
             ctx.lineWidth = 1.2;
-            roundedRectPath(ctx, bx, by, bw, bh, bh / 2);
+            roundedRectPath(ctx, bx, by, bw, pillH, pillH / 2);
             ctx.stroke();
+
+            if (icon) ctx.drawImage(icon, bx + padX, by + (pillH - iconSize) / 2, iconSize, iconSize);
+
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
             ctx.fillStyle = colour;
-            ctx.fillText(label, bx + 10, by + bh / 2 + 4.5);
-            bx -= 8;
+            ctx.fillText(label, bx + padX + (icon ? iconSize + gap : 0), by + pillH / 2 + 1);
+            ctx.textBaseline = 'alphabetic';
+
+            bx -= 10;
         }
     }
 
@@ -634,7 +646,6 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const starsX = textX + tierPillW + (priceW ? priceW + 20 : 10);
     drawStarsRow(ctx, starsX, imgY + 49, entry.rarity, entry.stars);
 
-    // Mastery status badge, top-right
     if (entry.stars === 5) {
         const masterCheck = canMaster(entry, profile.prestige.level);
 
@@ -706,7 +717,6 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();
 
-    // Ingredients label + chips
     let servedTextY = barY + 40;
     if (def?.ingredients?.length) {
         ctx.font = '16px FredokaOne';
@@ -774,7 +784,7 @@ function drawFooter(ctx, width, height, profile) {
         `${formatNumber(profile.recipes.unlocked.length)} recipes unlocked`,
         `${formatNumber(profile.staff.length)} staff hired`,
         `${formatNumber(profile.achievements.length)} achievements`,
-        `Prestige ${formatNumber(profile.prestige.level)}`,
+        `${formatNumber(profile.prestige.level)} prestige`,
     ].join('   •   ');
 
     const line2 = [

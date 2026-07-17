@@ -1,4 +1,3 @@
-
 import { SlashCommandBuilder, AttachmentBuilder } from 'discord.js';
 import { renderPremiumPerks } from '../../renders/renderPremiumBenefits.js';
 import PlayerProfile from '../../models/player.js';
