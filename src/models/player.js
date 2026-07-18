@@ -295,6 +295,17 @@ const Player = new Schema(
         // Customization
         customization: { type: Customization, default: () => ({}) },
 
+        premiumBonuses: {
+            recipeTickets: { type: Number, default: 0 },
+            premiumTokens: { type: Number, default: 0 },
+            storageExpansion: { type: Number, default: 0 },
+            standRepair: { type: Number, default: 0 },
+            ingredientCrate: { type: Number, default: 0 },
+            giftToken: { type: Number, default: 0 },
+            freeStaff: { type: Number, default: 0 },
+            lastClaimedAt: { type: Date, default: null },
+        },
+
         // Settings
         settings: {
             visibleLeaderboardBadge: { type: Boolean, default: true },

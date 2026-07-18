@@ -3,7 +3,7 @@ import path from 'path';
 import { RECIPES } from "../data/recipes.js";
 import { getDrinkImageFromCache } from "../data/drinkImages.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber } from '../helpers/renderHelper.js';
+import { wrapText, formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -43,10 +43,7 @@ export async function renderDrinkStock(player, page = 1) {
     const stockByKey = new Map(stockList.map(stock => [stock.key, stock]));
 
     const ownedDrinks = RECIPES
-        .map(recipe => ({
-            ...recipe,
-            quantity: stockByKey.get(recipe.id)?.quantity || 0,
-        }))
+        .map(recipe => ({ ...recipe, quantity: stockByKey.get(recipe.id)?.quantity || 0 }))
         .filter(drink => drink.quantity > 0);
 
     const start = (page - 1) * OWNED_DRINKS_PER_PAGE;
@@ -58,7 +55,7 @@ export async function renderDrinkStock(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, ownedDrinks.length);
+    drawHeader(ctx, width, page, ownedDrinks.length, player);
     drawDrinkGrid(ctx, pageDrinks, width, 175);
     drawFooter(ctx, width, height, ownedDrinks.length);
 
@@ -85,21 +82,29 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
     ctx.fill();
 }
 
-function drawHeader(ctx, width, page, totalOwned) {
+function drawHeader(ctx, width, page, totalOwned, player) {
     const totalPages = Math.max(1, Math.ceil(totalOwned / OWNED_DRINKS_PER_PAGE));
 
     ctx.font = "58px FredokaOne";
-    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
-    titleGrad.addColorStop(0, COLOURS.title);
-    titleGrad.addColorStop(1, '#FFDD70');
+    
+    const title = 'YOUR DRINKS';
+    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
 
-    ctx.strokeStyle = COLOURS.text;
+    const nameWidth = ctx.measureText(title).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText('YOUR DRINKS', 50, 78);
+    ctx.strokeText(title, 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText("YOUR DRINKS", 50, 78);
+    ctx.fillText(title, 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;

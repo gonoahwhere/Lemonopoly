@@ -1,15 +1,10 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { formatNumber } from '../helpers/renderHelper.js';
-import { getIconFromCache, preloadIcons } from '../data/iconImages.js';
+import { formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { getIconFromCache } from '../data/iconImages.js';
 import { UPGRADE_ICON_KEYS } from '../data/iconKeys.js';
-import {
-    UPGRADE_STATS,
-    UPGRADE_LEVEL_CAP,
-    isPrestigeReady,
-    getPrestigeLevelRequirement,
-} from '../data/upgrades.js';
+import { UPGRADE_STATS, UPGRADE_LEVEL_CAP, isPrestigeReady, getPrestigeLevelRequirement } from '../data/upgrades.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -21,6 +16,7 @@ const HEADER_H = 140;
 const ROW_H = 66;
 const ROW_GAP = 14;
 const BANNER_H = 78;
+const CARD_BORDER_WIDTH = 2.2;
 
 function roundedRectPath(ctx, x, y, w, h, r) {
     ctx.beginPath();
@@ -73,24 +69,31 @@ function drawIconBadge(ctx, cx, cy, radius, iconKey) {
     }
 }
 
-function drawHeader(ctx, prestige, ready) {
+function drawHeader(ctx, prestige, ready, player) {
     ctx.font = '46px FredokaOne';
-    const grad = ctx.createLinearGradient(PAD, 30, PAD + 360, 30);
-    grad.addColorStop(0, COLOURS.title);
-    grad.addColorStop(1, '#FFDD70');
-    ctx.textAlign = 'left';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = COLOURS.text;
+    const title = 'PRESTIGE';
+    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
+    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
+    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+
+    const nameWidth = ctx.measureText(title).width;
+    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
+    titleGrad.addColorStop(0, fillColours[0]);
+    titleGrad.addColorStop(1, fillColours[1]);
+
+    ctx.strokeStyle = strokeColour;
     ctx.lineWidth = 5;
-    ctx.strokeText('Prestige', PAD, 74);
-    ctx.fillStyle = grad;
-    ctx.fillText('Prestige', PAD, 74);
+    ctx.lineJoin = 'round';
+    ctx.strokeText(title, 50, 78);
+
+    ctx.fillStyle = titleGrad;
+    ctx.fillText(title, 50, 78);
 
     ctx.font = '19px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.fillText(ready ? 'Everything is maxed — you can prestige!' : 'Clear every requirement to prestige.', PAD + 2, 104);
 
-    // Prestige badge (right)
     ctx.font = '20px FredokaOne';
     const text = `Prestige ${prestige}`;
     const iconSize = 26;
@@ -102,14 +105,14 @@ function drawHeader(ctx, prestige, ready) {
     const x = WIDTH - PAD - pillW;
     const y = 50 - pillH / 2 + 12;
 
-    roundedRect(ctx, x, y, pillW, pillH, pillH / 2, COLOURS.card);
-    ctx.strokeStyle = COLOURS.border;
+    roundedRect(ctx, x, y, pillW, pillH, pillH / 2, '#DCEBFF');
+    ctx.strokeStyle = '#3B82F6';
     ctx.lineWidth = 1.3;
     roundedRectPath(ctx, x, y, pillW, pillH, pillH / 2);
     ctx.stroke();
     const icon = getIconFromCache('prestige');
     if (icon) ctx.drawImage(icon, x + padX, y + (pillH - iconSize) / 2, iconSize, iconSize);
-    ctx.fillStyle = COLOURS.title;
+    ctx.fillStyle = '#1D4ED8';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, x + padX + iconSize + gap, y + pillH / 2 + 1);
@@ -129,8 +132,8 @@ function drawHeader(ctx, prestige, ready) {
 
 function drawRequirementRow(ctx, x, y, w, h, iconKey, name, valueText, met) {
     roundedRectShadow(ctx, x, y, w, h, 16, COLOURS.card, COLOURS.cardShadow, 10, 4);
-    ctx.strokeStyle = met ? 'rgba(79,191,91,0.55)' : COLOURS.border;
-    ctx.lineWidth = 1.3;
+    ctx.strokeStyle = met ? 'rgba(79,191,91,0.55)' : 'rgba(224,66,66,0.6)';
+    ctx.lineWidth = CARD_BORDER_WIDTH;
     roundedRectPath(ctx, x, y, w, h, 16);
     ctx.stroke();
 
@@ -160,10 +163,10 @@ function drawRequirementRow(ctx, x, y, w, h, iconKey, name, valueText, met) {
 
 function drawBanner(ctx, x, y, w, h, ready, requiredLevel) {
     const bg = ready ? COLOURS.greenSoft : '#FBEFCE';
-    const line = ready ? COLOURS.green : COLOURS.border;
+    const line = ready ? COLOURS.green : 'rgba(224,66,66,0.6)';
     roundedRect(ctx, x, y, w, h, 18, bg);
     ctx.strokeStyle = line;
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = CARD_BORDER_WIDTH;
     roundedRectPath(ctx, x, y, w, h, 18);
     ctx.stroke();
 
@@ -175,18 +178,12 @@ function drawBanner(ctx, x, y, w, h, ready, requiredLevel) {
 
     ctx.font = '15px FredokaOne';
     ctx.fillStyle = ready ? '#3F8A47' : COLOURS.subtitle;
-    ctx.fillText(
-        ready ? 'Run /prestige to confirm and reset.' : `Max all four upgrades and reach stand level ${requiredLevel}.`,
-        x + w / 2,
-        y + h / 2 + 15,
-    );
+    ctx.fillText(ready ? 'Press the prestige icon to confirm and reset.' : `Max all four upgrades and reach stand level ${requiredLevel}.`, x + w / 2, y + h / 2 + 15);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
 }
 
 export async function renderPrestige(player) {
-    await preloadIcons([...Object.values(UPGRADE_ICON_KEYS), 'prestige', 'level', 'enabled', 'disabled']);
-
     const prestige = player?.prestige?.level ?? 0;
     const standLevel = player?.stand?.level ?? 1;
     const requiredLevel = getPrestigeLevelRequirement(prestige);
@@ -200,14 +197,14 @@ export async function renderPrestige(player) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, WIDTH, height);
-    drawHeader(ctx, prestige, ready);
+    drawHeader(ctx, prestige, ready, player);
 
     const contentW = WIDTH - PAD * 2;
     let rowY = PAD + HEADER_H;
 
     for (const stat of UPGRADE_STATS) {
         const level = player?.upgrades?.[stat]?.level ?? 0;
-        drawRequirementRow(ctx, PAD, rowY, contentW, ROW_H, UPGRADE_ICON_KEYS[stat], STAT_LABELS[stat], `${level} / ${UPGRADE_LEVEL_CAP}`, level >= UPGRADE_LEVEL_CAP);
+        drawRequirementRow(ctx, PAD, rowY, contentW, ROW_H, stat, STAT_LABELS[stat], `${level} / ${UPGRADE_LEVEL_CAP}`, level >= UPGRADE_LEVEL_CAP);
         rowY += ROW_H + ROW_GAP;
     }
 

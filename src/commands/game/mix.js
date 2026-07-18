@@ -42,18 +42,21 @@ export default {
                 components: [errorEmbed('You don\'t have a stand open yet!', 'You need to open your stand first - run `/start` to get going.')],
             });
         }
+
         if (amount !== 'all' && (isNaN(amount) || amount <= 0 || amount > 10)) {
             return interaction.reply({
                 components: [errorEmbed('Invalid amount.', 'Please enter a number between **1** and **10**, or **"all"**.')],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
+
         if (!activeRecipe) {
             return interaction.reply({
                 components: [errorEmbed('No active recipe found.', 'Please set an active recipe first.')],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
+        
         if (!recipe || !recipe.ingredients?.length) {
             return interaction.reply({
                 components: [errorEmbed('Something went wrong.', 'Your active recipe couldn\'t be found. Please try again later.')],
@@ -83,7 +86,7 @@ export default {
 
         if (drinkSpace < 1) {
             return interaction.reply({
-                components: [errorEmbed('Storage full!', `Your storage is already holding **${currentDrinks}/${drinkCap}** ${recipe.name}. Sell some with \`/sell\` or upgrade Storage with \`/upgrade\`.`)],
+                components: [errorEmbed('Storage full!', `Your storage is already holding **${currentDrinks}/${drinkCap} ${recipe.name}**. Sell some with \`/sell\` or upgrade storage with \`/upgrade buy\`.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
@@ -93,14 +96,14 @@ export default {
 
         if (count > maxCraftable) {
             return interaction.reply({
-                components: [errorEmbed('Not enough ingredients!', `You can only mix **${maxCraftable}** ${recipe.name}${maxCraftable === 1 ? '' : 's'} with your current stock, not **${count}**.`)],
+                components: [errorEmbed('Not enough ingredients!', `You can only mix **${maxCraftable} ${recipe.name}${maxCraftable === 1 ? '' : 's'}** with your current stock, not **${count}**.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
 
         if (count > drinkSpace) {
             return interaction.reply({
-                components: [errorEmbed('Not enough storage!', `You can only store **${drinkSpace}** more ${recipe.name} (**${currentDrinks}/${drinkCap}**). Sell some or upgrade Storage with \`/upgrade\`.`)],
+                components: [errorEmbed('Not enough storage!', `You currently have **${currentDrinks}/${drinkCap} ${recipe.name}** so you can only mix **${drinkSpace}** more. Sell some or upgrade storage with \`/upgrade buy\`.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }

@@ -103,6 +103,7 @@ export default {
                 total,
                 rows,
                 viewer,
+                viewerProfile
             });
             const attachment = new AttachmentBuilder(image, { name: 'leaderboard.png' });
 
@@ -166,6 +167,7 @@ export default {
                 total,
                 rows,
                 viewer,
+                viewerProfile
             });
             const attachment = new AttachmentBuilder(image, { name: 'premium-leaderboard.png' });
 

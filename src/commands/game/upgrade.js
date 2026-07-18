@@ -3,11 +3,7 @@ import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import config from '../../../config.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
 import { renderUpgrades } from '../../renders/renderUpgrades.js';
-import {
-    UPGRADE_LEVEL_CAP,
-    upgradeCostRange,
-    formatUpgradeEffect,
-} from '../../data/upgrades.js';
+import { UPGRADE_LEVEL_CAP, upgradeCostRange, formatUpgradeEffect } from '../../data/upgrades.js';
 
 const STAT_LABELS = {
     speed: 'Speed',
@@ -73,7 +69,7 @@ export default {
 
         if (level >= UPGRADE_LEVEL_CAP) {
             return interaction.reply({
-                components: [errorEmbed('Already maxed!', `Your **${label}** upgrade is already at the level ${UPGRADE_LEVEL_CAP} cap.`)],
+                components: [errorEmbed('Already maxed!', `Your **${label}** upgrade is already at the level **${UPGRADE_LEVEL_CAP}** cap.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
@@ -84,7 +80,7 @@ export default {
         if (profile.economy.cash < totalCost) {
             const plural = buying === 1 ? 'level' : 'levels';
             return interaction.reply({
-                components: [errorEmbed('Insufficient funds!', `Upgrading **${label}** by ${buying} ${plural} costs ${cash()} **${formatNumber(totalCost)}**, but you only have ${cash()} **${formatNumber(profile.economy.cash)}**.`)],
+                components: [errorEmbed('Insufficient funds!', `Upgrading **${label}** by **${buying} ${plural}** costs ${cash()} **${formatNumber(totalCost)}**, but you only have ${cash()} **${formatNumber(profile.economy.cash)}**.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }

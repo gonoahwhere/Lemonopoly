@@ -80,7 +80,7 @@ export default {
 
         const title = doubled ? 'Double sale!' : 'Drink sold!';
         let detail = `You sold **${cupsSold}× ${recipe.name}** for **$${formatNumber(earnings)}**`;
-        if (tip > 0) detail += ` *(+$${formatNumber(tip)} tip!)*`;
+        if (tip > 0) detail += ` **+$${formatNumber(tip)} tip**`;
         detail += `.\nYou now have **$${formatNumber(profile.economy.cash)}**.`;
 
         return interaction.reply({

@@ -54,7 +54,7 @@ export default {
             )
             .addSubcommand((sub) => sub
                 .setName('name_gradient')
-                .setDescription('Set a 2-colour gradient for your stand name.')
+                .setDescription('Set a 2-colour gradient for the headings on the rendered image.')
                 .addStringOption((opt) => opt
                     .setName('colour_1')
                     .setDescription('Primary colour (hex, e.g. #FF6B00)')
@@ -80,7 +80,7 @@ export default {
             )
             .addSubcommand((sub) => sub
                 .setName('name_gradient')
-                .setDescription('Clear your active gradient for your stand name.')
+                .setDescription('Clear your active gradient for the headings on the rendered images.')
             )
         ),
     async autocomplete(interaction) {
@@ -183,7 +183,7 @@ export default {
             if (subcommand === 'name_gradient') {
                 if (!profile.entitlements?.premium) {
                     return interaction.editReply({
-                        components: [errorEmbed('Premium pass required!', 'Gradient stand names are a premium perk. Use `/premium-perks` to learn more.')],
+                        components: [errorEmbed('Premium pass required!', 'Gradient heading names are a premium perk. Use `/premium-perks` to learn more.')],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
@@ -205,7 +205,7 @@ export default {
 
                 await profile.save();
                 return interaction.editReply({
-                    components: [successEmbed('Stand name gradient updated!', `Your stand name now has a custom gradient!`)],
+                    components: [successEmbed('Stand name gradient updated!', `Your heading names now have a custom gradient!`)],
                     flags: MessageFlags.IsComponentsV2,
                 });
             }
@@ -252,7 +252,7 @@ export default {
             if (subcommand === 'name_gradient') {
                 if (!profile.entitlements?.premium) {
                     return interaction.editReply({
-                        components: [errorEmbed('Premium pass required!', 'Gradient stand names are a premium perk. Use `/premium-perks` to learn more.')],
+                        components: [errorEmbed('Premium pass required!', 'Gradient heading names are a premium perk. Use `/premium-perks` to learn more.')],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }

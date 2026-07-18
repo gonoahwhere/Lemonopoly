@@ -214,7 +214,7 @@ export default {
 
                 if (currentQuantity + amount > capacity) {
                     return interaction.editReply({
-                        components: [errorEmbed('Exceeds storage capacity!', `You can only purchase **${capacity - currentQuantity}** more **${ingredient.name}** (storage holds **${capacity}**). Upgrade Storage with \`/upgrade\`.`)],
+                        components: [errorEmbed('Exceeds storage capacity!', `You currently have **${currentQuanity}/${capacity} ${ingredient.name}** so you can only purchase **${capacity - currentQuantity}** more. Upgrade storage with \`/upgrade buy\`.`)],
                         flags: MessageFlags.IsComponentsV2
                     });
                 }

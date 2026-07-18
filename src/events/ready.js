@@ -6,15 +6,15 @@ export default {
     name: 'clientReady',
     once: true,
     execute(client) {
-        logger.info(`Logged in as ${client.user.tag} (${client.user.id})`);
-        logger.info(`Serving ${client.guilds.cache.size} guild(s) on shard ${client.shard?.ids[0] ?? 0}`);
+        logger.info(`[CLIENT] Logged in as ${client.user.tag} (${client.user.id})`);
+        logger.info(`[CLIENT] Serving ${client.guilds.cache.size} guild(s) on shard ${client.shard?.ids[0] ?? 0}`);
 
         const { guilds, commands } = client;
         const serverNum = guilds.cache.size;
         const userNum = guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
 
-        logger.info(`Currently in ${serverNum} server(s) with a total of ${userNum} user(s).`);
-        logger.info(`Loaded ${commands.size} command(s).`);
+        logger.info(`[CLIENT] Currently in ${serverNum} server(s) with a total of ${userNum} user(s).`);
+        logger.info(`[CLIENT] Loaded ${commands.size} command(s).`);
 
         const formatNumber = (num) => {
             if (num < 1e3) return num.toString();

@@ -1,22 +1,22 @@
 export const UPGRADE_LEVEL_CAP = 20;
 export const UPGRADE_STATS = ['speed', 'storage', 'appeal', 'resilience'];
-export const BASE_SELL_COOLDOWN_MS = 10_000; // 10 seconds
-export const SELL_COOLDOWN_FLOOR_MS = 3_000; // 3 seconds
-export const BASE_STORAGE_CAPACITY = 40; // Base storage capacity
-export const TIP_RATE = 0.40; // Tips are 40% of the sale value
-export const PRESTIGE_STARTING_CASH = 500; // Starting cash after prestige
-export const PRESTIGE_STARTING_LEVEL = 1; // Stand level reset to on prestige
-export const PRESTIGE_INCOME_STEP = 0.15; // Income multiplier step per prestige level
-export const PRESTIGE_LEVEL_BASE = 50; // Base level requirement for prestige
-export const PRESTIGE_LEVEL_STEP = 15; // Step increase for level requirement
-export const PRESTIGE_PRICE_STEP = 0.5; // Price multiplier step per prestige level
+export const BASE_SELL_COOLDOWN_MS = 10_000;
+export const SELL_COOLDOWN_FLOOR_MS = 3_000;
+export const BASE_STORAGE_CAPACITY = 40;
+export const TIP_RATE = 0.05;
+export const PRESTIGE_STARTING_CASH = 500;
+export const PRESTIGE_STARTING_LEVEL = 1;
+export const PRESTIGE_INCOME_STEP = 0.15;
+export const PRESTIGE_LEVEL_BASE = 50;
+export const PRESTIGE_LEVEL_STEP = 15;
+export const PRESTIGE_PRICE_STEP = 0.5;
 
 export const UPGRADE_EFFECTS = {
-    speed: { start: 20, cap: 70, capsAt: 15 }, // % faster sells
-    storage: { start: 30, cap: 430, capsAt: 50 }, // flat capacity bonus over base
-    appealTip: { start: 5, cap: 100, capsAt: 20 }, // % chance of a tip
-    appealDouble: { start: 3, cap: 100, capsAt: 30 }, // % chance of a double sale
-    resilience: { start: 9, cap: 99, capsAt: 20 }, // % event damage reduction
+    speed: { start: 20, cap: 70, capsAt: 15 },
+    storage: { start: 30, cap: 430, capsAt: 50 },
+    appealTip: { start: 3, cap: 60, capsAt: 20 },
+    appealDouble: { start: 1, cap: 50, capsAt: 15 },
+    resilience: { start: 9, cap: 99, capsAt: 20 },
 };
 
 export const UPGRADE_PRICING = {
@@ -97,8 +97,8 @@ export const getPrestigeLevelRequirement = (prestige) => PRESTIGE_LEVEL_BASE + P
 export function areUpgradesMaxed(player) {
     return UPGRADE_STATS.every((stat) => (player?.upgrades?.[stat]?.level ?? 0) >= UPGRADE_LEVEL_CAP);
 }
+
 export function isPrestigeReady(player) {
     const level = player?.stand?.level ?? 1;
     return areUpgradesMaxed(player) && level >= getPrestigeLevelRequirement(prestigeLevel(player));
 }
-
