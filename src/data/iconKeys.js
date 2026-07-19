@@ -64,6 +64,14 @@ export const UPGRADE_ICON_KEYS = [
     'storage',
 ];
 
+export const WEATHER_ICON_KEYS = [
+    'heatwave',
+    'local_festival',
+    'sudden_rain',
+    'thunderstorm',
+    'wind_storm'
+];
+
 export const ALL_ICON_KEYS = [
     ...CONFIG_ICON_KEYS,
     ...CURRENCY_ICON_KEYS,
@@ -73,6 +81,7 @@ export const ALL_ICON_KEYS = [
     ...PREMIUM_ICON_KEYS,
     ...STAND_ICON_KEYS,
     ...UPGRADE_ICON_KEYS,
+    ...WEATHER_ICON_KEYS,
 ];
 
 export const ICON_CATEGORIES = {
@@ -84,6 +93,7 @@ export const ICON_CATEGORIES = {
     premium: PREMIUM_ICON_KEYS,
     stand: STAND_ICON_KEYS,
     upgrades: UPGRADE_ICON_KEYS,
+    weather: WEATHER_ICON_KEYS,
 };
 
 export const ICON_KEY_TO_CATEGORY = Object.fromEntries(Object.entries(ICON_CATEGORIES).flatMap(([category, keys]) => keys.map((key) => [key, category])));
