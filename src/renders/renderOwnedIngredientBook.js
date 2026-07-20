@@ -228,13 +228,13 @@ function drawIngredientGrid(ctx, ingredients, width, gridTop) {
     const circleSize = 84;
     const rowHeight = 186;
 
-    ingredients.forEach((ingredient, i) => {
+    for (let i = 0; i < ingredients.length; i++) {
         const col = i % COLUMNS;
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawIngredientTile(ctx, cx, cy, circleSize, ingredient, colWidth - 16);
-    });
+        drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
+    }
 }
 
 function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
@@ -275,9 +275,9 @@ function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'center';
     const lines = wrapText(ctx, ingredient.name, maxTextWidth, 2);
-    lines.forEach((line, i) => {
-        ctx.fillText(line, cx, cy + size / 2 + 28 + i * 17);
-    });
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, cy + size / 2 + 28 + i * 17);
+    }
 
     ctx.textAlign = 'left';
 }

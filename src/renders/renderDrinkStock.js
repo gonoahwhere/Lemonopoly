@@ -183,9 +183,9 @@ async function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'center';
     const lines = wrapText(ctx, drink.name, maxTextWidth, 2);
-    lines.forEach((line, i) => {
-        ctx.fillText(line, cx, cy + size / 2 + 30 + i * 24);
-    });
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, cy + size / 2 + 30 + i * 24);
+    }
 
     const pillY = cy + size / 2 + 30 + lines.length * 24 - 2;
     drawRarityPill(ctx, cx, pillY, drink.rarity, colour);

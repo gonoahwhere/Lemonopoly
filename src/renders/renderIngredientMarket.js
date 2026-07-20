@@ -247,13 +247,13 @@ function drawMarketGrid(ctx, ingredients, width, gridTop, discount) {
     const circleSize = 86;
     const rowHeight = 195;
 
-    ingredients.forEach((ingredient, i) => {
+    for (let i = 0; i < ingredients.length; i++) {
         const col = i % COLUMNS;
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawMarketTile(ctx, cx, cy, circleSize, ingredient, colWidth - 24, discount);
-    });
+        drawMarketTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 24, discount);
+    }
 }
 
 function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
@@ -292,9 +292,9 @@ function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'center';
     const lines = wrapText(ctx, ingredient.name, maxTextWidth, 2);
-    lines.forEach((line, i) => {
-        ctx.fillText(line, cx, cy + size / 2 + 28 + i * 17);
-    });
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, cy + size / 2 + 28 + i * 17);
+    }
 
     const priceY = cy + size / 2 + 20 + lines.length * 17 + 4;
     drawPriceTag(ctx, cx, priceY, ingredient.basePrice, discount);

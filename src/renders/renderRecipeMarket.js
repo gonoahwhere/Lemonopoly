@@ -266,9 +266,9 @@ async function drawRecipeCard(ctx, recipe, x, y, w, h) {
     ctx.font = '15px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     const descLines = wrapText(ctx, recipe.description, textW, 2);
-    descLines.forEach((line, i) => {
-        ctx.fillText(line, textX, y + 108 + i * 20);
-    });
+    for (let i = 0; i < descLines.length; i++) {
+        ctx.fillText(descLines[i], textX, y + 108 + i * 20);
+    }
 
     const ingredientsLabelY = y + imgSize + 46;
     ctx.font = '16px FredokaOne';

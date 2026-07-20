@@ -276,11 +276,11 @@ function drawUpgradesRow(ctx, width, profile, y) {
     const startX = (width - (chipW * 4 + gap * 3)) / 2;
     const keys = ['speed', 'storage', 'resilience', 'appeal'];
 
-    keys.forEach((key, i) => {
+    for (let i = 0; i < keys.length; i++) {
         const x = startX + (chipW + gap) * i;
-        const level = profile.upgrades?.[key]?.level ?? 0;
-        drawUpgradeChip(ctx, x, y, chipW, h, key, level);
-    });
+        const level = profile.upgrades?.[keys[i]]?.level ?? 0;
+        drawUpgradeChip(ctx, x, y, chipW, h, keys[i], level);
+    }
 }
 
 function drawUpgradeChip(ctx, x, y, w, h, key, level) {
@@ -674,9 +674,9 @@ async function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         ctx.font = '15px FredokaOne';
         ctx.fillStyle = COLOURS.subtitle;
         const lines = wrapText(ctx, def.description, textW, 2);
-        lines.forEach((line, i) => {
-            ctx.fillText(line, textX, imgY + 88 + i * 20);
-        });
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], textX, imgY + 88 + i * 20);
+        }
     }
 
     const barX = x + 34;
