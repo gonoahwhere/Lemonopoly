@@ -23,7 +23,7 @@ export default async function handleDrinkStock(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
+
     const stockByKey = new Map((profile.drinks || []).map(stock => [stock.key, stock]));
     const ownedCount = RECIPES.filter(recipe => (stockByKey.get(recipe.id)?.quantity || 0) > 0).length;
 

@@ -42,7 +42,7 @@ export default {
             .filter((c) => c.name.toLowerCase().includes(focused))
             .slice(0, 25)
             .map(({ name, value }) => ({ name, value }));
-        
+
         await interaction.respond(choices);
     },
     async execute(interaction) {

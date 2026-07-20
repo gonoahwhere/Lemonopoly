@@ -12,7 +12,7 @@ export const MASTERY_DEFS = {
     epic: { customersPerStar: 90, revenuePerStar: 33750, sellPriceBonusPerStar: 0.025, ingredientDiscountPerStar: 0.010 },
     legendary: { customersPerStar: 140, revenuePerStar: 63750, sellPriceBonusPerStar: 0.030, ingredientDiscountPerStar: 0.012 },
     mythic: { customersPerStar: 220, revenuePerStar: 120000, sellPriceBonusPerStar: 0.040, ingredientDiscountPerStar: 0.015 },
-    
+
     // Requires Prestiging
     divine: { customersPerStar: 350, revenuePerStar: 225000, sellPriceBonusPerStar: 0.050, ingredientDiscountPerStar: 0.018, prestigeRequired: 1 },
     cosmic: { customersPerStar: 550, revenuePerStar: 412500, sellPriceBonusPerStar: 0.060, ingredientDiscountPerStar: 0.021, prestigeRequired: 5 },

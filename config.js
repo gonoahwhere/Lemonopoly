@@ -167,7 +167,7 @@ const emojis = {
     }
 };
 
-export default { 
+export default {
     version: process.env.VERSION,
     token: isDev ? process.env.DEV_TOKEN : process.env.MAIN_TOKEN,
     clientId: isDev ? process.env.DEV_CLIENT_ID : process.env.MAIN_CLIENT_ID,

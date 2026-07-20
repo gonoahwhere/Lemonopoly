@@ -22,9 +22,9 @@ export default async function handleMarketIngredient(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
+
     let page = marketViewIngredient.get(interaction.user.id) ?? 1;
-    let ingredients = getMarketIngredients(profile); 
+    let ingredients = getMarketIngredients(profile);
     const totalPages = getIngredientMarketPageCount(profile);
 
     if (interaction.customId === 'market_ingredient_previous') {
@@ -44,7 +44,7 @@ export default async function handleMarketIngredient(interaction) {
         .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const ingredientMarketPage = new ButtonBuilder()
         .setCustomId(`market_ingredient_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -56,7 +56,7 @@ export default async function handleMarketIngredient(interaction) {
         .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, ingredientMarketPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;

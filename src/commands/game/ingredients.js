@@ -13,7 +13,7 @@ export default {
         .setDescription('View the ingredients you currently have.'),
     async execute(interaction) {
         const profile = interaction.playerProfile
-        
+
         let page = 1
         const totalPages = getOwnedIngredientBookPageCount(profile);
         const image = await renderOwnedIngredientBook(profile, page);
@@ -27,7 +27,7 @@ export default {
                 .setEmoji(config.emoji('misc', 'left_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === 1)
-            
+
             const ingredientPage = new ButtonBuilder()
                 .setCustomId(`ingredient_stock_page`)
                 .setLabel(`${page} / ${totalPages}`)
@@ -39,7 +39,7 @@ export default {
                 .setEmoji(config.emoji('misc', 'right_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === totalPages)
-            
+
             components.push(new ActionRowBuilder().addComponents(previousPage, ingredientPage, nextPage))
         }
 

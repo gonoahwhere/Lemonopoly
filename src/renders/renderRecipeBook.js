@@ -18,20 +18,20 @@ const COLOURS = {
 };
 
 const RARITY_COLOURS = {
-    Common: { 
-        text: '#8A7548', 
-        bg: 'rgba(138,117,72,0.12)', 
-        border: 'rgba(138,117,72,0.4)' 
+    Common: {
+        text: '#8A7548',
+        bg: 'rgba(138,117,72,0.12)',
+        border: 'rgba(138,117,72,0.4)'
     },
-    Rare: { 
-        text: '#3B82C4', 
-        bg: 'rgba(59,130,196,0.12)', 
-        border: 'rgba(59,130,196,0.4)' 
+    Rare: {
+        text: '#3B82C4',
+        bg: 'rgba(59,130,196,0.12)',
+        border: 'rgba(59,130,196,0.4)'
     },
-    Epic: { 
-        text: '#9B4FD1', 
-        bg: 'rgba(155,79,209,0.12)', 
-        border: 'rgba(155,79,209,0.4)' 
+    Epic: {
+        text: '#9B4FD1',
+        bg: 'rgba(155,79,209,0.12)',
+        border: 'rgba(155,79,209,0.4)'
     },
 };
 

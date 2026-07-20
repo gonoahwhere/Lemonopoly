@@ -19,7 +19,7 @@ export async function loadEvents(client) {
                 logger.warn(`[Events] ${file} is missing name or execute — skipped.`);
                 continue;
             }
-        
+
             const method = event.once ? 'once' : 'on';
             client[method](event.name, (...args) => event.execute(...args, client));
 

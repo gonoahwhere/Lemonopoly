@@ -37,7 +37,7 @@ export default {
         .setDescription('A display of the commands that I have.')
         .addStringOption(option => option
             .setName('cmd')
-            .setDescription('The command that you want detailed information for.') 
+            .setDescription('The command that you want detailed information for.')
             .setRequired(false)
             .addChoices(
                 { name: 'help', value: 'help' },
@@ -81,7 +81,7 @@ export default {
                     `**\`/${command} ${subName}**\n` +
                     `-# • Required: ${sub.requiredArgs}\n` +
                     `-# • Optional: ${sub.optionalArgs}\n` +
-                    `-# • Usage: ${sub.usage}\n` + 
+                    `-# • Usage: ${sub.usage}\n` +
                     `-# • Use Count: ${sub.useCount}`
                 );
             }
@@ -89,7 +89,7 @@ export default {
             detailContainer.addLongText(
                 `-# • Required: ${info.requiredArgs}\n` +
                 `-# • Optional: ${info.optionalArgs}\n` +
-                `-# • Usage: ${info.usage}\n` + 
+                `-# • Usage: ${info.usage}\n` +
                 `-# • Use Count: ${info.useCount}`
             );
         }

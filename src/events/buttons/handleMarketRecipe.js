@@ -22,9 +22,9 @@ export default async function handleMarketRecipe(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
+
     let page = marketViewRecipe.get(interaction.user.id) ?? 1;
-    let recipes = getMarketRecipes(profile); 
+    let recipes = getMarketRecipes(profile);
     let totalPages = Math.max(1, Math.ceil(recipes.length / 3));
 
     if (interaction.customId === 'market_recipe_previous') {
@@ -44,7 +44,7 @@ export default async function handleMarketRecipe(interaction) {
         .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const recipeMarketPage = new ButtonBuilder()
         .setCustomId(`market_recipe_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -56,7 +56,7 @@ export default async function handleMarketRecipe(interaction) {
         .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, recipeMarketPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;

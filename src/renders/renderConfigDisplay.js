@@ -392,7 +392,7 @@ export async function renderConfigDisplay(profile) {
     drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
     y += TOGGLE_ROW_H + GAP;
 
-    // Row: Timezone 
+    // Row: Timezone
     drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
     y += TIMEZONE_ROW_H + GAP;
 

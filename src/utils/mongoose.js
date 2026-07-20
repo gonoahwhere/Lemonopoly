@@ -9,11 +9,11 @@ module.exports = {
             socketTimeoutMS: 30000,
             family: 4,
             serverSelectionTimeoutMS: 5000,
-            heartbeatFrequencyMS: 10000, 
+            heartbeatFrequencyMS: 10000,
         };
-        
+
         mongoose.set('strictQuery', false);
-        
+
         mongoose.connect(process.env.MongoURI, dbOptions)
         .then(() => {
             console.log(fl.green('[MONGOOSE] I have successfully connected to the Database!'));

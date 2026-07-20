@@ -74,7 +74,7 @@ export default {
             }
 
             const statusMessage = watchingStatus[Math.floor(Math.random() * watchingStatus.length)];
-            
+
             client.user.setPresence({
                 activities: [{ name: statusMessage, type: ActivityType.Streaming, url: 'https://twitch.tv/gonoahwhere' }],
                 status: 'dnd',

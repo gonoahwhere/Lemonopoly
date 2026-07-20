@@ -25,7 +25,7 @@ export default {
                 [PermissionFlagsBits.AttachFiles]: "Attach Files",
                 [PermissionFlagsBits.EmbedLinks]: "Embed Links"
             };
-            
+
             const missingPermissions = requiredPermissions.filter(perm => !channelPermissions?.has(perm));
 
             if (missingPermissions.length > 0) {

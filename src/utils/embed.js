@@ -10,7 +10,7 @@ export function successEmbed(title, description) {
         container.addDivider()
         container.addText(description)
     }
-    
+
     return container
 }
 
@@ -44,7 +44,7 @@ export function warningEmbed(title, description) {
     const container = new SilentContainer()
         .setStatus('warning')
         .addText(`${config.emoji('misc', 'warning')} ${title}`)
-    
+
     if (description) {
         container.addDivider()
         container.addText(description)

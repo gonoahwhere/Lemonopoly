@@ -141,14 +141,14 @@ const Player = new Schema(
 
         // Stand
         stand: {
-            name: { 
-                type: String, 
-                default: 'Unidentified Stand', 
-                maxlength: 32 
+            name: {
+                type: String,
+                default: 'Unidentified Stand',
+                maxlength: 32
             },
-            location: { 
-                type: String, 
-                default: 'Suburban Sidewalk' 
+            location: {
+                type: String,
+                default: 'Suburban Sidewalk'
             },
             theme: {
                 type: String,

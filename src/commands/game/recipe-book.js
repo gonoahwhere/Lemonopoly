@@ -27,7 +27,7 @@ export default {
             .setEmoji(config.emoji('misc', 'left_arrow'))
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(page === 1)
-        
+
         const recipePage = new ButtonBuilder()
             .setCustomId(`recipe_book_page`)
             .setLabel(`${page} / ${totalPages}`)

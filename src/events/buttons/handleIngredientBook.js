@@ -21,7 +21,7 @@ export default async function handleIngredientBook(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
+
     let page = ingredientMap.get(interaction.user.id) ?? 1;
     const totalPages = getIngredientBookPageCount();
 
@@ -42,7 +42,7 @@ export default async function handleIngredientBook(interaction) {
         .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const ingredientPage = new ButtonBuilder()
         .setCustomId(`ingredient_book_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -54,7 +54,7 @@ export default async function handleIngredientBook(interaction) {
         .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, ingredientPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;
