@@ -7,7 +7,7 @@ export const COLOURS = {
     bgTop: '#FFF3C4',
     bgBottom: '#FFD98E',
     card: '#FFFDF6',
-    cardShadow: 'rgba(120, 78, 12, 0.18)',
+    cardShadow: '#784E0C2E',
     border: '#F0C94A',
     title: '#E7A800',
     titleLight: '#FFF3B0',
@@ -37,9 +37,9 @@ export function drawBackground(ctx, width, height) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    drawGlow(ctx, 60, 30, 260, 'rgba(255, 255, 255, 0.35)');
-    drawGlow(ctx, width - 30, height - 40, 320, 'rgba(255, 170, 80, 0.30)');
-    drawGlow(ctx, width * 0.75, height * 0.15, 200, 'rgba(255, 255, 255, 0.18)');
+    drawGlow(ctx, 60, 30, 260, '#FFFFFF59');
+    drawGlow(ctx, width - 30, height - 40, 320, '#FFAA504D');
+    drawGlow(ctx, width * 0.75, height * 0.15, 200, '#FFFFFF2E');
 
     drawWedgePattern(ctx, width, height);
     drawDappleLight(ctx, width, height);
@@ -108,7 +108,7 @@ function drawLeafSilhouette(ctx, cx, cy, size, rotation) {
     ctx.quadraticCurveTo(size * 0.5, -size * 0.15, 0, 0);
     ctx.fill();
 
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.strokeStyle = '#00000026';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -152,8 +152,8 @@ function drawGrain(ctx, width, height) {
 
 function drawVignette(ctx, width, height) {
     const v = ctx.createRadialGradient(width / 2, height / 2, height * 0.35, width / 2, height / 2, height * 0.75);
-    v.addColorStop(0, 'rgba(0,0,0,0)');
-    v.addColorStop(1, 'rgba(90, 60, 10, 0.12)');
+    v.addColorStop(0, '#00000000');
+    v.addColorStop(1, '#5A3C0A1F');
     ctx.fillStyle = v;
     ctx.fillRect(0, 0, width, height);
 }
@@ -161,7 +161,7 @@ function drawVignette(ctx, width, height) {
 function drawGlow(ctx, x, y, radius, color) {
     const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
     g.addColorStop(0, color);
-    g.addColorStop(1, 'rgba(0,0,0,0)');
+    g.addColorStop(1, '#00000000');
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);

@@ -112,8 +112,8 @@ function drawHeader(ctx, width, page, totalOwned) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -121,9 +121,9 @@ function drawHeader(ctx, width, page, totalOwned) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();

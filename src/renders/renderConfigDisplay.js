@@ -9,33 +9,33 @@ GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-B
 
 const COLOURS = {
     ...BASE_COLOURS,
-    redSoft: 'rgba(240,102,78,0.12)',
+    redSoft: '#F0664E1F',
     premium: '#9B4FD1',
-    premiumSoft: 'rgba(155,79,209,0.12)',
+    premiumSoft: '#9B4FD11F',
     seasonal: '#3B82C4',
-    seasonalSoft: 'rgba(59,130,196,0.12)',
+    seasonalSoft: '#3B82C41F',
     beta: '#F0664E',
-    betaSoft: 'rgba(240,102,78,0.12)',
+    betaSoft: '#F0664E1F',
     lockedGrey: '#A1A1AA',
-    lockedGreySoft: 'rgba(161,161,170,0.12)',
-    starEmpty: 'rgba(138,117,72,0.35)',
+    lockedGreySoft: '#A1A1AA1F',
+    starEmpty: '#8A754859',
     teal: '#2BAFA0',
 };
 
 const RARITY_COLOURS = {
-    common: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    uncommon: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    rare: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
-    epic: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    legendary: { text: '#E7A800', bg: 'rgba(231,168,0,0.12)', border: 'rgba(231,168,0,0.4)' },
-    mythic: { text: '#F0664E', bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)' },
-    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: 'rgba(139,92,246,0.45)' },
-    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: 'rgba(255,97,210,0.45)' },
-    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: 'rgba(0,198,255,0.45)' },
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
-    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: 'rgba(255,65,108,0.45)' },
-    eternal: { gradient: ['#2AF598', '#009EFD'], border: 'rgba(0,158,253,0.45)' },
-    exotic: { gradient: ['#FF9966', '#00F2FE'], border: 'rgba(255,153,102,0.45)' },
+    common: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    uncommon: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    rare: { text: '#3B82C4', bg: '#3B82C41F', border: '#3B82C466' },
+    epic: { text: '#9B4FD1', bg: '#9B4FD11F', border: '#9B4FD166' },
+    legendary: { text: '#E7A800', bg: '#E7A8001F', border: '#E7A80066' },
+    mythic: { text: '#F0664E', bg: '#F0664E1F', border: '#F0664E66' },
+    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: '#8B5CF673' },
+    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: '#FF61D273' },
+    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: '#00C6FF73' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
+    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: '#FF416C73' },
+    eternal: { gradient: ['#2AF598', '#009EFD'], border: '#009EFD73' },
+    exotic: { gradient: ['#FF9966', '#00F2FE'], border: '#FF996673' },
 };
 
 function roundedRectPath(ctx, x, y, w, h, r) {
@@ -130,9 +130,9 @@ function drawHeader(ctx, width, profile) {
     ctx.fillText(profile.stand.name, 54, 90);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -156,7 +156,7 @@ function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     ctx.fillStyle = COLOURS.premium;
     ctx.fillText('PREMIUM PASS', textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : '#A8934F1A');
 }
 
 function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
@@ -174,7 +174,7 @@ function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText("MIX 'ALL' CAP", textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, `${cap} CUPS`, COLOURS.muted, 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, `${cap} CUPS`, COLOURS.muted, '#A8934F1A');
 
     if (isPremium) {
         ctx.font = '13px FredokaOne';
@@ -193,7 +193,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     ctx.stroke();
 
     if (!active) {
-        roundedRect(ctx, x, y, w, h, 18, 'rgba(255,255,255,0.35)');
+        roundedRect(ctx, x, y, w, h, 18, '#FFFFFF59');
     }
 
     const iconSize = 40;
@@ -204,7 +204,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     ctx.fillStyle = accent;
     ctx.fillText(label.toUpperCase(), textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : '#A8934F1A');
 }
 
 function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
@@ -229,7 +229,7 @@ function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent
 
     const pillLabel = enabled ? 'ACTIVE' : 'INACTIVE';
     const pillColour = enabled ? COLOURS.green : COLOURS.muted;
-    const pillBg = enabled ? COLOURS.greenSoft : 'rgba(168,147,79,0.10)';
+    const pillBg = enabled ? COLOURS.greenSoft : '#A8934F1A';
     drawPill(ctx, textX, y + h / 2 - 1, pillLabel, pillColour, pillBg);
 }
 
@@ -248,7 +248,7 @@ function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText('TIMEZONE', textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, timezone, COLOURS.muted, 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, timezone, COLOURS.muted, '#A8934F1A');
 }
 
 function drawRarityPill(ctx, x, y, rarity) {

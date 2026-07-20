@@ -14,26 +14,26 @@ const COLOURS = {
     progressBg: '#F1E6BE',
     progressFillA: '#B7E75A',
     progressFillB: '#5FCB4F',
-    locked: 'rgba(74, 58, 26, 0.55)',
+    locked: '#4A3A1A8C',
     marketGold: '#E7A800',
-    marketGoldSoft: 'rgba(231,168,0,0.12)',
+    marketGoldSoft: '#E7A8001F',
 };
 
 const RARITY_COLOURS = {
     Common: {
         text: '#8A7548',
-        bg: 'rgba(138,117,72,0.12)',
-        border: 'rgba(138,117,72,0.4)'
+        bg: '#8A75481F',
+        border: '#8A754866'
     },
     Rare: {
         text: '#3B82C4',
-        bg: 'rgba(59,130,196,0.12)',
-        border: 'rgba(59,130,196,0.4)'
+        bg: '#3B82C41F',
+        border: '#3B82C466'
     },
     Epic: {
         text: '#9B4FD1',
-        bg: 'rgba(155,79,209,0.12)',
-        border: 'rgba(155,79,209,0.4)'
+        bg: '#9B4FD11F',
+        border: '#9B4FD166'
     },
 };
 
@@ -128,8 +128,8 @@ function drawHeader(ctx, width, page, totalRecipes, perPage) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -137,9 +137,9 @@ function drawHeader(ctx, width, page, totalRecipes, perPage) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();

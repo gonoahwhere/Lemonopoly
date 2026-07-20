@@ -8,15 +8,15 @@ import { wrapText } from '../helpers/renderHelper.js';
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const TYPE_COLOURS = {
-    Base: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    Drink: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    Herb: { gradient: ['#134E13', '#3E8E41'], border: 'rgba(62,142,65,0.45)' },
-    Fruit: { gradient: ['#FDC830', '#F37335'], border: 'rgba(243,115,53,0.45)' },
-    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: 'rgba(232,93,117,0.5)' },
-    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: 'rgba(255,65,44,0.45)' },
-    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: 'rgba(123,47,247,0.45)' },
-    Premium: { gradient: ['#D4A017', '#C026D3'], border: 'rgba(192,38,211,0.5)' },
-    Event: { gradient: ['#5D5FEF', '#232526'], border: 'rgba(93,95,239,0.45)' },
+    Base: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    Drink: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    Herb: { gradient: ['#134E13', '#3E8E41'], border: '#3E8E4173' },
+    Fruit: { gradient: ['#FDC830', '#F37335'], border: '#F3733573' },
+    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: '#E85D7580' },
+    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: '#FF412C73' },
+    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: '#7B2FF773' },
+    Premium: { gradient: ['#D4A017', '#C026D3'], border: '#C026D380' },
+    Event: { gradient: ['#5D5FEF', '#232526'], border: '#5D5FEF73' },
 };
 
 const TYPE_ORDER = ['Base', 'Drink', 'Herb', 'Fruit', 'Sweetener', 'Spice', 'Garnish', 'Premium', 'Event'];
@@ -155,8 +155,8 @@ function drawHeader(ctx, width, page, totalPages) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -164,9 +164,9 @@ function drawHeader(ctx, width, page, totalPages) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();

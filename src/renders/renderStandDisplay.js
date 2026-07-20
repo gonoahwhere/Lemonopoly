@@ -16,28 +16,28 @@ const COLOURS = {
     progressBg: '#F1E6BE',
     progressFillA: '#B7E75A',
     progressFillB: '#5FCB4F',
-    starEmpty: 'rgba(138,117,72,0.35)',
+    starEmpty: '#8A754859',
     premium: '#9B4FD1',
     seasonal: '#3B82C4',
     beta: '#F0664E',
-    eventBg: 'rgba(240,102,78,0.10)',
-    eventBorder: 'rgba(240,102,78,0.4)',
+    eventBg: '#F0664E1A',
+    eventBorder: '#F0664E66',
 };
 
 const RARITY_COLOURS = {
-    common: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    uncommon: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    rare: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
-    epic: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    legendary: { text: '#E7A800', bg: 'rgba(231,168,0,0.12)', border: 'rgba(231,168,0,0.4)' },
-    mythic: { text: '#F0664E', bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)' },
-    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: 'rgba(139,92,246,0.45)' },
-    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: 'rgba(255,97,210,0.45)' },
-    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: 'rgba(0,198,255,0.45)' },
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
-    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: 'rgba(255,65,108,0.45)' },
-    eternal: { gradient: ['#2AF598', '#009EFD'], border: 'rgba(0,158,253,0.45)' },
-    exotic: { gradient: ['#FF9966', '#00F2FE'], border: 'rgba(255,153,102,0.45)' },
+    common: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    uncommon: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    rare: { text: '#3B82C4', bg: '#3B82C41F', border: '#3B82C466' },
+    epic: { text: '#9B4FD1', bg: '#9B4FD11F', border: '#9B4FD166' },
+    legendary: { text: '#E7A800', bg: '#E7A8001F', border: '#E7A80066' },
+    mythic: { text: '#F0664E', bg: '#F0664E1F', border: '#F0664E66' },
+    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: '#8B5CF673' },
+    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: '#FF61D273' },
+    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: '#00C6FF73' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
+    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: '#FF416C73' },
+    eternal: { gradient: ['#2AF598', '#009EFD'], border: '#009EFD73' },
+    exotic: { gradient: ['#FF9966', '#00F2FE'], border: '#FF996673' },
 };
 
 const THEME_LABELS = {
@@ -202,9 +202,9 @@ function drawHeader(ctx, width, profile) {
     }
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -642,11 +642,11 @@ async function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         } else if (masterCheck.reason === 'PRESTIGE_LOCKED') {
             badgeLabel = 'PRESTIGE LOCKED';
             badgeColour = COLOURS.red;
-            badgeBg = 'rgba(240,102,78,0.12)';
+            badgeBg = '#F0664E1F';
         } else if (masterCheck.reason === 'MAX_TIER') {
             badgeLabel = 'MAX TIER';
             badgeColour = '#A1A1AA';
-            badgeBg = 'rgba(161,161,170,0.12)';
+            badgeBg = '#A1A1AA1F';
         }
 
         if (badgeLabel) {
