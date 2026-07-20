@@ -202,7 +202,7 @@ async function drawRecipeCard(ctx, recipe, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = await getDrinkImageFromCache(recipe.image);
+    const drinkImg = await getDrinkImageFromCache(recipe.id);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();

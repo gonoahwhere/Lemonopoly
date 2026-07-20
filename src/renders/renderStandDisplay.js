@@ -590,8 +590,8 @@ async function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if (def?.image) {
-        const drinkImg = await getDrinkImageFromCache(def.image);
+    if (def?.id) {
+        const drinkImg = await getDrinkImageFromCache(def.id);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();

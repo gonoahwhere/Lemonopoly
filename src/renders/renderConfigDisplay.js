@@ -305,8 +305,8 @@ async function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if (def?.image) {
-        const drinkImg = await getDrinkImageFromCache(def.image);
+    if (def) {
+        const drinkImg = await getDrinkImageFromCache(def.id);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();

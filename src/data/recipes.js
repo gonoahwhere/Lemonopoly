@@ -5,7 +5,6 @@ export const RECIPES = [
         description: 'A timeless blend of lemons, white sugar, and ice.',
         rarity: 'Common',
         sellPrice: 6,
-        image: 'classic_lemonade.png',
         unlock: {
             type: 'default'
         },
@@ -23,7 +22,6 @@ export const RECIPES = [
         description: 'A drizzle of honey gives this refreshing classic a naturally sweet finish.',
         rarity: 'Common',
         sellPrice: 7,
-        image: 'sweet_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 3
@@ -42,7 +40,6 @@ export const RECIPES = [
         description: 'Double the lemons for customers who enjoy a bold citrus kick.',
         rarity: 'Common',
         sellPrice: 7,
-        image: 'extra_sour_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 350
@@ -61,7 +58,6 @@ export const RECIPES = [
         description: 'Sparkling water and stevia create a crisp, lighter alternative.',
         rarity: 'Common',
         sellPrice: 8,
-        image: 'light_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 180
@@ -80,7 +76,6 @@ export const RECIPES = [
         description: 'Juicy strawberries bring a fruity twist to the original favourite.',
         rarity: 'Common',
         sellPrice: 9,
-        image: 'strawberry_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 8
@@ -100,7 +95,6 @@ export const RECIPES = [
         description: 'Sweet blueberries balance perfectly with sharp citrus notes.',
         rarity: 'Common',
         sellPrice: 10,
-        image: 'blueberry_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 120
@@ -120,7 +114,6 @@ export const RECIPES = [
         description: 'A vibrant berry blend with a pleasantly tart finish.',
         rarity: 'Common',
         sellPrice: 10,
-        image: 'raspberry_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 900
@@ -140,7 +133,6 @@ export const RECIPES = [
         description: 'Rich cherries add a smooth sweetness to every sip.',
         rarity: 'Common',
         sellPrice: 11,
-        image: 'cherry_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 600
@@ -160,7 +152,6 @@ export const RECIPES = [
         description: 'Fresh peaches and honey make for a mellow summer refreshment.',
         rarity: 'Common',
         sellPrice: 12,
-        image: 'peach_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 14
@@ -180,7 +171,6 @@ export const RECIPES = [
         description: 'Tropical mango transforms lemonade into a sunny delight.',
         rarity: 'Common',
         sellPrice: 12,
-        image: 'mango_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 400
@@ -200,7 +190,6 @@ export const RECIPES = [
         description: 'Bright pineapple adds an island-inspired sweetness.',
         rarity: 'Common',
         sellPrice: 13,
-        image: 'pineapple_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 3200
@@ -220,7 +209,6 @@ export const RECIPES = [
         description: 'Cool watermelon keeps customers refreshed on the hottest days.',
         rarity: 'Common',
         sellPrice: 13,
-        image: 'watermelon_lemonade.png',
         unlock: {
             type: 'upgradeSpeed',
             value: 3
@@ -240,7 +228,6 @@ export const RECIPES = [
         description: 'Tangy kiwi creates a vibrant, refreshing flavour.',
         rarity: 'Common',
         sellPrice: 14,
-        image: 'kiwi_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 1000
@@ -260,7 +247,6 @@ export const RECIPES = [
         description: 'Exotic passionfruit pairs beautifully with honey and citrus.',
         rarity: 'Common',
         sellPrice: 15,
-        image: 'passion_fruit_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 28
@@ -280,7 +266,6 @@ export const RECIPES = [
         description: 'A colourful tropical recipe that\'s as striking as it is refreshing.',
         rarity: 'Common',
         sellPrice: 16,
-        image: 'dragon_fruit_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 900
@@ -300,7 +285,6 @@ export const RECIPES = [
         description: 'A sharp, zesty alternative made entirely with fresh limes.',
         rarity: 'Common',
         sellPrice: 16,
-        image: 'limeade.png',
         unlock: {
             type: 'upgradeStorage',
             value: 4
@@ -319,7 +303,6 @@ export const RECIPES = [
         description: 'Sweet oranges soften the lemon\'s bite for a balanced drink.',
         rarity: 'Common',
         sellPrice: 17,
-        image: 'orange_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 11000
@@ -339,7 +322,6 @@ export const RECIPES = [
         description: 'Lemon, lime and orange combine for the ultimate citrus explosion.',
         rarity: 'Common',
         sellPrice: 18,
-        image: 'triple_citrus.png',
         unlock: {
             type: 'playerLevel',
             value: 45
@@ -360,7 +342,6 @@ export const RECIPES = [
         description: 'Cooling mint leaves make this recipe wonderfully refreshing.',
         rarity: 'Common',
         sellPrice: 18,
-        image: 'mint_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 1600
@@ -380,7 +361,6 @@ export const RECIPES = [
         description: 'Delicate floral notes create a calming, elegant drink.',
         rarity: 'Common',
         sellPrice: 19,
-        image: 'lavender_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 25000
@@ -400,7 +380,6 @@ export const RECIPES = [
         description: 'Aromatic rosemary gives this lemonade a sophisticated flavour.',
         rarity: 'Common',
         sellPrice: 20,
-        image: 'rosemary_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 67
@@ -420,7 +399,6 @@ export const RECIPES = [
         description: 'Fresh basil adds a subtle herbal freshness to every glass.',
         rarity: 'Common',
         sellPrice: 20,
-        image: 'basil_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 2000
@@ -440,7 +418,6 @@ export const RECIPES = [
         description: 'The famous combination of iced tea and lemonade.',
         rarity: 'Common',
         sellPrice: 21,
-        image: 'arnold_palmer.png',
         unlock: {
             type: 'customersServed',
             value: 3000
@@ -460,7 +437,6 @@ export const RECIPES = [
         description: 'Sweet peach tea meets citrus for a smooth afternoon favourite.',
         rarity: 'Common',
         sellPrice: 22,
-        image: 'peach_tea_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 75000
@@ -480,7 +456,6 @@ export const RECIPES = [
         description: 'Refreshing green tea keeps this recipe light and balanced.',
         rarity: 'Common',
         sellPrice: 22,
-        image: 'green_tea_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 90
@@ -500,7 +475,6 @@ export const RECIPES = [
         description: 'Floral hibiscus creates a beautifully vibrant lemonade.',
         rarity: 'Common',
         sellPrice: 23,
-        image: 'hibiscus_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 5000
@@ -520,7 +494,6 @@ export const RECIPES = [
         description: 'Mango, pineapple and coconut water bring tropical paradise to your stand.',
         rarity: 'Common',
         sellPrice: 24,
-        image: 'island_splash.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 250000
@@ -540,7 +513,6 @@ export const RECIPES = [
         description: 'Layers of citrus and tropical fruit create a stunning flavour.',
         rarity: 'Common',
         sellPrice: 25,
-        image: 'tropical_sunrise.png',
         unlock: {
             type: 'playerLevel',
             value: 146
@@ -560,7 +532,6 @@ export const RECIPES = [
         description: 'Coconut water gives this lemonade a smooth island finish.',
         rarity: 'Common',
         sellPrice: 25,
-        image: 'coconut_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 7500
@@ -580,7 +551,6 @@ export const RECIPES = [
         description: 'A colourful blend of strawberries and raspberries loved by every customer.',
         rarity: 'Common',
         sellPrice: 26,
-        image: 'pink_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 1000000
@@ -600,7 +570,6 @@ export const RECIPES = [
         description: 'Cream and vanilla create an indulgent dessert-inspired drink.',
         rarity: 'Common',
         sellPrice: 27,
-        image: 'creamy_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 204
@@ -620,7 +589,6 @@ export const RECIPES = [
         description: 'Sweet vanilla softens the citrus into a smooth refreshment.',
         rarity: 'Common',
         sellPrice: 27,
-        image: 'vanilla_lemonade.png',
         unlock: {
             type: 'sellCups',
             value: 10000
@@ -640,7 +608,6 @@ export const RECIPES = [
         description: 'Rich caramel adds a surprisingly delicious twist to lemonade.',
         rarity: 'Common',
         sellPrice: 28,
-        image: 'caramel_lemonade.png',
         unlock: {
             type: 'lifetimeRevenue',
             value: 100000000
@@ -660,7 +627,6 @@ export const RECIPES = [
         description: 'Fresh ginger delivers a warming zing with every sip.',
         rarity: 'Common',
         sellPrice: 29,
-        image: 'ginger_lemonade.png',
         unlock: {
             type: 'playerLevel',
             value: 300
@@ -680,7 +646,6 @@ export const RECIPES = [
         description: 'Cinnamon and cloves make this the perfect cosy lemonade.',
         rarity: 'Common',
         sellPrice: 30,
-        image: 'spiced_lemonade.png',
         unlock: {
             type: 'customersServed',
             value: 15000
@@ -701,7 +666,6 @@ export const RECIPES = [
         description: 'A luxurious blend of organic lemon and wild honey, served over diamond ice for a smooth, noble finish.',
         rarity: 'Rare',
         sellPrice: 50,
-        image: 'royal_lemonade.png',
         unlock: {
             type: 'premium',
             requiresPass: true
@@ -721,7 +685,6 @@ export const RECIPES = [
         description: 'Fresh organic lemon balanced with rich golden honey and premium sugar for a refined, regal sweetness.',
         rarity: 'Rare',
         sellPrice: 50,
-        image: 'golden_lemonade.png',
         unlock: {
             type: 'premium',
             requiresPass: true
@@ -741,7 +704,6 @@ export const RECIPES = [
         description: 'Sparkling water poured over diamond ice and rainbow syrup, creating a crisp, effervescent glow in every glass.',
         rarity: 'Rare',
         sellPrice: 50,
-        image: 'diamond_fizz.png',
         unlock: {
             type: 'premium',
             requiresPass: true
@@ -760,7 +722,6 @@ export const RECIPES = [
         description: 'A cosmic fusion of dragonfruit and rainbow syrup, shimmering with edible glitter in every sip.',
         rarity: 'Rare',
         sellPrice: 50,
-        image: 'galaxy_lemonade.png',
         unlock: {
             type: 'premium',
             requiresPass: true
@@ -780,7 +741,6 @@ export const RECIPES = [
         description: 'A warm seasonal blend of pumpkin, cinnamon, and honey layered into a surprisingly smooth autumn citrus drink.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'pumpkin_lemonade.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'fall_2026'
@@ -800,7 +760,6 @@ export const RECIPES = [
         description: 'A festive mix of lemon and peppermint with crushed candy cane pieces, delivering a cool winter sparkle.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'candy_cane_lemonade.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'winter_2026'
@@ -820,7 +779,6 @@ export const RECIPES = [
         description: 'A bold seasonal experiment combining rich chocolate, peppermint, and marshmallow with a citrus twist.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'hot_chocolate_lemonade.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'summer_2026'
@@ -840,7 +798,6 @@ export const RECIPES = [
         description: 'A romantic blend of strawberry and raspberry with heart sprinkles, crafted for a sweet, celebratory finish.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'valentine_punch.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'spring_2026'
@@ -860,7 +817,6 @@ export const RECIPES = [
         description: 'Every fruit in the pantry was added "for balance." Against all scientific expectation, it somehow tastes incredible.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'rainbow_overload.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -885,7 +841,6 @@ export const RECIPES = [
         description: 'Changes flavour every sip depending on who is holding the glass. The recipe refuses to elaborate.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'flux_capacitea.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -910,7 +865,6 @@ export const RECIPES = [
         description: 'A lemonade that rejected the concept of two ingredients and kept adding more until everyone was happy.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'binary_exception.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -934,7 +888,6 @@ export const RECIPES = [
         description: 'A mysteriously elegant blend with rich vanilla notes that prefers quiet confidence over unnecessary sweetness.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'ace_in_the_glass.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -958,7 +911,6 @@ export const RECIPES = [
         description: 'Can\'t decide between berry or citrus, so it aggressively became both. Zero regrets.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'double_trouble.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -981,7 +933,6 @@ export const RECIPES = [
         description: 'A glorious kitchen catastrophe featuring almost every fruit within arm\'s reach. Pure delicious chaos.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'kitchen_sink_deluxe.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -1006,7 +957,6 @@ export const RECIPES = [
         description: 'Layers of pastel sweetness swirl together into something completely different from where they started.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'character_customizer.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -1030,7 +980,6 @@ export const RECIPES = [
         description: 'Sweet, bold, and unapologetically fruity. Decorated with enough berries to make the blender nervous.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'raspberry_revolution.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -1055,7 +1004,6 @@ export const RECIPES = [
         description: 'A cool blend of mint, lime, and citrus so fresh it immediately gains +10 confidence.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'mint_condition.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'
@@ -1080,7 +1028,6 @@ export const RECIPES = [
         description: 'A vibrant fusion of golden fruit and juicy citrus that shines as brightly as summer sunshine.',
         rarity: 'Epic',
         sellPrice: 75,
-        image: 'sunburst_splash.png',
         unlock: {
             type: 'seasonal',
             eventKey: 'pride_2026'

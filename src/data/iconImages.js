@@ -5,21 +5,21 @@ const cache = new Map();
 const ICONS_DIR = path.join(process.cwd(), 'images', 'icons');
 const CACHE_AGE = 7200000;
 
-export async function getIconFromCache(key) {
-    const cached = cache.get(key);
+export async function getIconFromCache(id) {
+    const cached = cache.get(id);
 
     if (cached) {
         clearTimeout(cached.timeout);
-        cached.timeout = setTimeout(() => cache.delete(key), CACHE_AGE);
+        cached.timeout = setTimeout(() => cache.delete(id), CACHE_AGE);
 
         return cached.img;
     }
 
-    const img = await loadImage(path.join(ICONS_DIR, `${key}.png`));
+    const img = await loadImage(path.join(ICONS_DIR, `${id}.png`));
 
-    cache.set(key, {
+    cache.set(id, {
         img,
-        timeout: setTimeout(() => cache.delete(key), CACHE_AGE)
+        timeout: setTimeout(() => cache.delete(id), CACHE_AGE)
     });
 
     return img;
