@@ -27,30 +27,32 @@ export default {
         await interaction.deferReply();
         const profile = interaction.playerProfile;
 
-        if (subcommand === 'view') {
-            const buffer = await renderStandDisplay(profile);
-            await interaction.editReply({ files: [{ attachment: buffer, name: 'stand.png' }] });
-        }
+        switch (subcommand) {
+            case 'view': {
+                const buffer = await renderStandDisplay(profile);
+                return await interaction.editReply({ files: [{ attachment: buffer, name: 'stand.png' }] });
+            }
 
-        if (subcommand === 'rename') {
-            const rawName = interaction.options.getString('name');
-            const standName = rawName.trim().replace(/\s+/g, ' ');
+            case 'rename': {
+                const rawName = interaction.options.getString('name');
+                const standName = rawName.trim().replace(/\s+/g, ' ');
 
-            if (standName.length < 4 || standName.length > 32) {
+                if (standName.length < 4 || standName.length > 32) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Invalid length provided!', 'Your stand name needs to be between **4** and **32** characters.')],
+                        flags: MessageFlags.IsComponentsV2
+                    });
+                }
+
+                const oldName = profile.stand.name;
+                profile.stand.name = standName;
+                await profile.save();
+
                 return interaction.editReply({
-                    components: [errorEmbed('Invalid length provided!', 'Your stand name needs to be between **4** and **32** characters.')],
+                    components: [successEmbed('Stand name updated!', `Your stand has been renamed from **${oldName}** to **${standName}**.`)],
                     flags: MessageFlags.IsComponentsV2
                 });
             }
-
-            const oldName = profile.stand.name;
-            profile.stand.name = standName;
-            await profile.save();
-
-            return interaction.editReply({
-                components: [successEmbed('Stand name updated!', `Your stand has been renamed from **${oldName}** to **${standName}**.`)],
-                flags: MessageFlags.IsComponentsV2
-            });
         }
     }
 }
