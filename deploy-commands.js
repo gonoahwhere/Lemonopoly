@@ -12,22 +12,21 @@ const commands = [];
 
 const categoryDirs = await readdir(commandsPath);
 
-for (const category of categoryDirs) {
+await Promise.all(categoryDirs.map(async category => {
   const files = await readdir(join(commandsPath, category));
 
-  for (const file of files.filter((f) => f.endsWith('.js'))) {
+  await Promise.all(files.filter((f) => f.endsWith('.js'))).map(async file => {
     const filePath = join(commandsPath, category, file);
     const { default: command } = await import(pathToFileURL(filePath).href);
 
     if (!command?.data?.toJSON) {
       logger.warn(`Skipping ${file} — missing data or toJSON()`);
-      continue;
+    } else {
+      commands.push(command.data.toJSON());
+      logger.info(`Queued [${category}] /${command.data.name}`);
     }
-
-    commands.push(command.data.toJSON());
-    logger.info(`Queued [${category}] /${command.data.name}`);
-  }
-}
+  });
+}));
 
 const rest = new REST().setToken(config.token);
 
