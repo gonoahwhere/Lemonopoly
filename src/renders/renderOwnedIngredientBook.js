@@ -19,7 +19,7 @@ const TYPE_COLOURS = {
     Event: { gradient: ['#5D5FEF', '#232526'], border: '#5D5FEF73' },
 };
 
-const TYPE_ORDER = ['Base', 'Drink', 'Herb', 'Fruit', 'Sweetener', 'Spice', 'Garnish', 'Premium', 'Event'];
+const TYPE_ORDER = Object.keys(TYPE_COLOURS);
 
 const OWNED_INGREDIENTS_PER_PAGE = 20;
 const COLUMNS = 5;
