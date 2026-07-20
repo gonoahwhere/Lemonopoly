@@ -77,7 +77,7 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 14,
     ctx.restore();
 }
 
-function drawIconCircle(ctx, cx, cy, size, iconKey) {
+async function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.beginPath();
     ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
     ctx.fillStyle = '#FFF4D6';
@@ -86,7 +86,7 @@ function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = await getIconFromCache(iconKey);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -141,7 +141,7 @@ function drawHeader(ctx, width, profile) {
     ctx.stroke();
 }
 
-function drawPremiumChip(ctx, x, y, w, h, isPremium) {
+async function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = isPremium ? COLOURS.premium + '77' : COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -149,7 +149,7 @@ function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     ctx.stroke();
 
     const iconSize = 40;
-    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'premium');
+    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'premium');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -159,7 +159,7 @@ function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : '#A8934F1A');
 }
 
-function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
+async function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -167,7 +167,7 @@ function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     ctx.stroke();
 
     const iconSize = 40;
-    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'mix_all');
+    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'mix_all');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -185,7 +185,7 @@ function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     }
 }
 
-function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, accentSoft) {
+async function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, accentSoft) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = active ? accent + '77' : COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -197,7 +197,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     }
 
     const iconSize = 40;
-    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
+    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -207,7 +207,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : '#A8934F1A');
 }
 
-function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
+async function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = locked ? COLOURS.lockedGrey + '55' : (enabled ? COLOURS.green + '77' : COLOURS.border);
     ctx.lineWidth = 1.2;
@@ -215,7 +215,7 @@ function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent
     ctx.stroke();
 
     const iconSize = 40;
-    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
+    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -233,7 +233,7 @@ function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent
     drawPill(ctx, textX, y + h / 2 - 1, pillLabel, pillColour, pillBg);
 }
 
-function drawTimezoneChip(ctx, x, y, w, h, timezone) {
+async function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -241,7 +241,7 @@ function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     ctx.stroke();
 
     const iconSize = 40;
-    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'timezone');
+    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'timezone');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -377,23 +377,23 @@ export async function renderConfigDisplay(profile) {
     const threeChipW = (800 - 36) / 3;
 
     // Row: Premium Pass / Mix All Cap
-    drawPremiumChip(ctx, 50, y, twoChipW, STATUS_ROW_H, isPremium);
-    drawMixAllCapChip(ctx, 50 + twoChipW + 22, y, twoChipW, STATUS_ROW_H, mixAllCap, isPremium);
+    await drawPremiumChip(ctx, 50, y, twoChipW, STATUS_ROW_H, isPremium);
+    await drawMixAllCapChip(ctx, 50 + twoChipW + 22, y, twoChipW, STATUS_ROW_H, mixAllCap, isPremium);
     y += STATUS_ROW_H + GAP;
 
     // Row: Seasonal / Beta Tester entitlement badges
-    drawEntitlementChip(ctx, 50, y, twoChipW, ENTITLEMENT_ROW_H, 'seasonal', 'Seasonal Pass', isSeasonal, COLOURS.seasonal, COLOURS.seasonalSoft);
-    drawEntitlementChip(ctx, 50 + twoChipW + 22, y, twoChipW, ENTITLEMENT_ROW_H, 'beta', 'Beta Tester', isBetaTester, COLOURS.beta, COLOURS.betaSoft);
+    await drawEntitlementChip(ctx, 50, y, twoChipW, ENTITLEMENT_ROW_H, 'seasonal', 'Seasonal Pass', isSeasonal, COLOURS.seasonal, COLOURS.seasonalSoft);
+    await drawEntitlementChip(ctx, 50 + twoChipW + 22, y, twoChipW, ENTITLEMENT_ROW_H, 'beta', 'Beta Tester', isBetaTester, COLOURS.beta, COLOURS.betaSoft);
     y += ENTITLEMENT_ROW_H + GAP;
 
     // Row: Leaderboard / Auto-Serve / Notifications toggles
-    drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
-    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
-    drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
+    await drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
+    await drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
+    await drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
     y += TOGGLE_ROW_H + GAP;
 
     // Row: Timezone
-    drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
+    await drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
     y += TIMEZONE_ROW_H + GAP;
 
     ctx.font = '16px FredokaOne';
