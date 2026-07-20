@@ -100,7 +100,7 @@ export default {
             // Execute Command
             try {
                 // Dev Guard
-                if (command.devOnly && !config.developerIds.includes(interaction.user.id)) {
+                if (command.devOnly && config.owners.every(owner => owner.id !== interaction.user.id)) {
                     return interaction.reply({
                         components: [errorEmbed("Developer Only", "You do not have permission to use this command.")],
                         flags: MessageFlags.IsComponentsV2,
