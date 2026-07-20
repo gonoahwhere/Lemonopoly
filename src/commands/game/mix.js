@@ -6,15 +6,9 @@ import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from "../../data/ingredients.js";
 
 function getIngredientEmoji(id) {
-    const categories = config.emojis.ingredients;
+    const category = Object.keys(config.emojis.ingredients).find(k => id in config.emojis.ingredients[k]);
 
-    for (const category of Object.values(categories)) {
-        if (category[id]) {
-            return category[id];
-        }
-    }
-
-    return '';
+    return category ? config.emoji('ingredients', category, id) : '';
 }
 
 export default {

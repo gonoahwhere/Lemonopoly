@@ -12,7 +12,7 @@ export default async function handleRecipeBook(interaction) {
     if (!interaction.customId.startsWith('recipe_view_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -41,7 +41,7 @@ export default async function handleRecipeBook(interaction) {
 
     const previousPage = new ButtonBuilder()
         .setCustomId(`recipe_view_previous`)
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
     
@@ -53,7 +53,7 @@ export default async function handleRecipeBook(interaction) {
 
     const nextPage = new ButtonBuilder()
         .setCustomId(`recipe_view_next`)
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
     

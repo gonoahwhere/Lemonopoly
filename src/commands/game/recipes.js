@@ -63,7 +63,7 @@ export default {
             if (totalPages > 1) {
                 const previousPage = new ButtonBuilder()
                     .setCustomId(`recipe_view_previous`)
-                    .setEmoji(config.emojis.misc.left_arrow)
+                    .setEmoji(config.emoji('misc', 'left_arrow'))
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === 1);
 
@@ -75,7 +75,7 @@ export default {
 
                 const nextPage = new ButtonBuilder()
                     .setCustomId(`recipe_view_next`)
-                    .setEmoji(config.emojis.misc.right_arrow)
+                    .setEmoji(config.emoji('misc', 'right_arrow'))
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(page === totalPages);
 

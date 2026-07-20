@@ -50,7 +50,7 @@ export default {
 
         const container = new SilentContainer()
             .setColor(config.containers.color)
-            .addHeading(`${config.emojis.misc.info} The Curbside Command Guide`)
+            .addHeading(`${config.emoji('misc', 'info')} The Curbside Command Guide`)
             .addText(`-# Here is a list of all the commands that I have to offer!`)
             .addDivider()
             .addText(`-# \`help\`, \`stand\`, \`start\``)
@@ -71,7 +71,7 @@ export default {
 
         const detailContainer = new SilentContainer()
             .setColor(config.containers.color)
-            .addHeading(`${config.emojis.misc.info} \`${command}\``)
+            .addHeading(`${config.emoji('misc', 'info')} \`${command}\``)
             .addText(`-# • Permission: ${info.permission}`)
             .addDivider();
 

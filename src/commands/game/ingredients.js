@@ -24,7 +24,7 @@ export default {
         if (totalPages > 1) {
             const previousPage = new ButtonBuilder()
                 .setCustomId(`ingredient_stock_previous`)
-                .setEmoji(config.emojis.misc.left_arrow)
+                .setEmoji(config.emoji('misc', 'left_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === 1)
             
@@ -36,7 +36,7 @@ export default {
 
             const nextPage = new ButtonBuilder()
                 .setCustomId(`ingredient_stock_next`)
-                .setEmoji(config.emojis.misc.right_arrow)
+                .setEmoji(config.emoji('misc', 'right_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === totalPages)
             
