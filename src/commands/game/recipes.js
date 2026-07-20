@@ -8,7 +8,7 @@ import { canMaster, masterRecipe } from '../../utils/recipeMastery.js';
 const RECIPES_PER_PAGE = 3;
 
 function capitalize(str) {
-    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    return str ? str[0].toUpperCase() + str.slice(1) : '';
 }
 
 export default {
