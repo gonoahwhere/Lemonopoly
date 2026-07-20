@@ -1,9 +1,3 @@
-export const RARITY_TIERS = [
-    'common', 'uncommon', 'rare', 'epic', 'legendary',
-    'mythic', 'divine', 'cosmic', 'transcendent', 'ancient',
-    'primal', 'eternal', 'exotic',
-];
-
 export const MASTERY_DEFS = {
     // Normal Mastery Tiers
     common: { customersPerStar: 15, revenuePerStar: 3000, sellPriceBonusPerStar: 0.010, ingredientDiscountPerStar: 0.004 },
@@ -22,3 +16,5 @@ export const MASTERY_DEFS = {
     eternal: { customersPerStar: 3000, revenuePerStar: 4125000, sellPriceBonusPerStar: 0.135, ingredientDiscountPerStar: 0.033, prestigeRequired: 50 },
     exotic: { customersPerStar: 4500, revenuePerStar: 7125000, sellPriceBonusPerStar: 0.165, ingredientDiscountPerStar: 0.036, prestigeRequired: 100 },
 }
+
+export const RARITY_TIERS = Object.keys(MASTERY_DEFS);
