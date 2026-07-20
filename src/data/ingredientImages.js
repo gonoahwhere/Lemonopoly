@@ -1,26 +1,26 @@
 import { loadImage } from '@napi-rs/canvas';
-import fs from 'fs';
 import path from 'path';
-import { INGREDIENTS } from '../data/ingredients.js';
 
-const cache = {};
+const cache = new Map();
+const INGREDIENTS_DIR = path.join(process.cwd(), 'images', 'ingredients');
+const CACHE_AGE = 7200000;
 
-export async function loadIngredientImages() {
-    for (const [id, ingredient] of Object.entries(INGREDIENTS)) {
+export async function getIngredientFromCache(id) {
+    const cached = cache.get(id);
 
-        const filePath = path.join(
-            process.cwd(),
-            'images',
-            'ingredients',
-            ingredient.icon
-        );
+    if (cached) {
+        clearTimeout(cached.timeout);
+        cached.timeout = setTimeout(() => cache.delete(id), CACHE_AGE);
 
-        const buffer = fs.readFileSync(filePath);
-
-        cache[id] = await loadImage(buffer);
+        return cached.img;
     }
-}
 
-export function getIngredientFromCache(id) {
-    return cache[id];
+    const img = await loadImage(path.join(INGREDIENTS_DIR, `${id}.png`));
+
+    cache.set(id, {
+        img,
+        timeout: setTimeout(() => cache.delete(id), CACHE_AGE)
+    });
+
+    return img;
 }

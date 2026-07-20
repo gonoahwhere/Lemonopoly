@@ -102,7 +102,7 @@ export async function renderOwnedIngredientBook(player, page = 1) {
     let gridStartY = 175;
     if (current) {
         gridStartY = drawTypePill(ctx, width, current.type, current.pageInType, current.totalPagesInType);
-        drawIngredientGrid(ctx, current.items, width, gridStartY);
+        await drawIngredientGrid(ctx, current.items, width, gridStartY);
     }
 
     drawFooter(ctx, width, height, ownedIngredients.length);
@@ -221,7 +221,7 @@ function drawTypePill(ctx, width, type, pageInType, totalPagesInType) {
     return pillY + pillH + 75;
 }
 
-function drawIngredientGrid(ctx, ingredients, width, gridTop) {
+async function drawIngredientGrid(ctx, ingredients, width, gridTop) {
     const marginX = 50;
     const contentW = width - marginX * 2;
     const colWidth = contentW / COLUMNS;
@@ -233,11 +233,11 @@ function drawIngredientGrid(ctx, ingredients, width, gridTop) {
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
+        await drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
     }
 }
 
-function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
+async function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     const type = ingredient.type;
     const borderColour = getTypeBorder(type);
 
@@ -258,7 +258,7 @@ function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ingredient.id);
+    const img = await getIngredientFromCache(ingredient.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();

@@ -317,10 +317,10 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const chipSize = 46;
     const chipGap = 14;
     let chipX = x + 34;
-    recipe.ingredients.slice(0, 10).forEach((ing) => {
-        drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
+    for (const ing of recipe.ingredients.slice(0, 10)) {
+        await drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
         chipX += chipSize + chipGap;
-    });
+    }
 
     if (!isOwned) {
         ctx.save();
@@ -333,7 +333,7 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     }
 }
 
-function drawIngredientChip(ctx, x, y, size, ing) {
+async function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.beginPath();
     ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
     ctx.fillStyle = '#FFF4D6';
@@ -342,7 +342,7 @@ function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ing.id);
+    const img = await getIngredientFromCache(ing.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();

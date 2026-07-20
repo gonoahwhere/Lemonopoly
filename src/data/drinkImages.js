@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { loadImage } from '@napi-rs/canvas';
 import path from 'path';
 
 const cache = new Map();

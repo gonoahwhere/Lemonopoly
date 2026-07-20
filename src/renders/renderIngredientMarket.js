@@ -110,7 +110,7 @@ export async function renderIngredientMarket(player, page = 1) {
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, totalPages, discount);
     const gridStartY = drawTypePill(ctx, width, current.type, current.pageInType, current.totalPagesInType);
-    drawMarketGrid(ctx, current.items, width, gridStartY, discount);
+    await drawMarketGrid(ctx, current.items, width, gridStartY, discount);
     drawFooter(ctx, width, height, discount);
 
     return canvas.toBuffer('image/png');
@@ -240,7 +240,7 @@ function drawTypePill(ctx, width, type, pageInType, totalPagesInType) {
     return pillY + pillH + 75;
 }
 
-function drawMarketGrid(ctx, ingredients, width, gridTop, discount) {
+async function drawMarketGrid(ctx, ingredients, width, gridTop, discount) {
     const marginX = 50;
     const contentW = width - marginX * 2;
     const colWidth = contentW / COLUMNS;
@@ -252,11 +252,11 @@ function drawMarketGrid(ctx, ingredients, width, gridTop, discount) {
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawMarketTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 24, discount);
+        await drawMarketTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 24, discount);
     }
 }
 
-function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
+async function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
     const type = ingredient.type;
     const borderColour = getTypeBorder(type);
 
@@ -277,7 +277,7 @@ function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ingredient.id);
+    const img = await getIngredientFromCache(ingredient.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
