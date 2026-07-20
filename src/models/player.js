@@ -77,24 +77,29 @@ const StaffMember = new Schema(
     { _id: false }
 );
 
-const ActiveEvent = new Schema(
+const EVENT_KEYS = [
+    'heatwave',
+    'local_festival',
+    'sudden_rain',
+    'thunderstorm',
+    'wind_storm',
+];
+
+const EventInstance = new Schema(
     {
         key: {
             type: String,
-            enum: [
-                'heatwave',
-                'local_festival',
-                'sudden_rain',
-                'thunderstorm',
-                'wind_storm',
-                'weekend_rush',
-            ],
+            enum: EVENT_KEYS,
             default: null,
         },
-        startedAt: { type: Date, default: null },
+        type: {
+            type: String,
+            enum: ['beneficial', 'risky', 'harmful'],
+            default: null,
+        },
+        optionId: { type: String, default: null },
+        startsAt: { type: Date, default: null },
         endsAt: { type: Date, default: null },
-        effects: { type: Schema.Types.Mixed, default: {} },
-        choiceMade: { type: String, default: null },
     },
     { _id: false }
 );
@@ -267,8 +272,8 @@ const Player = new Schema(
 
         // Events
         events: {
-            active: { type: ActiveEvent, default: () => ({}) },
-            nextEventAt:  { type: Date, default: null },
+            active: { type: EventInstance, default: () => ({}) },
+            next: { type: EventInstance, default: () => ({}) },
             history: { type: [EventHistoryEntry], default: [] },
         },
 

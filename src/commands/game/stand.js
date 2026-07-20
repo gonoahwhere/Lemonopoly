@@ -2,6 +2,7 @@ import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import PlayerProfile from '../../models/player.js';
 import { renderStandDisplay } from '../../renders/renderStandDisplay.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
+import { advanceEvents } from '../../helpers/weatherEvents.js';
 
 export default {
     devOnly: false,
@@ -28,6 +29,18 @@ export default {
         const profile = interaction.playerProfile;
 
         if (subcommand === 'view') {
+            const { active, next, changed, expired } = advanceEvents(profile.events);
+
+            if (changed) {
+                for (const ev of expired) {
+                    profile.events.history.push({ key: ev.key, outcome: ev.optionId });
+                }
+
+                profile.events.active = active;
+                profile.events.next = next;
+                await profile.save();
+            }
+
             const buffer = await renderStandDisplay(profile);
             await interaction.editReply({ files: [{ attachment: buffer, name: 'stand.png' }] });
         }
