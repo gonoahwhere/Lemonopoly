@@ -57,40 +57,38 @@ export default {
             return interaction.editReply({ files: [{ attachment: buffer, name: 'config.png' }] });
         }
 
-        if (group === 'edit') {
-            if (subcommand === 'active_recipe') {
-                const recipeId = interaction.options.getString('recipe', true);
-                const currentRecipe = profile.recipes.unlocked.find(r => r.isActive);
-                const newRecipe = profile.recipes.unlocked.find(r => r.key === recipeId);
+        if (group === 'edit' && subcommand === 'active_recipe') {
+            const recipeId = interaction.options.getString('recipe', true);
+            const currentRecipe = profile.recipes.unlocked.find(r => r.isActive);
+            const newRecipe = profile.recipes.unlocked.find(r => r.key === recipeId);
 
-                if (!newRecipe) {
-                    return interaction.editReply({
-                        components: [errorEmbed('Recipe not unlocked!', `You haven't unlocked that recipe yet.`)],
-                        flags: MessageFlags.IsComponentsV2,
-                    });
-                }
-
-                if (newRecipe.isActive) {
-                    return interaction.editReply({
-                        components: [errorEmbed('Already active!', 'This is already set as your currently active recipe.')],
-                        flags: MessageFlags.IsComponentsV2,
-                    });
-                }
-
-                if (currentRecipe) {
-                    currentRecipe.isActive = false;
-                }
-
-                newRecipe.isActive = true;
-                await profile.save();
-
-                const recipe = RECIPES.find(r => r.id === recipeId);
-
+            if (!newRecipe) {
                 return interaction.editReply({
-                    components: [successEmbed('Active recipe updated!', `**${recipe.name}** is now your active recipe.`)],
+                    components: [errorEmbed('Recipe not unlocked!', `You haven't unlocked that recipe yet.`)],
                     flags: MessageFlags.IsComponentsV2,
                 });
             }
+
+            if (newRecipe.isActive) {
+                return interaction.editReply({
+                    components: [errorEmbed('Already active!', 'This is already set as your currently active recipe.')],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
+
+            if (currentRecipe) {
+                currentRecipe.isActive = false;
+            }
+
+            newRecipe.isActive = true;
+            await profile.save();
+
+            const recipe = RECIPES.find(r => r.id === recipeId);
+
+            return interaction.editReply({
+                components: [successEmbed('Active recipe updated!', `**${recipe.name}** is now your active recipe.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
         }
     }
 }
