@@ -52,7 +52,7 @@ export async function renderMasteryBook(player, page = 1) {
 
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, unlockedRecipes.length, recipesPerPage);
-    drawRecipes(ctx, pageRecipes, player);
+    await drawRecipes(ctx, pageRecipes, player);
     drawFooter(ctx, width, height, unlockedRecipes.length, recipesPerPage);
 
     return canvas.toBuffer('image/png');
@@ -145,17 +145,17 @@ function drawFooter(ctx, width, height, totalRecipes, perPage) {
     ctx.textAlign = 'left';
 }
 
-function drawRecipes(ctx, recipes, player) {
+async function drawRecipes(ctx, recipes, player) {
     const cardX = 50;
     const cardYStart = 175;
     const cardWidth = 800;
     const cardHeight = 305;
     const gap = 22;
 
-    recipes.forEach((recipe, i) => {
+    for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        drawRecipeCard(ctx, recipe, player, cardX, y, cardWidth, cardHeight);
-    });
+        await drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
+    }
 }
 
 function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
@@ -262,7 +262,7 @@ function drawTierPill(ctx, x, y, rarity) {
     return w;
 }
 
-function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
+async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const entry = recipe.entry;
     entry.stars = calculateStars(entry);
     const bonuses = getMasteryBonuses(entry);
@@ -287,7 +287,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = getDrinkImageFromCache(recipe.image);
+    const drinkImg = await getDrinkImageFromCache(recipe.image);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();

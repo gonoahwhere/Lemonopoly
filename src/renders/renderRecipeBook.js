@@ -51,7 +51,7 @@ export async function renderRecipeBook(player, page = 1) {
 
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, RECIPES.length, recipesPerPage);
-    drawRecipes(ctx, pageRecipes, player);
+    await drawRecipes(ctx, pageRecipes, player);
     drawFooter(ctx, width, height, page, RECIPES.length, recipesPerPage);
 
     return canvas.toBuffer('image/png');
@@ -144,20 +144,20 @@ function drawFooter(ctx, width, height, page, totalRecipes, perPage) {
     ctx.textAlign = 'left';
 }
 
-function drawRecipes(ctx, recipes, player) {
+async function drawRecipes(ctx, recipes, player) {
     const cardX = 50;
     const cardYStart = 175;
     const cardWidth = 800;
     const cardHeight = 305;
     const gap = 22;
 
-    recipes.forEach((recipe, i) => {
+    for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        drawRecipeCard(ctx, recipe, player, cardX, y, cardWidth, cardHeight);
-    });
+        await drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
+    }
 }
 
-function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
+async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const unlock = getRecipeUnlock(recipe, player);
     const meetsRequirement = unlock.progress >= 100;
     const isOwned = (player?.recipes?.unlocked ?? []).some((r) => r.key === recipe.id);
@@ -204,7 +204,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = getDrinkImageFromCache(recipe.image);
+    const drinkImg = await getDrinkImageFromCache(recipe.image);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();

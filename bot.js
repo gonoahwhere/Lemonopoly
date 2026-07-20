@@ -4,7 +4,6 @@ import config from './config.js';
 import logger from './src/utils/logger.js';
 
 import { loadIngredientImages } from "./src/data/ingredientImages.js";
-import { preloadDrinkImages } from "./src/data/drinkImages.js";
 import { preloadIcons } from "./src/data/iconImages.js";
 import { loadCommands } from './src/handlers/commandHandler.js';
 import { loadEvents } from './src/handlers/eventHandler.js';
@@ -34,7 +33,6 @@ try {
 }
 
 await loadIngredientImages();
-await preloadDrinkImages(RECIPES);
 await preloadIcons(ALL_ICON_KEYS);
 await loadCommands(client);
 await loadEvents(client);

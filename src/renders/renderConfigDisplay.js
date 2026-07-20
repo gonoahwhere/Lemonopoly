@@ -282,7 +282,7 @@ function drawRarityPill(ctx, x, y, rarity) {
     return w;
 }
 
-function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
+async function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -306,7 +306,7 @@ function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.stroke();
 
     if (def?.image) {
-        const drinkImg = getDrinkImageFromCache(def.image);
+        const drinkImg = await getDrinkImageFromCache(def.image);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();
@@ -404,7 +404,7 @@ export async function renderConfigDisplay(profile) {
     for (let i = 0; i < maxActiveSlots; i++) {
         const entry = activeEntries[i];
         if (entry) {
-            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
+            await drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
         } else {
             drawEmptySlotCard(ctx, 50, y, 800, SLOT_CARD_H, i + 1);
         }

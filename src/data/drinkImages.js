@@ -3,19 +3,24 @@ import path from 'path';
 
 const cache = new Map();
 const DRINKS_DIR = path.join(process.cwd(), 'images', 'drinks');
+const CACHE_AGE = 7200000;
 
-export async function preloadDrinkImages(recipes) {
-    for (const recipe of recipes) {
-        if (!recipe.image || cache.has(recipe.image)) continue;
-        try {
-            const img = await loadImage(path.join(DRINKS_DIR, recipe.image));
-            cache.set(recipe.image, img);
-        } catch {
-            cache.set(recipe.image, null);
-        }
+export async function getDrinkImageFromCache(filename) {
+    const cached = cache.get(filename);
+
+    if (cached) {
+        clearTimeout(cached.timeout);
+        cached.timeout = setTimeout(() => cache.delete(filename), CACHE_AGE);
+
+        return cached.img;
     }
-}
 
-export function getDrinkImageFromCache(filename) {
-    return cache.get(filename) || null;
+    const img = await loadImage(path.join(DRINKS_DIR, filename));
+
+    cache.set(filename, {
+        img,
+        timeout: setTimeout(() => cache.delete(filename), CACHE_AGE)
+    });
+
+    return img;
 }

@@ -119,7 +119,7 @@ export async function renderStandDisplay(profile) {
     drawEventRow(ctx, profile, cursorY);
     cursorY += EVENT_BANNER_H + GAP;
 
-    drawActiveRecipeCard(ctx, profile, 50, cursorY, 800, RECIPE_CARD_H);
+    await drawActiveRecipeCard(ctx, profile, 50, cursorY, 800, RECIPE_CARD_H);
     cursorY += RECIPE_CARD_H + GAP;
     drawFooter(ctx, width, height, profile);
 
@@ -554,7 +554,7 @@ function drawTierPill(ctx, x, y, rarity) {
     return w;
 }
 
-function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
+async function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const entry = profile.recipes.unlocked.find((r) => r.isActive);
 
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
@@ -591,7 +591,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     ctx.stroke();
 
     if (def?.image) {
-        const drinkImg = getDrinkImageFromCache(def.image);
+        const drinkImg = await getDrinkImageFromCache(def.image);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();

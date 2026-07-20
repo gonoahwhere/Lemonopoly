@@ -64,7 +64,7 @@ export async function renderRecipeMarket(player, page = 1) {
 
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, marketRecipes.length, recipesPerPage);
-    drawRecipes(ctx, pageRecipes);
+    await drawRecipes(ctx, pageRecipes);
     drawFooter(ctx, width, height, page, marketRecipes.length, recipesPerPage);
 
     return canvas.toBuffer('image/png');
@@ -162,20 +162,20 @@ function drawFooter(ctx, width, height, page, totalRecipes, perPage) {
     ctx.textAlign = 'left';
 }
 
-function drawRecipes(ctx, recipes) {
+async function drawRecipes(ctx, recipes) {
     const cardX = 50;
     const cardYStart = 175;
     const cardWidth = 800;
     const cardHeight = 305;
     const gap = 22;
 
-    recipes.forEach((recipe, i) => {
+    for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        drawRecipeCard(ctx, recipe, cardX, y, cardWidth, cardHeight);
-    });
+        await drawRecipeCard(ctx, recipes[i], cardX, y, cardWidth, cardHeight);
+    }
 }
 
-function drawRecipeCard(ctx, recipe, x, y, w, h) {
+async function drawRecipeCard(ctx, recipe, x, y, w, h) {
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
 
     ctx.save();
@@ -202,7 +202,7 @@ function drawRecipeCard(ctx, recipe, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = getDrinkImageFromCache(recipe.image);
+    const drinkImg = await getDrinkImageFromCache(recipe.image);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();
