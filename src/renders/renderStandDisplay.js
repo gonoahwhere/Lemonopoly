@@ -1,9 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
-import { getIconFromCache } from "../data/iconImages.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
+import { getDrinkImage, getIconImage, getIngredientImage } from "../data/imageCache.js";
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { UPGRADE_ICON_KEYS } from "../data/iconKeys.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
@@ -107,13 +105,13 @@ export async function renderStandDisplay(profile) {
     drawHeader(ctx, width, profile);
 
     let cursorY = HEADER_H;
-    drawStatRow(ctx, width, profile, cursorY);
+    await drawStatRow(ctx, width, profile, cursorY);
     cursorY += STAT_ROW_H + GAP;
 
-    drawUpgradesRow(ctx, width, profile, cursorY);
+    await drawUpgradesRow(ctx, width, profile, cursorY);
     cursorY += UPGRADES_ROW_H + GAP;
 
-    drawEconomyRow(ctx, width, profile, cursorY);
+    await drawEconomyRow(ctx, width, profile, cursorY);
     cursorY += ECONOMY_ROW_H + GAP;
 
     drawEventRow(ctx, profile, cursorY);
@@ -213,7 +211,7 @@ function drawHeader(ctx, width, profile) {
     ctx.stroke();
 }
 
-function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
+async function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow, 12, 5);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -231,7 +229,7 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = await getIconImage(iconKey);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -251,16 +249,16 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
     ctx.fillText(value, textX, y + h / 2 + 22);
 }
 
-function drawStatRow(ctx, width, profile, y) {
+async function drawStatRow(ctx, width, profile, y) {
     const h = STAT_ROW_H;
     const gap = 22;
     const chipW = 176;
     const startX = (width - (chipW * 4 + gap * 3)) / 2;
 
-    drawStatChip(ctx, startX, y, chipW, h, 'level', 'Level', `Lv. ${profile.stand.level}`);
-    drawStatChip(ctx, startX + (chipW + gap), y, chipW, h, 'heart', 'Health', `${profile.stand.health}/100`, profile.stand.health < 40 ? COLOURS.red : COLOURS.text);
-    drawStatChip(ctx, startX + (chipW + gap) * 2, y, chipW, h, 'cash', 'Cash', `$${formatNumber(profile.economy.cash)}`, '#2E8B39');
-    drawStatChip(ctx, startX + (chipW + gap) * 3, y, chipW, h, 'coins', 'Coins', formatNumber(profile.economy.coins), '#B8860B');
+    await drawStatChip(ctx, startX, y, chipW, h, 'level', 'Level', `Lv. ${profile.stand.level}`);
+    await drawStatChip(ctx, startX + (chipW + gap), y, chipW, h, 'heart', 'Health', `${profile.stand.health}/100`, profile.stand.health < 40 ? COLOURS.red : COLOURS.text);
+    await drawStatChip(ctx, startX + (chipW + gap) * 2, y, chipW, h, 'cash', 'Cash', `$${formatNumber(profile.economy.cash)}`, '#2E8B39');
+    await drawStatChip(ctx, startX + (chipW + gap) * 3, y, chipW, h, 'coins', 'Coins', formatNumber(profile.economy.coins), '#B8860B');
 
     if (profile.stand.repairCost > 0) {
         ctx.font = '12px FredokaOne';
@@ -269,7 +267,7 @@ function drawStatRow(ctx, width, profile, y) {
     }
 }
 
-function drawUpgradesRow(ctx, width, profile, y) {
+async function drawUpgradesRow(ctx, width, profile, y) {
     const h = UPGRADES_ROW_H;
     const gap = 22;
     const chipW = 176;
@@ -279,11 +277,11 @@ function drawUpgradesRow(ctx, width, profile, y) {
     for (let i = 0; i < keys.length; i++) {
         const x = startX + (chipW + gap) * i;
         const level = profile.upgrades?.[keys[i]]?.level ?? 0;
-        drawUpgradeChip(ctx, x, y, chipW, h, keys[i], level);
+        await drawUpgradeChip(ctx, x, y, chipW, h, keys[i], level);
     }
 }
 
-function drawUpgradeChip(ctx, x, y, w, h, key, level) {
+async function drawUpgradeChip(ctx, x, y, w, h, key, level) {
     roundedRectWithShadow(ctx, x, y, w, h, 16, COLOURS.card, COLOURS.cardShadow, 10, 4);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -301,7 +299,7 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(UPGRADE_ICON_KEYS[key]);
+    const icon = await getIconImage(UPGRADE_ICON_KEYS[key]);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -321,19 +319,19 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
     ctx.fillText(`Lv. ${level}`, textX, y + h / 2 + 22);
 }
 
-function drawEconomyRow(ctx, width, profile, y) {
+async function drawEconomyRow(ctx, width, profile, y) {
     const h = ECONOMY_ROW_H;
     const gap = 22;
     const chipW = 176;
     const startX = (width - (chipW * 4 + gap * 3)) / 2;
 
-    drawEconomyChip(ctx, startX, y, chipW, h, 'cash', 'Cash Earned', profile.economy.lifetimeEarned.cash, COLOURS.green, '$');
-    drawEconomyChip(ctx, startX + (chipW + gap), y, chipW, h, 'cash', 'Cash Spent', profile.economy.lifetimeSpent.cash, COLOURS.red, '$');
-    drawEconomyChip(ctx, startX + (chipW + gap) * 2, y, chipW, h, 'coins', 'Coins Earned', profile.economy.lifetimeEarned.coins, COLOURS.green);
-    drawEconomyChip(ctx, startX + (chipW + gap) * 3, y, chipW, h, 'coins', 'Coins Spent', profile.economy.lifetimeSpent.coins, COLOURS.red);
+    await drawEconomyChip(ctx, startX, y, chipW, h, 'cash', 'Cash Earned', profile.economy.lifetimeEarned.cash, COLOURS.green, '$');
+    await drawEconomyChip(ctx, startX + (chipW + gap), y, chipW, h, 'cash', 'Cash Spent', profile.economy.lifetimeSpent.cash, COLOURS.red, '$');
+    await drawEconomyChip(ctx, startX + (chipW + gap) * 2, y, chipW, h, 'coins', 'Coins Earned', profile.economy.lifetimeEarned.coins, COLOURS.green);
+    await drawEconomyChip(ctx, startX + (chipW + gap) * 3, y, chipW, h, 'coins', 'Coins Spent', profile.economy.lifetimeSpent.coins, COLOURS.red);
 }
 
-function drawEconomyChip(ctx, x, y, w, h, iconKey, label, value, accent, prefix = '') {
+async function drawEconomyChip(ctx, x, y, w, h, iconKey, label, value, accent, prefix = '') {
     roundedRectWithShadow(ctx, x, y, w, h, 16, COLOURS.card, COLOURS.cardShadow, 10, 4);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -351,7 +349,7 @@ function drawEconomyChip(ctx, x, y, w, h, iconKey, label, value, accent, prefix 
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = await getIconImage(iconKey);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -591,7 +589,7 @@ async function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     ctx.stroke();
 
     if (def?.id) {
-        const drinkImg = await getDrinkImageFromCache(def.id);
+        const drinkImg = await getDrinkImage(def.id);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();
@@ -737,7 +735,7 @@ async function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = await getIngredientFromCache(ing.id);
+    const img = await getIngredientImage(ing.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();

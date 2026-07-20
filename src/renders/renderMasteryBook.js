@@ -1,8 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
+import { getIngredientImage, getDrinkImage } from "../data/imageCache.js";
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
@@ -287,7 +286,7 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = await getDrinkImageFromCache(recipe.id);
+    const drinkImg = await getDrinkImage(recipe.id);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();
@@ -410,7 +409,7 @@ async function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = await getIngredientFromCache(ing.id);
+    const img = await getIngredientImage(ing.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();

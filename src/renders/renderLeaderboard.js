@@ -1,6 +1,6 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
-import { getIconFromCache } from "../data/iconImages.js";
+import { getIconImage } from "../data/imageCache.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
@@ -54,7 +54,7 @@ function truncate(ctx, text, maxWidth) {
 }
 
 
-function drawIconCircle(ctx, cx, cy, r, iconKey) {
+async function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fillStyle = COLOURS.rankSoft;
@@ -63,7 +63,7 @@ function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = await getIconImage(iconKey);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -93,11 +93,11 @@ export async function renderLeaderboard(data) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, WIDTH, height);
-    drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
+    await drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
 
     let cursorY = HEADER_H + ROWS_TOP_GAP;
     for (const row of rows) {
-        drawRow(ctx, cursorY, { prefix, accent, ...row });
+        await drawRow(ctx, cursorY, { prefix, accent, ...row });
         cursorY += ROW_H + ROW_GAP;
     }
 
@@ -106,7 +106,7 @@ export async function renderLeaderboard(data) {
     return canvas.toBuffer('image/png');
 }
 
-function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
+async function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     // Brand title
     ctx.font = '58px FredokaOne';
     ctx.strokeStyle = COLOURS.text;
@@ -124,7 +124,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     const iconR = 18;
     const iconCx = PAD + iconR;
     const iconCy = 104;
-    drawIconCircle(ctx, iconCx, iconCy, iconR, iconKey);
+    await drawIconCircle(ctx, iconCx, iconCy, iconR, iconKey);
 
     ctx.font = '26px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -169,7 +169,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     ctx.stroke();
 }
 
-function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
+async function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     const x = PAD;
     const w = WIDTH - PAD * 2;
 
@@ -187,7 +187,7 @@ function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     // Rank badge: medal PNG for 1-3, number-tile PNG for 4-10, drawn circle as a fallback.
     const isMedal = Boolean(MEDAL_KEYS[rank]);
     const rankKey = MEDAL_KEYS[rank] ?? String(rank).padStart(2, '0');
-    const rankImg = getIconFromCache(rankKey);
+    const rankImg = await getIconImage(rankKey);
     if (rankImg) {
         const size = isMedal ? 46 : 40;
         ctx.drawImage(rankImg, badgeCx - size / 2, badgeCy - size / 2, size, size);

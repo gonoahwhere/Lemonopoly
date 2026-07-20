@@ -1,8 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
-import { getIconFromCache } from "../data/iconImages.js";
+import { getDrinkImage, getIconImage } from "../data/imageCache.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
@@ -86,7 +85,7 @@ async function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = await getIconFromCache(iconKey);
+    const icon = await getIconImage(iconKey);
     if (icon) {
         ctx.save();
         ctx.beginPath();
@@ -306,7 +305,7 @@ async function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.stroke();
 
     if (def) {
-        const drinkImg = await getDrinkImageFromCache(def.id);
+        const drinkImg = await getDrinkImage(def.id);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();

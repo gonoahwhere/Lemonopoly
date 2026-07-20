@@ -1,7 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
+import { getDrinkImage } from "../data/imageCache.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
 
@@ -166,7 +166,7 @@ async function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = await getDrinkImageFromCache(drink.id);
+    const img = await getDrinkImage(drink.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();

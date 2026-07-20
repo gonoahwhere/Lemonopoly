@@ -1,7 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
+import { getIngredientImage } from "../data/imageCache.js";
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
 
@@ -246,7 +246,7 @@ async function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = await getIngredientFromCache(ingredient.id);
+    const img = await getIngredientImage(ingredient.id);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
