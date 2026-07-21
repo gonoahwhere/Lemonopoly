@@ -24,13 +24,6 @@ const TYPE_ORDER = Object.keys(TYPE_COLOURS);
 const INGREDIENTS_PER_PAGE = 20;
 const COLUMNS = 5;
 
-function hexToRgba(hex, alpha) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-}
-
 function getTypeFill(ctx, type, x0, y0, x1, y1) {
     const def = TYPE_COLOURS[type] || TYPE_COLOURS.Base;
     if (def.gradient) {

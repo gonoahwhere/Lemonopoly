@@ -70,13 +70,6 @@ export function getIngredientMarketPageCount(player) {
     return buildTypePages(allIngredients, INGREDIENTS_PER_PAGE).length;
 }
 
-function hexToRgba(hex, alpha) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-}
-
 function getTypeFill(ctx, type, x0, y0, x1, y1) {
     const def = TYPE_COLOURS[type] || TYPE_COLOURS.Base;
     if (def.gradient) {
@@ -173,8 +166,8 @@ function drawHeader(ctx, width, page, totalPages, discount) {
         const discLabel = `-${Math.round(discount * 100)}% DISCOUNT`;
         const discW = ctx.measureText(discLabel).width + pillPadX * 2;
         const discX = pillX - 14 - discW;
-        roundedRect(ctx, discX, pillY, discW, pillH, pillH / 2, hexToRgba(COLOURS.green, 0.15));
-        ctx.strokeStyle = hexToRgba(COLOURS.green, 0.5);
+        roundedRect(ctx, discX, pillY, discW, pillH, pillH / 2, `${COLOURS.green}26`);
+        ctx.strokeStyle = `${COLOURS.green}80`;
         ctx.lineWidth = 1.5;
         roundedRectPath(ctx, discX, pillY, discW, pillH, pillH / 2);
         ctx.stroke();
@@ -311,8 +304,8 @@ function drawPricePill(ctx, cx, y, label, colour, strikethrough) {
     const pillW = measurePillWidth(ctx, label, padX);
     const pillX = cx - pillW / 2;
 
-    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, hexToRgba(colour, 0.15));
-    ctx.strokeStyle = hexToRgba(colour, 0.5);
+    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, `${colour}26`);
+    ctx.strokeStyle = `${colour}80`;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, pillX, y, pillW, pillH, pillH / 2);
     ctx.stroke();

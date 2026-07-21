@@ -27,13 +27,6 @@ const RARITY_COLOURS = {
 const OWNED_DRINKS_PER_PAGE = 12;
 const COLUMNS = 4;
 
-function hexToRgba(hex, alpha) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-}
-
 function rarityColour(rarity) {
     return RARITY_COLOURS[(rarity || '').toLowerCase()] || COLOURS.muted;
 }
@@ -154,13 +147,13 @@ async function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
 
     ctx.beginPath();
     ctx.arc(cx, cy, size / 2 + 4, 0, Math.PI * 2);
-    ctx.strokeStyle = hexToRgba(colour, 0.25);
+    ctx.strokeStyle = `${colour}40`;
     ctx.lineWidth = 3;
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
-    ctx.fillStyle = hexToRgba(colour, 0.25);
+    ctx.fillStyle = `${colour}40`;
     ctx.fill();
     ctx.strokeStyle = colour;
     ctx.lineWidth = 3;
@@ -226,8 +219,8 @@ function drawRarityPill(ctx, cx, y, rarity, colour) {
     const pillH = 22;
     const pillX = cx - pillW / 2;
 
-    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, hexToRgba(colour, 0.15));
-    ctx.strokeStyle = hexToRgba(colour, 0.5);
+    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, `${colour}26`);
+    ctx.strokeStyle = `${colour}80`;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, pillX, y, pillW, pillH, pillH / 2);
     ctx.stroke();
