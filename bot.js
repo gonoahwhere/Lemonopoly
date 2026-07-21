@@ -28,9 +28,7 @@ try {
     process.exit(1);
 }
 
-await loadSprites();
-await loadCommands(client);
-await loadEvents(client);
+await Promise.all([loadSprites(), loadCommands(client), loadEvents(client)]);
 
 client.login(config.token).catch((err) => {
     logger.error(`Login failed: ${err.message}`);
