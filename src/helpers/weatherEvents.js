@@ -8,7 +8,6 @@ function randomDurationMs() {
     return Math.floor(Math.random() * (MAX_EVENT_DURATION_MS - MIN_EVENT_DURATION_MS + 1)) + MIN_EVENT_DURATION_MS;
 }
 
-
 function pickWeightedOption(options) {
     const total = options.reduce((sum, o) => sum + (o.weight ?? 1), 0);
     let roll = Math.random() * total;

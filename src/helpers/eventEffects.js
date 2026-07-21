@@ -1,3 +1,5 @@
+import { advanceEvents } from './weatherEvents.js';
+
 export const OUTCOME_EFFECTS = {
     // -- HEATWAVE (beneficial) --
     heatwave_one: { category: 'ingredientConsumptionMultiplier', value: 1.15 },
@@ -68,6 +70,24 @@ export const OUTCOME_EFFECTS = {
 function getEffect(activeEvent) {
     if (!activeEvent?.optionId) return null;
     return OUTCOME_EFFECTS[activeEvent.optionId] ?? null;
+}
+
+export async function ensureEventsCurrent(profile, now = new Date()) {
+    const result = advanceEvents(profile.events, now);
+    if (result.changed) {
+        profile.events = { active: result.active, next: result.next };
+        await profile.save();
+    }
+    return profile.events;
+}
+
+export function getLiveEvent(profile) {
+    const event = profile.events?.active;
+    if (!event?.optionId) return null;
+    if (event.endsAt && Date.now() >= new Date(event.endsAt).getTime()) {
+        return null;
+    }
+    return event;
 }
 
 export function getSellCooldownMultiplier(activeEvent) {
