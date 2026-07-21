@@ -42,7 +42,7 @@ export default {
             });
         }
 
-        const buffer = await renderStandDisplay(profile);
+        const buffer = renderStandDisplay(profile);
         await interaction.reply({ files: [{ attachment: buffer, name: 'stand.png' }] });
     }
 }

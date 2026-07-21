@@ -36,7 +36,7 @@ export default async function handleMarketRecipe(interaction) {
     }
 
     marketViewRecipe.set(interaction.user.id, page);
-    const image = await renderRecipeMarket(profile, page);
+    const image = renderRecipeMarket(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipe-market.png' });
 
     const previousPage = new ButtonBuilder()

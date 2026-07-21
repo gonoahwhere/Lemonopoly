@@ -72,7 +72,7 @@ export default {
 
         const viewer = viewerProfile ? { rank: higherThanViewer + 1, value: viewerValue } : null;
 
-        const image = await renderLeaderboard({
+        const image = renderLeaderboard({
             label: board.label,
             prefix: board.prefix,
             iconKey: board.icon,

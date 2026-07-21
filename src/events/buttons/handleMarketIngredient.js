@@ -36,7 +36,7 @@ export default async function handleMarketIngredient(interaction) {
     }
 
     marketViewIngredient.set(interaction.user.id, page);
-    const image = await renderIngredientMarket(profile, page);
+    const image = renderIngredientMarket(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'ingredient-market.png' });
 
     const previousPage = new ButtonBuilder()

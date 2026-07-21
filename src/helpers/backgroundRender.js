@@ -20,7 +20,7 @@ export const COLOURS = {
     yellow: '#FFC940',
 };
 
-export async function renderBackground(player, page = 1, width = 900, height = 1000) {
+export function renderBackground(player, page = 1, width = 900, height = 1000) {
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 

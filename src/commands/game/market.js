@@ -96,7 +96,7 @@ export default {
 
                         const recipes = getMarketRecipes(profile);
                         const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
-                        const buffer = await renderRecipeMarket(profile);
+                        const buffer = renderRecipeMarket(profile);
                         const attachment = new AttachmentBuilder(buffer, { name: 'recipe-market.png' });
                         const components = [];
 
@@ -128,7 +128,7 @@ export default {
                         let page = 1;
 
                         const totalPages = getIngredientMarketPageCount(profile);
-                        const buffer = await renderIngredientMarket(profile);
+                        const buffer = renderIngredientMarket(profile);
                         const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
                         const components = [];
 

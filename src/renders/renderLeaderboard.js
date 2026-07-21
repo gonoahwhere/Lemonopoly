@@ -1,6 +1,6 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
-import { getIconImage } from "../data/imageCache.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
@@ -54,7 +54,7 @@ function truncate(ctx, text, maxWidth) {
 }
 
 
-async function drawIconCircle(ctx, cx, cy, r, iconKey) {
+function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fillStyle = COLOURS.rankSoft;
@@ -63,13 +63,13 @@ async function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = await getIconImage(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, r - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - r + 3, cy - r + 3, (r - 3) * 2, (r - 3) * 2);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - r + 3, cy - r + 3, (r - 3) * 2, (r - 3) * 2);
         ctx.restore();
     }
 }
@@ -83,7 +83,7 @@ const ROW_GAP = 10;
 const ROWS_TOP_GAP = 14;
 const FOOTER_H = 60;
 
-export async function renderLeaderboard(data) {
+export function renderLeaderboard(data) {
     const { label, prefix, iconKey, accent, total, rows, viewer } = data;
 
     const rowsBlockH = rows.length * ROW_H + Math.max(0, rows.length - 1) * ROW_GAP;
@@ -93,11 +93,11 @@ export async function renderLeaderboard(data) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, WIDTH, height);
-    await drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
+    drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
 
     let cursorY = HEADER_H + ROWS_TOP_GAP;
     for (const row of rows) {
-        await drawRow(ctx, cursorY, { prefix, accent, ...row });
+        drawRow(ctx, cursorY, { prefix, accent, ...row });
         cursorY += ROW_H + ROW_GAP;
     }
 
@@ -106,7 +106,7 @@ export async function renderLeaderboard(data) {
     return canvas.toBuffer('image/png');
 }
 
-async function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
+function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     // Brand title
     ctx.font = '58px FredokaOne';
     ctx.strokeStyle = COLOURS.text;
@@ -124,7 +124,7 @@ async function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     const iconR = 18;
     const iconCx = PAD + iconR;
     const iconCy = 104;
-    await drawIconCircle(ctx, iconCx, iconCy, iconR, iconKey);
+    drawIconCircle(ctx, iconCx, iconCy, iconR, iconKey);
 
     ctx.font = '26px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -169,7 +169,7 @@ async function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     ctx.stroke();
 }
 
-async function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
+function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     const x = PAD;
     const w = WIDTH - PAD * 2;
 
@@ -187,10 +187,10 @@ async function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) 
     // Rank badge: medal PNG for 1-3, number-tile PNG for 4-10, drawn circle as a fallback.
     const isMedal = Boolean(MEDAL_KEYS[rank]);
     const rankKey = MEDAL_KEYS[rank] ?? String(rank).padStart(2, '0');
-    const rankImg = await getIconImage(rankKey);
+    const rankImg = getSprite(`icon.${rankKey}`);
     if (rankImg) {
         const size = isMedal ? 46 : 40;
-        ctx.drawImage(rankImg, badgeCx - size / 2, badgeCy - size / 2, size, size);
+        ctx.drawImage(rankImg.sheet, rankImg.x, rankImg.y, rankImg.w, rankImg.h, badgeCx - size / 2, badgeCy - size / 2, size, size);
     } else {
         ctx.beginPath();
         ctx.arc(badgeCx, badgeCy, badgeR, 0, Math.PI * 2);

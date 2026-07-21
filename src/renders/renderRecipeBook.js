@@ -2,7 +2,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
 import { getRecipeUnlock } from "../data/recipeUnlocks.js";
-import { getIngredientImage, getDrinkImage } from "../data/imageCache.js";
+import { getSprite } from "../data/sprites.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
 
@@ -38,7 +38,7 @@ const RECIPE_COLOURS = {
     ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
 };
 
-export async function renderRecipeBook(player, page = 1) {
+export function renderRecipeBook(player, page = 1) {
     const recipesPerPage = 3;
     const start = (page - 1) * recipesPerPage;
     const pageRecipes = RECIPES.slice(start, start + recipesPerPage);
@@ -50,7 +50,7 @@ export async function renderRecipeBook(player, page = 1) {
 
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, RECIPES.length, recipesPerPage);
-    await drawRecipes(ctx, pageRecipes, player);
+    drawRecipes(ctx, pageRecipes, player);
     drawFooter(ctx, width, height, page, RECIPES.length, recipesPerPage);
 
     return canvas.toBuffer('image/png');
@@ -143,7 +143,7 @@ function drawFooter(ctx, width, height, page, totalRecipes, perPage) {
     ctx.textAlign = 'left';
 }
 
-async function drawRecipes(ctx, recipes, player) {
+function drawRecipes(ctx, recipes, player) {
     const cardX = 50;
     const cardYStart = 175;
     const cardWidth = 800;
@@ -152,11 +152,11 @@ async function drawRecipes(ctx, recipes, player) {
 
     for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        await drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
+        drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
     }
 }
 
-async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
+function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const unlock = getRecipeUnlock(recipe, player);
     const meetsRequirement = unlock.progress >= 100;
     const isOwned = (player?.recipes?.unlocked ?? []).some((r) => r.key === recipe.id);
@@ -203,13 +203,13 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = await getDrinkImage(recipe.id);
+    const drinkImg = getSprite(`drink.${recipe.id}`);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+        ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
         ctx.restore();
     }
 
@@ -317,7 +317,7 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const chipGap = 14;
     let chipX = x + 34;
     for (const ing of recipe.ingredients.slice(0, 10)) {
-        await drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
+        drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
         chipX += chipSize + chipGap;
     }
 
@@ -332,7 +332,7 @@ async function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     }
 }
 
-async function drawIngredientChip(ctx, x, y, size, ing) {
+function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.beginPath();
     ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
     ctx.fillStyle = '#FFF4D6';
@@ -341,14 +341,14 @@ async function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = await getIngredientImage(ing.id);
+    const img = getSprite(`ingredient.${ing.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, x + pad / 2, y + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, x + pad / 2, y + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 

@@ -39,7 +39,7 @@ export default async function handleDrinkStock(interaction) {
     }
 
     drinkStockPageMap.set(interaction.user.id, page);
-    const image = await renderDrinkStock(profile, page);
+    const image = renderDrinkStock(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-drinks.png' });
 
     const previousPage = new ButtonBuilder()

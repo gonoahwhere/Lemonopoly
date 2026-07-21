@@ -1,7 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImage, getIconImage } from "../data/imageCache.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
@@ -76,7 +76,7 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 14,
     ctx.restore();
 }
 
-async function drawIconCircle(ctx, cx, cy, size, iconKey) {
+function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.beginPath();
     ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
     ctx.fillStyle = '#FFF4D6';
@@ -85,13 +85,13 @@ async function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = await getIconImage(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - size / 2 + 3, cy - size / 2 + 3, size - 6, size - 6);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - size / 2 + 3, cy - size / 2 + 3, size - 6, size - 6);
         ctx.restore();
     }
 }
@@ -140,7 +140,7 @@ function drawHeader(ctx, width, profile) {
     ctx.stroke();
 }
 
-async function drawPremiumChip(ctx, x, y, w, h, isPremium) {
+function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = isPremium ? COLOURS.premium + '77' : COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -148,7 +148,7 @@ async function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     ctx.stroke();
 
     const iconSize = 40;
-    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'premium');
+    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'premium');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -158,7 +158,7 @@ async function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : '#A8934F1A');
 }
 
-async function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
+function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -166,7 +166,7 @@ async function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     ctx.stroke();
 
     const iconSize = 40;
-    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'mix_all');
+    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'mix_all');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -184,7 +184,7 @@ async function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     }
 }
 
-async function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, accentSoft) {
+function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, accentSoft) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = active ? accent + '77' : COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -196,7 +196,7 @@ async function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, acce
     }
 
     const iconSize = 40;
-    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
+    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -206,7 +206,7 @@ async function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, acce
     drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : '#A8934F1A');
 }
 
-async function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
+function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = locked ? COLOURS.lockedGrey + '55' : (enabled ? COLOURS.green + '77' : COLOURS.border);
     ctx.lineWidth = 1.2;
@@ -214,7 +214,7 @@ async function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, 
     ctx.stroke();
 
     const iconSize = 40;
-    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
+    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, iconKey);
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -232,7 +232,7 @@ async function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, 
     drawPill(ctx, textX, y + h / 2 - 1, pillLabel, pillColour, pillBg);
 }
 
-async function drawTimezoneChip(ctx, x, y, w, h, timezone) {
+function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -240,7 +240,7 @@ async function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     ctx.stroke();
 
     const iconSize = 40;
-    await drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'timezone');
+    drawIconCircle(ctx, x + 14 + iconSize / 2, y + h / 2, iconSize, 'timezone');
 
     const textX = x + 14 + iconSize + 12;
     ctx.font = '13px FredokaOne';
@@ -281,7 +281,7 @@ function drawRarityPill(ctx, x, y, rarity) {
     return w;
 }
 
-async function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
+function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
     ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.2;
@@ -305,13 +305,13 @@ async function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     ctx.stroke();
 
     if (def) {
-        const drinkImg = await getDrinkImage(def.id);
+        const drinkImg = getSprite(`drink.${def.id}`);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();
             ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+            ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
             ctx.restore();
         }
     }
@@ -338,7 +338,7 @@ function drawEmptySlotCard(ctx, x, y, w, h, slotNumber) {
     ctx.textAlign = 'left';
 }
 
-export async function renderConfigDisplay(profile) {
+export function renderConfigDisplay(profile) {
     const width = 900;
 
     const isPremium = Boolean(profile.entitlements?.premium);
@@ -376,23 +376,23 @@ export async function renderConfigDisplay(profile) {
     const threeChipW = (800 - 36) / 3;
 
     // Row: Premium Pass / Mix All Cap
-    await drawPremiumChip(ctx, 50, y, twoChipW, STATUS_ROW_H, isPremium);
-    await drawMixAllCapChip(ctx, 50 + twoChipW + 22, y, twoChipW, STATUS_ROW_H, mixAllCap, isPremium);
+    drawPremiumChip(ctx, 50, y, twoChipW, STATUS_ROW_H, isPremium);
+    drawMixAllCapChip(ctx, 50 + twoChipW + 22, y, twoChipW, STATUS_ROW_H, mixAllCap, isPremium);
     y += STATUS_ROW_H + GAP;
 
     // Row: Seasonal / Beta Tester entitlement badges
-    await drawEntitlementChip(ctx, 50, y, twoChipW, ENTITLEMENT_ROW_H, 'seasonal', 'Seasonal Pass', isSeasonal, COLOURS.seasonal, COLOURS.seasonalSoft);
-    await drawEntitlementChip(ctx, 50 + twoChipW + 22, y, twoChipW, ENTITLEMENT_ROW_H, 'beta', 'Beta Tester', isBetaTester, COLOURS.beta, COLOURS.betaSoft);
+    drawEntitlementChip(ctx, 50, y, twoChipW, ENTITLEMENT_ROW_H, 'seasonal', 'Seasonal Pass', isSeasonal, COLOURS.seasonal, COLOURS.seasonalSoft);
+    drawEntitlementChip(ctx, 50 + twoChipW + 22, y, twoChipW, ENTITLEMENT_ROW_H, 'beta', 'Beta Tester', isBetaTester, COLOURS.beta, COLOURS.betaSoft);
     y += ENTITLEMENT_ROW_H + GAP;
 
     // Row: Leaderboard / Auto-Serve / Notifications toggles
-    await drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
-    await drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
-    await drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
+    drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
+    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
+    drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
     y += TOGGLE_ROW_H + GAP;
 
     // Row: Timezone
-    await drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
+    drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
     y += TIMEZONE_ROW_H + GAP;
 
     ctx.font = '16px FredokaOne';
@@ -403,7 +403,7 @@ export async function renderConfigDisplay(profile) {
     for (let i = 0; i < maxActiveSlots; i++) {
         const entry = activeEntries[i];
         if (entry) {
-            await drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
+            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
         } else {
             drawEmptySlotCard(ctx, 50, y, 800, SLOT_CARD_H, i + 1);
         }

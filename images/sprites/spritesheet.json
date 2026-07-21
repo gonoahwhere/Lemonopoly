@@ -1,0 +1,1058 @@
+{
+  "drink.ace_in_the_glass": {
+    "x": 0,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.arnold_palmer": {
+    "x": 198,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.basil_lemonade": {
+    "x": 0,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.binary_exception": {
+    "x": 198,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.blueberry_lemonade": {
+    "x": 396,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.candy_cane_lemonade": {
+    "x": 396,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.caramel_lemonade": {
+    "x": 594,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.character_customizer": {
+    "x": 594,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.cherry_lemonade": {
+    "x": 792,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.classic_lemonade": {
+    "x": 792,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.coconut_lemonade": {
+    "x": 0,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.creamy_lemonade": {
+    "x": 0,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.diamond_fizz": {
+    "x": 198,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.double_trouble": {
+    "x": 198,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.dragon_fruit_lemonade": {
+    "x": 396,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.extra_sour_lemonade": {
+    "x": 396,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.flux_capacitea": {
+    "x": 594,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.galaxy_lemonade": {
+    "x": 594,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.ginger_lemonade": {
+    "x": 792,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.golden_lemonade": {
+    "x": 792,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.green_tea_lemonade": {
+    "x": 990,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.hibiscus_lemonade": {
+    "x": 990,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.hot_chocolate_lemonade": {
+    "x": 990,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.island_splash": {
+    "x": 990,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.kitchen_sink_deluxe": {
+    "x": 1188,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.kiwi_lemonade": {
+    "x": 1386,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.lavender_lemonade": {
+    "x": 1584,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.light_lemonade": {
+    "x": 1782,
+    "y": 0,
+    "w": 198,
+    "h": 252
+  },
+  "drink.limeade": {
+    "x": 1188,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.mango_lemonade": {
+    "x": 1188,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.mint_condition": {
+    "x": 1188,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.mint_lemonade": {
+    "x": 1386,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.orange_lemonade": {
+    "x": 1584,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.passion_fruit_lemonade": {
+    "x": 1782,
+    "y": 252,
+    "w": 198,
+    "h": 252
+  },
+  "drink.peach_lemonade": {
+    "x": 1386,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.peach_tea_lemonade": {
+    "x": 1386,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.pineapple_lemonade": {
+    "x": 1584,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.pink_lemonade": {
+    "x": 1584,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.pumpkin_lemonade": {
+    "x": 1782,
+    "y": 504,
+    "w": 198,
+    "h": 252
+  },
+  "drink.rainbow_overload": {
+    "x": 1782,
+    "y": 756,
+    "w": 198,
+    "h": 252
+  },
+  "drink.raspberry_lemonade": {
+    "x": 0,
+    "y": 1008,
+    "w": 198,
+    "h": 252
+  },
+  "drink.raspberry_revolution": {
+    "x": 0,
+    "y": 1260,
+    "w": 198,
+    "h": 252
+  },
+  "drink.rosemary_lemonade": {
+    "x": 0,
+    "y": 1512,
+    "w": 198,
+    "h": 252
+  },
+  "drink.royal_lemonade": {
+    "x": 0,
+    "y": 1764,
+    "w": 198,
+    "h": 252
+  },
+  "drink.spiced_lemonade": {
+    "x": 198,
+    "y": 1008,
+    "w": 198,
+    "h": 252
+  },
+  "drink.strawberry_lemonade": {
+    "x": 198,
+    "y": 1260,
+    "w": 198,
+    "h": 252
+  },
+  "drink.sunburst_splash": {
+    "x": 198,
+    "y": 1512,
+    "w": 198,
+    "h": 252
+  },
+  "drink.sweet_lemonade": {
+    "x": 198,
+    "y": 1764,
+    "w": 198,
+    "h": 252
+  },
+  "drink.triple_citrus": {
+    "x": 396,
+    "y": 1008,
+    "w": 198,
+    "h": 252
+  },
+  "drink.tropical_sunrise": {
+    "x": 396,
+    "y": 1260,
+    "w": 198,
+    "h": 252
+  },
+  "drink.valentine_punch": {
+    "x": 396,
+    "y": 1512,
+    "w": 198,
+    "h": 252
+  },
+  "drink.vanilla_lemonade": {
+    "x": 396,
+    "y": 1764,
+    "w": 198,
+    "h": 252
+  },
+  "drink.watermelon_lemonade": {
+    "x": 594,
+    "y": 1008,
+    "w": 198,
+    "h": 252
+  },
+  "icon.01": {
+    "x": 594,
+    "y": 1260,
+    "w": 128,
+    "h": 128
+  },
+  "icon.02": {
+    "x": 594,
+    "y": 1388,
+    "w": 128,
+    "h": 128
+  },
+  "icon.03": {
+    "x": 594,
+    "y": 1516,
+    "w": 128,
+    "h": 128
+  },
+  "icon.04": {
+    "x": 594,
+    "y": 1644,
+    "w": 128,
+    "h": 128
+  },
+  "icon.05": {
+    "x": 594,
+    "y": 1772,
+    "w": 128,
+    "h": 128
+  },
+  "icon.06": {
+    "x": 594,
+    "y": 1900,
+    "w": 128,
+    "h": 128
+  },
+  "icon.07": {
+    "x": 722,
+    "y": 1260,
+    "w": 128,
+    "h": 128
+  },
+  "icon.08": {
+    "x": 792,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.09": {
+    "x": 722,
+    "y": 1388,
+    "w": 128,
+    "h": 128
+  },
+  "icon.10": {
+    "x": 722,
+    "y": 1516,
+    "w": 128,
+    "h": 128
+  },
+  "icon.appeal": {
+    "x": 722,
+    "y": 1644,
+    "w": 128,
+    "h": 128
+  },
+  "icon.autoserve": {
+    "x": 722,
+    "y": 1772,
+    "w": 128,
+    "h": 128
+  },
+  "icon.beta": {
+    "x": 722,
+    "y": 1900,
+    "w": 128,
+    "h": 128
+  },
+  "icon.bronze": {
+    "x": 850,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "icon.cash": {
+    "x": 920,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.coins": {
+    "x": 850,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "icon.cooldown": {
+    "x": 850,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "icon.disabled": {
+    "x": 850,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "icon.enabled": {
+    "x": 850,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "icon.gold": {
+    "x": 850,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "icon.heart": {
+    "x": 850,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "icon.info": {
+    "x": 978,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "icon.leaderboard": {
+    "x": 1048,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.left_arrow": {
+    "x": 978,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "icon.level": {
+    "x": 978,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "icon.location": {
+    "x": 978,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "icon.mix_all": {
+    "x": 978,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "icon.notifications": {
+    "x": 978,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium": {
+    "x": 978,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "icon.prestige": {
+    "x": 1176,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.recipe": {
+    "x": 1304,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.reply": {
+    "x": 1432,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.replyagain": {
+    "x": 1560,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.resilience": {
+    "x": 1688,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.right_arrow": {
+    "x": 1816,
+    "y": 1008,
+    "w": 128,
+    "h": 128
+  },
+  "icon.seasonal": {
+    "x": 1106,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "icon.silver": {
+    "x": 1106,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "icon.speed": {
+    "x": 1106,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "icon.storage": {
+    "x": 1106,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "icon.timezone": {
+    "x": 1106,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "icon.warning": {
+    "x": 1106,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.agave": {
+    "x": 1106,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.aged_vanilla": {
+    "x": 1234,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.almond_milk": {
+    "x": 1362,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.banana": {
+    "x": 1490,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.basil": {
+    "x": 1618,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.blackberry": {
+    "x": 1746,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.black_tea": {
+    "x": 1874,
+    "y": 1136,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.blueberry": {
+    "x": 1234,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.brown_sugar": {
+    "x": 1234,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.candy": {
+    "x": 1234,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.candy_cane": {
+    "x": 1234,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.caramel_syrup": {
+    "x": 1234,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cardamom": {
+    "x": 1234,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cherry": {
+    "x": 1362,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.chocolate": {
+    "x": 1490,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cinnamon": {
+    "x": 1618,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cloves": {
+    "x": 1746,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.coconut": {
+    "x": 1874,
+    "y": 1264,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.coconut_water": {
+    "x": 1362,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.coffee": {
+    "x": 1362,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cranberry": {
+    "x": 1362,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.cream": {
+    "x": 1362,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.diamond_ice": {
+    "x": 1362,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.dragonfruit": {
+    "x": 1490,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.edible_glitter": {
+    "x": 1618,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.firework_powder": {
+    "x": 1746,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.ginger": {
+    "x": 1874,
+    "y": 1392,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.gingerbread": {
+    "x": 1490,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.gold_leaf": {
+    "x": 1490,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.grape": {
+    "x": 1490,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.green_apple": {
+    "x": 1490,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.green_tea": {
+    "x": 1618,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.heart_sprinkles": {
+    "x": 1746,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.hibiscus_tea": {
+    "x": 1874,
+    "y": 1520,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.honey": {
+    "x": 1618,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.ice": {
+    "x": 1618,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.kiwi": {
+    "x": 1618,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.lavender": {
+    "x": 1746,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.lemon": {
+    "x": 1874,
+    "y": 1648,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.lemon_slice": {
+    "x": 1746,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.lime": {
+    "x": 1746,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.lime_slice": {
+    "x": 1874,
+    "y": 1776,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.mango": {
+    "x": 1874,
+    "y": 1904,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.maple_syrup": {
+    "x": 0,
+    "y": 2016,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.maraschino_cherry": {
+    "x": 128,
+    "y": 2016,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.marshmallow": {
+    "x": 256,
+    "y": 2016,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.milk": {
+    "x": 384,
+    "y": 2016,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.mint": {
+    "x": 512,
+    "y": 2028,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.mint_leaf": {
+    "x": 640,
+    "y": 2028,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.nutmeg": {
+    "x": 0,
+    "y": 2144,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.oat_milk": {
+    "x": 128,
+    "y": 2144,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.orange": {
+    "x": 256,
+    "y": 2144,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.orange_slice": {
+    "x": 384,
+    "y": 2144,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.organic_lemon": {
+    "x": 768,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.passionfruit": {
+    "x": 512,
+    "y": 2156,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.peach_tea": {
+    "x": 640,
+    "y": 2156,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.peppermint": {
+    "x": 0,
+    "y": 2272,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.pineapple": {
+    "x": 128,
+    "y": 2272,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.pomegranate": {
+    "x": 256,
+    "y": 2272,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.premium_sugar": {
+    "x": 384,
+    "y": 2272,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.pride_confetti": {
+    "x": 896,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.prism_dust": {
+    "x": 1024,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.pumpkin": {
+    "x": 1152,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.rainbow_sprinkles": {
+    "x": 1280,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.rainbow_syrup": {
+    "x": 1408,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.raspberry": {
+    "x": 1536,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.red_apple": {
+    "x": 1664,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.rosemary": {
+    "x": 1792,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.sage": {
+    "x": 1920,
+    "y": 2032,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.snowflake_ice": {
+    "x": 768,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.sparkling_water": {
+    "x": 512,
+    "y": 2284,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.stevia": {
+    "x": 640,
+    "y": 2284,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.strawberry": {
+    "x": 0,
+    "y": 2400,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.thyme": {
+    "x": 128,
+    "y": 2400,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.umbrella": {
+    "x": 256,
+    "y": 2400,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.vanilla": {
+    "x": 384,
+    "y": 2400,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.vanilla_syrup": {
+    "x": 896,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.water": {
+    "x": 1024,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.watermelon": {
+    "x": 1152,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.whipped_cream": {
+    "x": 1280,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.white_sugar": {
+    "x": 1408,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.wild_honey": {
+    "x": 1536,
+    "y": 2160,
+    "w": 128,
+    "h": 128
+  }
+}

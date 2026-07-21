@@ -6,6 +6,7 @@ import logger from './src/utils/logger.js';
 import { loadCommands } from './src/handlers/commandHandler.js';
 import { loadEvents } from './src/handlers/eventHandler.js';
 import { loadButtons } from './src/events/buttons/index.js';
+import { loadSprites } from './src/data/sprites.js';
 
 const client = new Client({
     intents: [
@@ -27,6 +28,7 @@ try {
     process.exit(1);
 }
 
+await loadSprites();
 await loadCommands(client);
 await loadEvents(client);
 

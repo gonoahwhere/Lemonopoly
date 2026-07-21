@@ -36,7 +36,7 @@ export default async function handleRecipeBook(interaction) {
     }
 
     recipeMap.set(interaction.user.id, page);
-    const image = await renderRecipeBook(profile, page);
+    const image = renderRecipeBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipes.png' });
 
     const previousPage = new ButtonBuilder()

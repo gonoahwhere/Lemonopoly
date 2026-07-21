@@ -57,7 +57,7 @@ export default {
                 const totalPages = Math.max(1, Math.ceil(unlockedCount / RECIPES_PER_PAGE));
                 const page = 1;
 
-                const image = await renderMasteryBook(profile, page);
+                const image = renderMasteryBook(profile, page);
                 const attachment = new AttachmentBuilder(image, { name: 'my-recipes.png' });
 
                 const components = [];

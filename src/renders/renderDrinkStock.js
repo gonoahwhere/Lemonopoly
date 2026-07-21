@@ -1,7 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImage } from "../data/imageCache.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
 
@@ -31,7 +31,7 @@ function rarityColour(rarity) {
     return RARITY_COLOURS[(rarity || '').toLowerCase()] || COLOURS.muted;
 }
 
-export async function renderDrinkStock(player, page = 1) {
+export function renderDrinkStock(player, page = 1) {
     const stockList = player?.drinks || [];
     const stockByKey = new Map(stockList.map(stock => [stock.key, stock]));
 
@@ -52,7 +52,7 @@ export async function renderDrinkStock(player, page = 1) {
 
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, ownedDrinks.length);
-    await drawDrinkGrid(ctx, pageDrinks, width, 175);
+    drawDrinkGrid(ctx, pageDrinks, width, 175);
     drawFooter(ctx, width, height, ownedDrinks.length);
 
     return canvas.toBuffer('image/png');
@@ -125,7 +125,7 @@ function drawHeader(ctx, width, page, totalOwned) {
     ctx.stroke();
 }
 
-async function drawDrinkGrid(ctx, drinks, width, startY) {
+function drawDrinkGrid(ctx, drinks, width, startY) {
     const marginX = 50;
     const contentW = width - marginX * 2;
     const colWidth = contentW / COLUMNS;
@@ -138,11 +138,11 @@ async function drawDrinkGrid(ctx, drinks, width, startY) {
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        await drawDrinkTile(ctx, cx, cy, circleSize, drinks[i], colWidth - 16);
+        drawDrinkTile(ctx, cx, cy, circleSize, drinks[i], colWidth - 16);
     }
 }
 
-async function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
+function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
     const colour = rarityColour(drink.rarity);
 
     ctx.beginPath();
@@ -159,14 +159,14 @@ async function drawDrinkTile(ctx, cx, cy, size, drink, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = await getDrinkImage(drink.id);
+    const img = getSprite(`drink.${drink.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 

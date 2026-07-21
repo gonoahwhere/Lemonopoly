@@ -11,7 +11,7 @@ export default {
         .setName('ingredient-book')
         .setDescription('View the full ingredient index.'),
     async execute(interaction) {
-        const image = await renderIngredientBook();
+        const image = renderIngredientBook();
 
         let page = 1;
         const totalPages = getIngredientBookPageCount();

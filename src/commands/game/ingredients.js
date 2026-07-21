@@ -16,7 +16,7 @@ export default {
 
         let page = 1
         const totalPages = getOwnedIngredientBookPageCount(profile);
-        const image = await renderOwnedIngredientBook(profile, page);
+        const image = renderOwnedIngredientBook(profile, page);
         const attachment = new AttachmentBuilder(image, { name: 'my-ingredients.png' });
 
         const components = [];

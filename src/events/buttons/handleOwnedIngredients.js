@@ -34,7 +34,7 @@ export default async function handleOwnedIngredientBook(interaction) {
     }
 
     ownedIngredientMap.set(interaction.user.id, page);
-    const image = await renderOwnedIngredientBook(profile, page);
+    const image = renderOwnedIngredientBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-ingredients.png' });
 
     const previousPage = new ButtonBuilder()

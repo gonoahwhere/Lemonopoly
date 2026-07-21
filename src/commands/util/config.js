@@ -54,7 +54,7 @@ export default {
 
         switch (subcommand) {
             case 'view': {
-                const buffer = await renderConfigDisplay(profile);
+                const buffer = renderConfigDisplay(profile);
                 return interaction.editReply({ files: [{ attachment: buffer, name: 'config.png' }] });
             }
 

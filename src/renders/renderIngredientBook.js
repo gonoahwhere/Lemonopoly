@@ -1,7 +1,7 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
-import { getIngredientImage } from "../data/imageCache.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText } from '../helpers/renderHelper.js';
 
@@ -69,7 +69,7 @@ export function getIngredientBookPageCount() {
     return buildTypePages(allIngredients, INGREDIENTS_PER_PAGE).length;
 }
 
-export async function renderIngredientBook(player, page = 1) {
+export function renderIngredientBook(player, page = 1) {
     const allIngredients = Object.entries(INGREDIENTS).map(([id, data]) => ({ id, ...data }));
     const typePages = buildTypePages(allIngredients, INGREDIENTS_PER_PAGE);
     const totalPages = typePages.length;
@@ -84,7 +84,7 @@ export async function renderIngredientBook(player, page = 1) {
     drawBackground(ctx, width, height);
     drawHeader(ctx, width, page, totalPages);
     const gridStartY = drawTypePill(ctx, width, current.type, current.pageInType, current.totalPagesInType);
-    await drawIngredientGrid(ctx, current.items, width, gridStartY);
+    drawIngredientGrid(ctx, current.items, width, gridStartY);
     drawFooter(ctx, width, height, allIngredients.length);
 
     return canvas.toBuffer('image/png');
@@ -201,7 +201,7 @@ function drawTypePill(ctx, width, type, pageInType, totalPagesInType) {
     return pillY + pillH + 75;
 }
 
-async function drawIngredientGrid(ctx, ingredients, width, gridTop) {
+function drawIngredientGrid(ctx, ingredients, width, gridTop) {
     const marginX = 50;
     const contentW = width - marginX * 2;
     const colWidth = contentW / COLUMNS;
@@ -213,11 +213,11 @@ async function drawIngredientGrid(ctx, ingredients, width, gridTop) {
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        await drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
+        drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
     }
 }
 
-async function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
+function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     const type = ingredient.type;
     const borderColour = getTypeBorder(type);
 
@@ -238,14 +238,14 @@ async function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = await getIngredientImage(ingredient.id);
+    const img = getSprite(`ingredient.${ingredient.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 

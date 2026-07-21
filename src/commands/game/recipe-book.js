@@ -16,7 +16,7 @@ export default {
         .setDescription('View your very own recipe book.'),
     async execute(interaction) {
         const profile = interaction.playerProfile
-        const image = await renderRecipeBook(profile);
+        const image = renderRecipeBook(profile);
 
         let page = 1;
         const totalPages = Math.max(1, Math.ceil(RECIPES.length / RECIPES_PER_PAGE));

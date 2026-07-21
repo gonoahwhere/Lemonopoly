@@ -29,7 +29,7 @@ export default {
 
         switch (subcommand) {
             case 'view': {
-                const buffer = await renderStandDisplay(profile);
+                const buffer = renderStandDisplay(profile);
                 return await interaction.editReply({ files: [{ attachment: buffer, name: 'stand.png' }] });
             }
 

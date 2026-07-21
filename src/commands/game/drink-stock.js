@@ -20,7 +20,7 @@ export default {
 
         const page = 1;
         const totalPages = Math.max(1, Math.ceil(ownedCount / OWNED_DRINKS_PER_PAGE));
-        const image = await renderDrinkStock(profile, page);
+        const image = renderDrinkStock(profile, page);
         const attachment = new AttachmentBuilder(image, { name: 'my-drinks.png' });
 
         const components = [];
