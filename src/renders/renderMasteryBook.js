@@ -170,12 +170,12 @@ function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
 
 function drawPuffyStarShape(ctx, cx, cy, outerR, innerR, roundness = 0.65) {
     const points = 5;
-    const verts = [];
-    for (let i = 0; i < points * 2; i++) {
+    const verts = Array.from({ length: points * 2 }, (_, i) => {
         const r = i % 2 === 0 ? outerR : innerR;
         const angle = (Math.PI / points) * i - Math.PI / 2;
-        verts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-    }
+
+        return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+    });
 
     ctx.beginPath();
     const n = verts.length;
