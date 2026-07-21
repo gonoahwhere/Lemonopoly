@@ -1,3 +1,4 @@
+
 import { EVENT_DETAILS } from '../data/eventKeys.js';
 
 const MIN_EVENT_DURATION_MS = 10 * 60 * 1000;
@@ -5,6 +6,18 @@ const MAX_EVENT_DURATION_MS = 20 * 60 * 1000;
 
 function randomDurationMs() {
     return Math.floor(Math.random() * (MAX_EVENT_DURATION_MS - MIN_EVENT_DURATION_MS + 1)) + MIN_EVENT_DURATION_MS;
+}
+
+
+function pickWeightedOption(options) {
+    const total = options.reduce((sum, o) => sum + (o.weight ?? 1), 0);
+    let roll = Math.random() * total;
+
+    for (const option of options) {
+        roll -= option.weight ?? 1;
+        if (roll <= 0) return option;
+    }
+    return options[options.length - 1];
 }
 
 function rollEvent(excludeType = null) {
@@ -16,7 +29,7 @@ function rollEvent(excludeType = null) {
     const source = pool.length > 0 ? pool : EVENT_DETAILS;
 
     const event = source[Math.floor(Math.random() * source.length)];
-    const option = event.options[Math.floor(Math.random() * event.options.length)];
+    const option = pickWeightedOption(event.options);
     return {
         key: event.id,
         type: event.type,
