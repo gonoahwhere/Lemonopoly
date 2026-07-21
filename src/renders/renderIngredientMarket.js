@@ -82,8 +82,7 @@ function getTypeFill(ctx, type, x0, y0, x1, y1) {
 }
 
 function getTypeBorder(type) {
-    const def = TYPE_COLOURS[type] || TYPE_COLOURS.Base;
-    return def.border;
+    return (TYPE_COLOURS[type] || TYPE_COLOURS.Base).border;
 }
 
 export async function renderIngredientMarket(player, page = 1) {
