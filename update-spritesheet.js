@@ -115,6 +115,6 @@ for (const rect of packer.bins[0].rects) {
 }
 
 await Promise.all([
-  writeFile('./images/sprites/spritesheet.png', await canvas.encode('png'), () => {}),
+  canvas.encode('png').then(encoded => writeFile('./images/sprites/spritesheet.png', encoded, () => {})),
   writeFile('./images/sprites/spritesheet.json', JSON.stringify(output, null, 2), () => {})
 ]);
