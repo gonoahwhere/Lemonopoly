@@ -1,4 +1,4 @@
-import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
+import { GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
@@ -19,15 +19,6 @@ export const COLOURS = {
     red: '#F0664E',
     yellow: '#FFC940',
 };
-
-export function renderBackground(player, page = 1, width = 900, height = 1000) {
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext('2d');
-
-    drawBackground(ctx, width, height);
-
-    return canvas.toBuffer('image/png');
-}
 
 export function drawBackground(ctx, width, height) {
     const bg = ctx.createLinearGradient(0, 0, 0, height);

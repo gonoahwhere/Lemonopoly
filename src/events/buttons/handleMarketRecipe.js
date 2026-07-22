@@ -2,7 +2,6 @@ import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Messag
 import config from '../../../config.js';
 import PlayerProfile from '../../models/player.js';
 import { renderRecipeMarket, getMarketRecipes } from '../../renders/renderRecipeMarket.js';
-import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const marketViewRecipe = new Map();

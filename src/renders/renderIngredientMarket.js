@@ -65,7 +65,7 @@ function buildTypePages(allIngredients, perPage) {
     return pages;
 }
 
-export function getIngredientMarketPageCount(player) {
+export function getIngredientMarketPageCount() {
     const allIngredients = Object.entries(INGREDIENTS).map(([id, data]) => ({ id, ...data }));
     return buildTypePages(allIngredients, INGREDIENTS_PER_PAGE).length;
 }

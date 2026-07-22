@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 import { renderIngredientBook, getIngredientBookPageCount } from '../../renders/renderIngredientBook.js';
 import config from "../../../config.js";
-import { INGREDIENTS } from "../../data/ingredients.js";
 
 export default {
     devOnly: false,

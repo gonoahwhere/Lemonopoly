@@ -1,5 +1,4 @@
 import { SlashCommandBuilder, MessageFlags } from 'discord.js';
-import PlayerProfile from '../../models/player.js';
 import { renderStandDisplay } from '../../renders/renderStandDisplay.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 

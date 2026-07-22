@@ -1,6 +1,4 @@
-import { SlashCommandBuilder, AttachmentBuilder, MessageFlags, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
-import PlayerProfile from '../../models/player.js';
-import { errorEmbed } from '../../utils/embed.js';
+import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 import { renderRecipeBook } from '../../renders/renderRecipeBook.js';
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";

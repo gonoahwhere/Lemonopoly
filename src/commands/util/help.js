@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed } from '../../utils/embed.js';
 import SilentContainer from 'silent-container';
-import fs from 'fs';
 import config from "../../../config.js";
 
 const commandInfo = {

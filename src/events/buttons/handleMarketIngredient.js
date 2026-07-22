@@ -1,8 +1,7 @@
 import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from 'discord.js';
 import config from '../../../config.js';
 import PlayerProfile from '../../models/player.js';
-import { renderIngredientMarket, getMarketIngredients, getIngredientMarketPageCount } from '../../renders/renderIngredientMarket.js';
-import { RECIPES } from '../../data/recipes.js';
+import { renderIngredientMarket, getIngredientMarketPageCount } from '../../renders/renderIngredientMarket.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const marketViewIngredient = new Map();
@@ -23,9 +22,8 @@ export default async function handleMarketIngredient(interaction) {
         });
     }
 
-    let page = marketViewIngredient.get(interaction.user.id) ?? 1;
-    let ingredients = getMarketIngredients(profile);
-    const totalPages = getIngredientMarketPageCount(profile);
+    let page = marketViewIngredient.get(interaction.user.id) ?? 1
+    const totalPages = getIngredientMarketPageCount();
 
     if (interaction.customId === 'market_ingredient_previous') {
         page = Math.max(1, page - 1);

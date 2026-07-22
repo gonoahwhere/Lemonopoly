@@ -1,9 +1,7 @@
-import { SlashCommandBuilder, AttachmentBuilder, MessageFlags, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
-import PlayerProfile from '../../models/player.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
-import { INGREDIENTS } from "../../data/ingredients.js";
 
 function getIngredientEmoji(id) {
     const category = Object.keys(config.emojis.ingredients).find(k => id in config.emojis.ingredients[k]);

@@ -4,7 +4,6 @@ import { renderRecipeMarket, getMarketRecipes } from '../../renders/renderRecipe
 import { renderIngredientMarket, getMarketIngredients, getIngredientMarketPageCount } from '../../renders/renderIngredientMarket.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from "../../data/recipes.js";
-import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
 
 function toSchemaRarity(rarity) {
@@ -127,7 +126,7 @@ export default {
                     case 'ingredient_market': {
                         let page = 1;
 
-                        const totalPages = getIngredientMarketPageCount(profile);
+                        const totalPages = getIngredientMarketPageCount();
                         const buffer = renderIngredientMarket(profile);
                         const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
                         const components = [];

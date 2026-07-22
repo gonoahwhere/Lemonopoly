@@ -1,4 +1,4 @@
-import { Collection, InteractionType, PermissionFlagsBits, MessageFlags } from "discord.js";
+import { Collection, PermissionFlagsBits, MessageFlags } from "discord.js";
 import { errorEmbed } from "../utils/embed.js";
 import logger from "../utils/logger.js";
 import config from "../../config.js";

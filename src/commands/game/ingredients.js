@@ -1,8 +1,6 @@
 import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 import { renderOwnedIngredientBook, getOwnedIngredientBookPageCount } from '../../renders/renderOwnedIngredientBook.js';
-import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
-import PlayerProfile from '../../models/player.js';
 
 export default {
     devOnly: false,

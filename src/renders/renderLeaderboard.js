@@ -2,7 +2,7 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber } from '../helpers/renderHelper.js';
+import { formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 

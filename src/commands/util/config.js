@@ -1,8 +1,6 @@
-import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } from 'discord.js';
-import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embed.js';
-import { renderMasteryBook } from '../../renders/renderMasteryBook.js';
+import { SlashCommandBuilder, MessageFlags } from 'discord.js';
+import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { renderConfigDisplay } from '../../renders/renderConfigDisplay.js';
-import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
 
 export default {
