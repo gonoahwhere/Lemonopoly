@@ -13,7 +13,8 @@ export const OUTCOME_EFFECTS = {
     heatwave_nine: { category: 'sellPriceMultiplier', value: 1.20 },
     heatwave_ten: { category: 'guaranteedCustomer', customer: 'tourist' },
     heatwave_eleven: { category: 'customerChanceModifier', customer: 'worker', value: 0.15 },
-
+    heatwave_twelve: { category: 'customerChanceModifier', customer: 'rich', value: 0.15 },
+    
     // -- LOCAL FESTIVAL (beneficial) --
     local_festival_one: { category: 'sellCooldownMultiplier', value: 0.80 },
     local_festival_two: { category: 'tipChanceBonus', value: 0.15 },

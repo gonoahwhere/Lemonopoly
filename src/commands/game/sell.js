@@ -5,6 +5,17 @@ import { calculateStars } from '../../utils/recipeMastery.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
 import { getSellCooldownMs, getTipChance, getDoubleChance, TIP_RATE } from '../../data/upgrades.js';
 import { ensureEventsCurrent, getSellCooldownMultiplier, getSellPriceMultiplier, getTipChanceBonus, getBulkTipChanceBonus, getTipAmountMultiplier, getBonusSaleChance, getSaleFailChance } from '../../helpers/eventEffects.js';
+import { rollEventCustomer } from '../../helpers/eventCustomers.js';
+import { EVENT_CUSTOMERS } from '../../data/eventKeys.js';
+
+// Maps EVENT_CUSTOMERS ids -> profile.customers.byType field names (schema uses plurals for tourist/kid/worker)
+const EVENT_CUSTOMER_STAT_KEY = {
+    tourist: 'tourists',
+    kid: 'kids',
+    worker: 'workers',
+    rich: 'rich',
+    angry: 'angry',
+};
 
 export default {
     devOnly: false,
@@ -95,6 +106,12 @@ export default {
 
         const earnings = saleValue + tip;
 
+        // Event customer -> flavour/attribution only, does not affect earnings above.
+        // Gated by event type eligibility, recipe preference, and (for workers) the
+        // first 5 minutes window, all handled inside rollEventCustomer.
+        const eventCustomerId = rollEventCustomer(liveEvent, activeRecipe.key, RECIPES);
+        const eventCustomer = eventCustomerId ? EVENT_CUSTOMERS.find((c) => c.id === eventCustomerId) : null;
+
         stock.quantity -= cupsSold;
         if (stock.quantity <= 0) {
             profile.drinks = profile.drinks.filter((d) => d.key !== activeRecipe.key);
@@ -108,6 +125,11 @@ export default {
         profile.customers.totalServed += cupsSold;
         if (tip > 0) profile.customers.totalTipsEarned += tip;
 
+        if (eventCustomer) {
+            const statKey = EVENT_CUSTOMER_STAT_KEY[eventCustomer.id];
+            if (statKey) profile.customers.byType[statKey] += cupsSold;
+        }
+
         activeRecipe.timesServed += cupsSold;
         activeRecipe.progress.customersServed += cupsSold;
         activeRecipe.progress.revenueEarned += earnings;
@@ -115,8 +137,9 @@ export default {
 
         await profile.save();
 
-        const title = bonusCup ? 'Bonus sale!' : (doubled ? 'Double sale!' : 'Drink sold!');
-        let detail = `You sold **${cupsSold}× ${recipe.name}** for **$${formatNumber(earnings)}**`;
+        const title = eventCustomer ? `A ${eventCustomer.name} stopped by!` : (bonusCup ? 'Bonus sale!' : (doubled ? 'Double sale!' : 'Drink sold!'));
+        let detail = eventCustomer ? `A **${eventCustomer.name}** showed up — they ${eventCustomer.job}.\n` : '';
+        detail += `You sold **${cupsSold}× ${recipe.name}** for **$${formatNumber(earnings)}**`;
         if (tip > 0) detail += ` **+$${formatNumber(tip)} tip**`;
         detail += `.\nYou now have **$${formatNumber(profile.economy.cash)}**.`;
 
