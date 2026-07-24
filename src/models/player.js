@@ -100,6 +100,9 @@ const EventInstance = new Schema(
         optionId: { type: String, default: null },
         startsAt: { type: Date, default: null },
         endsAt: { type: Date, default: null },
+        lastDamageRollAt: { type: Date, default: null },
+        lastIngredientLossRollAt: { type: Date, default: null },
+        lastDrinkLossRollAt: { type: Date, default: null },
     },
     { _id: false }
 );

@@ -1,4 +1,3 @@
-
 import { EVENT_DETAILS } from '../data/eventKeys.js';
 
 const MIN_EVENT_DURATION_MS = 10 * 60 * 1000;
@@ -20,9 +19,7 @@ function pickWeightedOption(options) {
 }
 
 function rollEvent(excludeType = null) {
-    const pool = excludeType
-        ? EVENT_DETAILS.filter((e) => e.type !== excludeType)
-        : EVENT_DETAILS;
+    const pool = excludeType ? EVENT_DETAILS.filter((e) => e.type !== excludeType) : EVENT_DETAILS;
 
     // fallback in case every event shares the same type - avoid crashing on an empty pool
     const source = pool.length > 0 ? pool : EVENT_DETAILS;
@@ -48,12 +45,14 @@ export function rollInitialEvents(now = new Date()) {
         ...rollEvent(),
         startsAt: activeStarts,
         endsAt: activeEnds,
+        lastDamageRollAt: null, // fresh cursor: stand-damage rolls (if applicable) start counting from startsAt
     };
 
     const next = {
         ...rollEvent(active.type),
         startsAt: activeEnds,
         endsAt: nextEnds,
+        lastDamageRollAt: null,
     };
 
     return { active, next };
@@ -81,6 +80,7 @@ export function advanceEvents(events, now = new Date()) {
             optionId: next.optionId,
             startsAt: next.startsAt,
             endsAt: next.endsAt,
+            lastDamageRollAt: null,
         };
 
         // roll a fresh "next" queued right after the new active ends, guaranteed a different type
@@ -91,6 +91,7 @@ export function advanceEvents(events, now = new Date()) {
             ...rollEvent(active.type),
             startsAt,
             endsAt,
+            lastDamageRollAt: null,
         };
     }
 

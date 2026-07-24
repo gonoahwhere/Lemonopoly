@@ -8,6 +8,8 @@ import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
 import { getStorageCapacity } from '../../data/upgrades.js';
+import { getLiveEvent, getIngredientCostMultiplier } from '../../helpers/weatherEffects.js';
+import { getActiveIngredientDiscount } from '../../helpers/masteryHelper.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';
@@ -214,12 +216,19 @@ export default {
 
                 if (currentQuantity + amount > capacity) {
                     return interaction.editReply({
-                        components: [errorEmbed('Exceeds storage capacity!', `You currently have **${currentQuanity}/${capacity} ${ingredient.name}** so you can only purchase **${capacity - currentQuantity}** more. Upgrade storage with \`/upgrade buy\`.`)],
+                        components: [errorEmbed('Exceeds storage capacity!', `You currently have **${currentQuantity}/${capacity} ${ingredient.name}** so you can only purchase **${capacity - currentQuantity}** more. Upgrade storage with \`/upgrade buy\`.`)],
                         flags: MessageFlags.IsComponentsV2
                     });
                 }
 
-                const totalPrice = ingredient.marketPrice * amount;
+                // Mastery discount applies first, weather cost multiplier scales the discounted price
+                const discount = getActiveIngredientDiscount(profile);
+                const discountedUnitPrice = ingredient.marketPrice * (1 - discount);
+
+                const costMultiplier = getIngredientCostMultiplier(getLiveEvent(profile));
+                const finalUnitPrice = discountedUnitPrice * costMultiplier;
+
+                const totalPrice = Math.round(finalUnitPrice * amount);
 
                 if (profile.economy.cash < totalPrice) {
                     return interaction.editReply({
