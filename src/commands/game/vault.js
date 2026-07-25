@@ -1,9 +1,18 @@
 import { SlashCommandBuilder, MessageFlags, AttachmentBuilder } from 'discord.js';
 import PlayerProfile from '../../models/player.js';
-import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embed.js';
+import { errorEmbed, warningEmbed } from '../../utils/embed.js';
 import { renderPremiumInventory } from '../../renders/renderPremiumInventory.js';
 import { MONTHLY_CLAIMS } from '../../data/passBenefits.js';
+import { RECIPES } from '../../data/recipes.js';
 import { CLAIM_ID_TO_FIELD } from '../util/premium-claim.js';
+import { redeemIngredientCrate, redeemStorageExpansion, redeemGiftToken, redeemRecipeTicket } from '../../data/redeemHandlers.js';
+
+const REDEEM_HANDLERS = {
+    ingredient_crate: redeemIngredientCrate,
+    storage_expansion_token: redeemStorageExpansion,
+    gift_token_bundle: redeemGiftToken,
+    recipe_tickets: redeemRecipeTicket,
+};
 
 export default {
     devOnly: false,
@@ -21,32 +30,50 @@ export default {
                 .setDescription('The item to redeem')
                 .setRequired(true)
                 .setAutocomplete(true))
+            .addStringOption((option) => option
+                .setName('recipe')
+                .setDescription('Required for Recipe Tickets — the owned recipe to brew')
+                .setRequired(false)
+                .setAutocomplete(true))
+            .addUserOption((option) => option
+                .setName('target')
+                .setDescription('Required for Gift Token Bundle — who receives the ingredients')
+                .setRequired(false))
         ),
     async autocomplete(interaction) {
-        const focused = interaction.options.getFocused()?.toLowerCase() ?? '';
-        const profile = interaction.playerProfile ?? await PlayerProfile.findOne({ userId: interaction.user.id });
+        const focused = interaction.options.getFocused(true);
+        const profile = interaction.playerProfile ?? await PlayerProfile.findOne({ discordId: interaction.user.id });
+
+        if (focused.name === 'recipe') {
+            const query = focused.value?.toLowerCase() ?? '';
+            const unlocked = profile?.recipes?.unlocked ?? [];
+
+            const choices = unlocked
+                .map((u) => RECIPES.find((r) => r.id === u.key))
+                .filter(Boolean)
+                .filter((r) => r.name.toLowerCase().includes(query) || r.id.toLowerCase().includes(query))
+                .slice(0, 25)
+                .map((r) => ({ name: r.name, value: r.id }));
+
+            return interaction.respond(choices);
+        }
+
+        const query = focused.value?.toLowerCase() ?? '';
         const bonuses = profile?.premiumBonuses ?? {};
 
         const choices = MONTHLY_CLAIMS
             .filter((claim) => CLAIM_ID_TO_FIELD[claim.id])
-            .map((claim) => ({
-                claim,
-                quantity: bonuses[CLAIM_ID_TO_FIELD[claim.id]] ?? 0,
-            }))
+            .map((claim) => ({ claim, quantity: bonuses[CLAIM_ID_TO_FIELD[claim.id]] ?? 0 }))
             .filter((entry) => entry.quantity > 0)
-            .filter((entry) => entry.claim.name.toLowerCase().includes(focused) || entry.claim.id.toLowerCase().includes(focused))
+            .filter((entry) => entry.claim.name.toLowerCase().includes(query) || entry.claim.id.toLowerCase().includes(query))
             .slice(0, 25)
-            .map((entry) => ({
-                name: `${entry.claim.name} (x${entry.quantity})`,
-                value: entry.claim.id,
-            }));
+            .map((entry) => ({ name: `${entry.claim.name} (x${entry.quantity})`, value: entry.claim.id }));
 
         return interaction.respond(choices);
     },
     async execute(interaction) {
         await interaction.deferReply();
         const subcommand = interaction.options.getSubcommand();
-
         const profile = interaction.playerProfile;
 
         if (!profile.entitlements?.premium) {
@@ -63,51 +90,6 @@ export default {
         }
 
         if (subcommand === 'redeem') {
-            return interaction.editReply({
-                components: [warningEmbed('This command is unfinished!', 'Come back later when this feature is complete.')],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-    }
-}
-
-/*
-async function applyRedeemEffect(claimId, profile) {
-    switch (claimId) {
-        // TODO: wire to wherever your spendable currency actually lives
-        // e.g. profile.economy.tokens += SOME_VALUE;
-        case 'premium_tokens':
-            return 'Tokens have been added to your balance.';
-
-        // TODO: hook into utils/recipeMastery.js if tickets feed mastery progress
-        case 'recipe_tickets':
-            return 'A recipe ticket has been applied.';
-
-        // TODO: grant a randomized/fixed ingredient bundle to profile.inventory
-        case 'ingredient_crate':
-            return 'An ingredient crate has been opened into your inventory.';
-
-        // TODO: profile.stand.storageCapacity += SOME_VALUE;
-        case 'storage_expansion_token':
-            return 'Your stand storage capacity has increased.';
-
-        case 'free_stand_repair':
-        // TODO: profile.stand.durability = profile.stand.maxDurability;
-            return 'Your stand has been fully repaired.';
-
-        // TODO: grant a free staff hire, bypassing cost
-        case 'free_staff_contract':
-            return 'A free staff contract has been issued.';
-        
-            // TODO: profile.giftTokens += SOME_VALUE;
-        case 'gift_token_bundle':
-            return 'Gift tokens have been added to your account.';
-
-        default:
-            return 'Item redeemed.';
-    }
-}
-
             const claimId = interaction.options.getString('item', true);
             const claim = MONTHLY_CLAIMS.find((c) => c.id === claimId);
             const field = CLAIM_ID_TO_FIELD[claimId];
@@ -120,7 +102,6 @@ async function applyRedeemEffect(claimId, profile) {
             }
 
             const owned = profile?.premiumBonuses?.[field] ?? 0;
-
             if (owned <= 0) {
                 return interaction.editReply({
                     components: [errorEmbed('Nothing to redeem', `You don't have any **${claim.name}** banked right now.`)],
@@ -128,15 +109,15 @@ async function applyRedeemEffect(claimId, profile) {
                 });
             }
 
-            profile.premiumBonuses[field] = owned - 1;
-            const resultMessage = await applyRedeemEffect(claimId, profile);
-            await profile.save();
+            const handler = REDEEM_HANDLERS[claimId];
+            if (!handler) {
+                return interaction.editReply({
+                    components: [warningEmbed('This item can\'t be redeemed yet!', 'Come back later when this feature is complete.')],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
 
-            const buffer = await renderPremiumInventory(profile);
-            const attachment = new AttachmentBuilder(buffer, { name: 'the-vault.png' });
-
-            return interaction.editReply({
-                components: [successEmbed('Premium item redeemed!', `${resultMessage}`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
-*/
+            return handler(interaction, profile, field);
+        }
+    }
+}

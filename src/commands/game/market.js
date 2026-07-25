@@ -8,8 +8,8 @@ import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
 import { getStorageCapacity } from '../../data/upgrades.js';
-import { getLiveEvent, getIngredientCostMultiplier } from '../../helpers/weatherEffects.js';
-import { getActiveIngredientDiscount } from '../../helpers/masteryHelper.js';
+import { getLiveEvent, getIngredientCostMultiplier } from '../../helpers/eventEffects.js';
+import { getActiveIngredientDiscount } from '../../helpers/masteryDiscount.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';

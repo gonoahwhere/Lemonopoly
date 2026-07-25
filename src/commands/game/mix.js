@@ -5,7 +5,7 @@ import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from "../../data/ingredients.js";
 import { getStorageCapacity } from "../../data/upgrades.js";
-import { getLiveEvent, getIngredientConsumptionMultiplier } from '../../helpers/weatherEffects.js';
+import { getLiveEvent, getIngredientConsumptionMultiplier } from '../../helpers/eventEffects.js';
 
 function getIngredientEmoji(id) {
     const categories = config.emojis.ingredients;
