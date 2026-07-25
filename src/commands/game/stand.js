@@ -3,6 +3,8 @@ import PlayerProfile from '../../models/player.js';
 import { renderStandDisplay } from '../../renders/renderStandDisplay.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { advanceEvents } from '../../helpers/weatherEvents.js';
+import { formatNumber } from '../../helpers/renderHelper.js';
+import { calculateRepairCost, repairStandFully, FULL_HEALTH } from '../../helpers/standRepair.js';
 
 export default {
     devOnly: false,
@@ -21,6 +23,19 @@ export default {
                 .setRequired(true)
                 .setMinLength(4)
                 .setMaxLength(32)
+            )
+        )
+        .addSubcommand((sub) => sub
+            .setName('repair')
+            .setDescription('Repair your stand back to full health.')
+            .addStringOption((opt) => opt
+                .setName('method')
+                .setDescription('How to pay for the repair')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'Cash', value: 'cash' },
+                    { name: 'Repair Token', value: 'token' },
+                )
             )
         ),
     async execute(interaction) {
@@ -64,6 +79,58 @@ export default {
                 components: [successEmbed('Stand name updated!', `Your stand has been renamed from **${oldName}** to **${standName}**.`)],
                 flags: MessageFlags.IsComponentsV2
             });
+        }
+
+        if (subcommand === 'repair') {
+            const method = interaction.options.getString('method', true);
+
+            if (profile.stand.health >= FULL_HEALTH) {
+                return interaction.editReply({
+                    components: [errorEmbed('Already at full health!', 'Your stand doesn\'t need repairing right now.')],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
+
+            if (method === 'cash') {
+                const cost = calculateRepairCost(profile);
+
+                if (profile.economy.cash < cost) {
+                    return interaction.editReply({
+                        components: [errorEmbed('Not enough cash!', `Repairing your stand costs **$${formatNumber(cost)}**, but you only have **$${formatNumber(profile.economy.cash)}**.`)],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+
+                profile.economy.cash -= cost;
+                profile.economy.lifetimeSpent.cash += cost;
+                repairStandFully(profile);
+                await profile.save();
+
+                return interaction.editReply({
+                    components: [successEmbed('Stand repaired!', `You paid **$${formatNumber(cost)}** to restore your stand to **100%** health.`)],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
+
+            if (method === 'token') {
+                const tokens = profile.premiumBonuses?.standRepair ?? 0;
+
+                if (tokens <= 0) {
+                    return interaction.editReply({
+                        components: [errorEmbed('No repair tokens!', 'You don\'t have any **Stand Repair Tokens** banked — check `/the-vault view`.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                }
+
+                profile.premiumBonuses.standRepair -= 1;
+                repairStandFully(profile);
+                await profile.save();
+
+                return interaction.editReply({
+                    components: [successEmbed('Stand repaired!', 'You used a **Stand Repair Token** to restore your stand to **100%** health.')],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+            }
         }
     }
 }

@@ -3,24 +3,10 @@ import config from '../../../config.js';
 import PlayerProfile from '../../models/player.js';
 import { COMMAND_CATEGORIES, FEATURES } from '../../data/guideKeys.js';
 import { buildGuideManifest } from '../../helpers/guideManifest.js';
-import { renderGuideContents, renderGuideCommands, renderGuideFeature } from '../../renders/renderInstructionGuide.js';
+import { guideSessionMap, getModePages, renderGuidePage } from '../../helpers/guideSession.js';
 import { errorEmbed } from '../../utils/embed.js';
 
-const guidePageMap = new Map();
 const manifest = buildGuideManifest(COMMAND_CATEGORIES, FEATURES);
-
-async function renderGuidePage(profile, page) {
-    if (page === 1) {
-        return renderGuideContents(manifest.sections, profile, page, manifest.totalPages);
-    }
-
-    const entry = manifest.pages[page - 2];
-    if (entry.type === 'commands') {
-        return renderGuideCommands(entry.category, entry.commands, profile, page, manifest.totalPages, entry.part);
-    }
-
-    return renderGuideFeature(entry.feature, profile, page, manifest.totalPages, entry.part);
-}
 
 export default async function handleGuideView(interaction) {
     if (!interaction.customId.startsWith('guide_')) return;
@@ -38,8 +24,11 @@ export default async function handleGuideView(interaction) {
         });
     }
 
-    const totalPages = manifest.totalPages;
-    let page = guidePageMap.get(interaction.user.id) ?? 1;
+    const session = guideSessionMap.get(interaction.user.id) ?? { mode: 'full', page: 1 };
+    const { mode } = session;
+    const totalPages = getModePages(manifest, mode).length;
+
+    let page = session.page ?? 1;
 
     if (interaction.customId === 'guide_previous') {
         page = Math.max(1, page - 1);
@@ -49,9 +38,9 @@ export default async function handleGuideView(interaction) {
         page = Math.min(totalPages, page + 1);
     }
 
-    guidePageMap.set(interaction.user.id, page);
+    guideSessionMap.set(interaction.user.id, { mode, page });
 
-    const image = await renderGuidePage(profile, page);
+    const image = await renderGuidePage(manifest, mode, page, profile);
     const attachment = new AttachmentBuilder(image, { name: 'guide.png' });
 
     const previousPage = new ButtonBuilder()

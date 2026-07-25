@@ -5,14 +5,18 @@ import { renderPremiumInventory } from '../../renders/renderPremiumInventory.js'
 import { MONTHLY_CLAIMS } from '../../data/passBenefits.js';
 import { RECIPES } from '../../data/recipes.js';
 import { CLAIM_ID_TO_FIELD } from '../util/premium-claim.js';
-import { redeemIngredientCrate, redeemStorageExpansion, redeemGiftToken, redeemRecipeTicket } from '../../data/redeemHandlers.js';
+import { redeemIngredientCrate, redeemStorageExpansion, redeemGiftToken, redeemRecipeTicket, redeemFreeStaffContract, redeemStandRepair } from '../../data/redeemHandlers.js';
 
 const REDEEM_HANDLERS = {
     ingredient_crate: redeemIngredientCrate,
     storage_expansion_token: redeemStorageExpansion,
     gift_token_bundle: redeemGiftToken,
     recipe_tickets: redeemRecipeTicket,
+    free_staff_contract: redeemFreeStaffContract,
+    free_stand_repair: redeemStandRepair,
 };
+
+const NON_REDEEMABLE_CLAIMS = new Set(['premium_tokens']);
 
 export default {
     devOnly: false,
@@ -63,6 +67,7 @@ export default {
 
         const choices = MONTHLY_CLAIMS
             .filter((claim) => CLAIM_ID_TO_FIELD[claim.id])
+            .filter((claim) => !NON_REDEEMABLE_CLAIMS.has(claim.id))
             .map((claim) => ({ claim, quantity: bonuses[CLAIM_ID_TO_FIELD[claim.id]] ?? 0 }))
             .filter((entry) => entry.quantity > 0)
             .filter((entry) => entry.claim.name.toLowerCase().includes(query) || entry.claim.id.toLowerCase().includes(query))
@@ -94,7 +99,7 @@ export default {
             const claim = MONTHLY_CLAIMS.find((c) => c.id === claimId);
             const field = CLAIM_ID_TO_FIELD[claimId];
 
-            if (!claim || !field) {
+            if (!claim || !field || NON_REDEEMABLE_CLAIMS.has(claimId)) {
                 return interaction.editReply({
                     components: [errorEmbed('Unknown item', 'That item doesn\'t exist — pick one from the autocomplete list.')],
                     flags: MessageFlags.IsComponentsV2,

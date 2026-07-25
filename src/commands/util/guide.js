@@ -2,7 +2,7 @@ import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, Act
 import PlayerProfile from '../../models/player.js';
 import { COMMAND_CATEGORIES, FEATURES } from '../../data/guideKeys.js';
 import { buildGuideManifest } from '../../helpers/guideManifest.js';
-import { renderGuideContents } from '../../renders/renderInstructionGuide.js';
+import { guideSessionMap, getModePages, renderGuidePage } from '../../helpers/guideSession.js';
 import { errorEmbed } from '../../utils/embed.js';
 import logger from '../../utils/logger.js';
 import config from '../../../config.js';
@@ -15,7 +15,21 @@ export default {
     category: 'Util',
     data: new SlashCommandBuilder()
         .setName('getting-started')
-        .setDescription('Open the stand manual — commands, features, and how everything works.'),
+        .setDescription('Open the stand manual — commands, features, and how everything works.')
+        .addIntegerOption(option =>
+            option.setName('page')
+                .setDescription(`Jump to a specific page (1-${manifest.totalPages})`)
+                .setMinValue(1)
+                .setMaxValue(manifest.totalPages)
+                .setRequired(false))
+        .addStringOption(option =>
+            option.setName('section')
+                .setDescription('View only one part of the manual')
+                .setRequired(false)
+                .addChoices(
+                    { name: 'Commands', value: 'commands' },
+                    { name: 'Features', value: 'features' },
+                )),
     async execute(interaction) {
         await interaction.deferReply();
 
@@ -30,12 +44,24 @@ export default {
             });
         }
 
-        const page = 1;
-        const image = await renderGuideContents(manifest.sections, profile, page, manifest.totalPages);
+        const section = interaction.options.getString('section');
+        const requestedPage = interaction.options.getInteger('page');
+        const mode = section === 'commands' ? 'commands' : section === 'features' ? 'features' : 'full';
+
+        const totalPages = getModePages(manifest, mode).length;
+
+        // Clamp in case a page number was requested against the full-guide range
+        // but the section chosen has fewer pages than that.
+        let page = requestedPage ?? 1;
+        page = Math.min(Math.max(page, 1), totalPages);
+
+        guideSessionMap.set(interaction.user.id, { mode, page });
+
+        const image = await renderGuidePage(manifest, mode, page, profile);
         const attachment = new AttachmentBuilder(image, { name: 'guide.png' });
 
         const components = [];
-        if (manifest.totalPages > 1) {
+        if (totalPages > 1) {
             const previousPage = new ButtonBuilder()
                 .setCustomId('guide_previous')
                 .setEmoji(config.emojis.misc.left_arrow)
@@ -44,7 +70,7 @@ export default {
 
             const guidePage = new ButtonBuilder()
                 .setCustomId('guide_view')
-                .setLabel(`${page} / ${manifest.totalPages}`)
+                .setLabel(`${page} / ${totalPages}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(true);
 
@@ -52,7 +78,7 @@ export default {
                 .setCustomId('guide_next')
                 .setEmoji(config.emojis.misc.right_arrow)
                 .setStyle(ButtonStyle.Secondary)
-                .setDisabled(page === manifest.totalPages);
+                .setDisabled(page === totalPages);
 
             components.push(new ActionRowBuilder().addComponents(previousPage, guidePage, nextPage));
         }

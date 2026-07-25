@@ -1,8 +1,9 @@
 import { MessageFlags } from 'discord.js';
 import PlayerProfile from '../models/player.js';
-import { errorEmbed, successEmbed } from '../utils/embed.js';
+import { errorEmbed, warningEmbed, successEmbed } from '../utils/embed.js';
 import { rollRandomIngredients, applyIngredientGains, applyStorageExpansion, applyRecipeTicket } from './premiumRedeem.js';
 import { getIngredientEmoji, getRecipeEmoji } from '../helpers/emojiLookup.js';
+import { repairStandFully, FULL_HEALTH } from '../helpers/standRepair.js';
 
 const CRATE_INGREDIENT_COUNT = 4;
 const GIFT_INGREDIENT_COUNT = 3;
@@ -115,6 +116,31 @@ export async function redeemRecipeTicket(interaction, profile, field) {
 
     return interaction.editReply({
         components: [successEmbed('Recipe ticket used!', message)],
+        flags: MessageFlags.IsComponentsV2,
+    });
+}
+
+export async function redeemFreeStaffContract(interaction, profile, field) {
+    return interaction.editReply({
+        components: [successEmbed('Coming soon!', 'Free Staff Contracts aren\'nt redeemable yet - coming soon in an update.')],
+        flags: MessageFlags.IsComponentsV2,
+    })
+}
+
+export async function redeemStandRepair(interaction, profile, field) {
+    if (profile.stand.health >= FULL_HEALTH) {
+        return interaction.editReply({
+            components: [warningEmbed('Already at full health!', 'Your stand doesn\'t need repairing right now — hang onto this token for later.')],
+            flags: MessageFlags.IsComponentsV2,
+        });
+    }
+
+    repairStandFully(profile);
+    profile.premiumBonuses[field] -= 1;
+    await profile.save();
+
+    return interaction.editReply({
+        components: [successEmbed('Stand repaired!', 'Your stand has been restored to **100%** health.')],
         flags: MessageFlags.IsComponentsV2,
     });
 }

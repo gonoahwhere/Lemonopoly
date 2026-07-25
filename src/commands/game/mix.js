@@ -6,6 +6,7 @@ import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from "../../data/ingredients.js";
 import { getStorageCapacity } from "../../data/upgrades.js";
 import { getLiveEvent, getIngredientConsumptionMultiplier } from '../../helpers/eventEffects.js';
+import { isStandTooDamagedToMix, MIX_BLOCK_HEALTH_THRESHOLD } from '../../helpers/standRepair.js';
 
 function getIngredientEmoji(id) {
     const categories = config.emojis.ingredients;
@@ -41,6 +42,13 @@ export default {
         if (!player) {
             return interaction.reply({
                 components: [errorEmbed('You don\'t have a stand open yet!', 'You need to open your stand first - run `/start` to get going.')],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        if (isStandTooDamagedToMix(player)) {
+            return interaction.reply({
+                components: [errorEmbed('Stand too damaged!', `Your stand is down to **${player.stand.health}%** health — that's too damaged to mix anything. Repair it with \`/stand repair\` first.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }

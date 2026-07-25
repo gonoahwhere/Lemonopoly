@@ -56,8 +56,13 @@ export default {
             });
         }
 
-        // Cooldown -> base cooldown adjusted by the event's sellCooldownMultiplier (1 if no active event/event expired)
-        const baseCooldownMs = getSellCooldownMs(profile);
+        const PREMIUM_COOLDOWN_INCREASE_MS = 15_000;
+        const NON_PREMIUM_COOLDOWN_INCREASE_MS = 20_000;
+
+        // Cooldown -> base cooldown, plus a flat tiered penalty, adjusted by the
+        // event's sellCooldownMultiplier (1 if no active event/event expired)
+        const cooldownPenaltyMs = profile.entitlements?.premium ? PREMIUM_COOLDOWN_INCREASE_MS : NON_PREMIUM_COOLDOWN_INCREASE_MS;
+        const baseCooldownMs = getSellCooldownMs(profile) + cooldownPenaltyMs;
         const cooldownMs = baseCooldownMs * getSellCooldownMultiplier(liveEvent);
         const lastSold = profile.stand.lastSoldAt ? profile.stand.lastSoldAt.getTime() : 0;
         const remainingMs = lastSold + cooldownMs - Date.now();
