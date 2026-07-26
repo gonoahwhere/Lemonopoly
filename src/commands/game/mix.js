@@ -74,6 +74,15 @@ export default {
             });
         }
 
+        if (recipe.unlock?.type === 'premium' && recipe.unlock?.requiresPass && !player.entitlements?.premium) {
+            return interaction.reply({
+                components: [errorEmbed('Premium required!', `**${recipe.name}** is a premium recipe. Your premium pass has expired, so you can't mix this one until it's renewed. Set a different active recipe with \`/my-recipes\` in the meantime.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
+
         const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
         const quantityOf = (id) => ingredientStock.get(id)?.quantity || 0;
 

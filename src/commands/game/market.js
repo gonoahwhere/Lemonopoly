@@ -34,6 +34,12 @@ export default {
                 )
                 .setRequired(true)
             )
+            .addIntegerOption((opt) => opt
+                .setName('page')
+                .setDescription('Jump to a specific page')
+                .setMinValue(1)
+                .setRequired(false)
+            )
         )
         .addSubcommandGroup((group) => group
             .setName('purchase')
@@ -94,19 +100,20 @@ export default {
 
         if (subcommand === 'view') {
             const choice = interaction.options.getString('type');
+            const requestedPage = interaction.options.getInteger('page');
 
             if (choice === 'recipe_market') {
-                let page = 1;
-                
                 const recipes = getMarketRecipes(profile); 
                 const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
-                const buffer = await renderRecipeMarket(profile);
+                const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+
+                const buffer = await renderRecipeMarket(profile, page);
                 const attachment = new AttachmentBuilder(buffer, { name: 'recipe-market.png' });
                 const components = [];
 
                 if (totalPages > 1) {
                     const previousPage = new ButtonBuilder()
-                        .setCustomId(`market_recipe_previous`)
+                        .setCustomId(`market_recipe_previous_${page}`)
                         .setEmoji(config.emojis.misc.left_arrow)
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === 1);
@@ -118,7 +125,7 @@ export default {
                         .setDisabled(true);
 
                     const nextPage = new ButtonBuilder()
-                        .setCustomId(`market_recipe_next`)
+                        .setCustomId(`market_recipe_next_${page}`)
                         .setEmoji(config.emojis.misc.right_arrow)
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === totalPages);
@@ -129,15 +136,16 @@ export default {
             }
 
             if (choice === 'ingredient_market') {
-                let page = 1;
                 const totalPages = getIngredientMarketPageCount(profile);
-                const buffer = await renderIngredientMarket(profile);
+                const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+
+                const buffer = await renderIngredientMarket(profile, page);
                 const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
                 const components = [];
 
                 if (totalPages > 1) {
                     const previousPage = new ButtonBuilder()
-                        .setCustomId(`market_ingredient_previous`)
+                        .setCustomId(`market_ingredient_previous_${page}`)
                         .setEmoji(config.emojis.misc.left_arrow)
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === 1);
@@ -149,7 +157,7 @@ export default {
                         .setDisabled(true);
 
                     const nextPage = new ButtonBuilder()
-                        .setCustomId(`market_ingredient_next`)
+                        .setCustomId(`market_ingredient_next_${page}`)
                         .setEmoji(config.emojis.misc.right_arrow)
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === totalPages);
@@ -163,11 +171,13 @@ export default {
         if (group === 'purchase') {
             if (subcommand === 'recipe') {
                 const id = interaction.options.getString('recipe', true);
-                const recipe = RECIPES.find((r) => r.id === id);
+
+                const marketRecipes = getMarketRecipes(profile);
+                const recipe = marketRecipes.find((r) => r.id === id);
 
                 if (!recipe) {
                     return interaction.editReply({
-                        components: [errorEmbed('Invalid recipe!', `That recipe doesn't exist.`)],
+                        components: [errorEmbed('Invalid recipe!', `That recipe isn't currently available on the market.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
@@ -221,7 +231,6 @@ export default {
                     });
                 }
 
-                // Mastery discount applies first, weather cost multiplier scales the discounted price
                 const discount = getActiveIngredientDiscount(profile);
                 const discountedUnitPrice = ingredient.marketPrice * (1 - discount);
 

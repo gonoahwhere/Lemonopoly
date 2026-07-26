@@ -4,8 +4,6 @@ import PlayerProfile from '../../models/player.js';
 import { renderOwnedIngredientBook, getOwnedIngredientBookPageCount } from '../../renders/renderOwnedIngredientBook.js';
 import { errorEmbed } from '../../utils/embed.js';
 
-const ownedIngredientMap = new Map();
-
 export default async function handleOwnedIngredientBook(interaction) {
     if (!interaction.customId.startsWith('ingredient_stock_')) return;
 
@@ -22,23 +20,26 @@ export default async function handleOwnedIngredientBook(interaction) {
         });
     }
 
-    let page = ownedIngredientMap.get(interaction.user.id) ?? 1;
     const totalPages = getOwnedIngredientBookPageCount(profile);
 
-    if (interaction.customId === 'ingredient_stock_previous') {
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    page = Math.min(Math.max(page, 1), totalPages);
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'ingredient_stock_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    ownedIngredientMap.set(interaction.user.id, page);
     const image = await renderOwnedIngredientBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-ingredients.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`ingredient_stock_previous`)
+        .setCustomId(`ingredient_stock_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -50,7 +51,7 @@ export default async function handleOwnedIngredientBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`ingredient_stock_next`)
+        .setCustomId(`ingredient_stock_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)

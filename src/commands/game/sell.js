@@ -48,6 +48,15 @@ export default {
             });
         }
 
+        if (recipe.unlock?.type === 'premium' && recipe.unlock?.requiresPass && !profile.entitlements?.premium) {
+            return interaction.reply({
+                components: [errorEmbed('Premium required!', `**${recipe.name}** is a premium recipe. Your premium pass has expired, so you can't sell this one until it's renewed. Set a different active recipe with \`/my-recipes\` in the meantime.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        const stock = profile.drinks.find((d) => d.key === activeRecipe.key);
+
         const stock = profile.drinks.find((d) => d.key === activeRecipe.key);
         if (!stock || stock.quantity <= 0) {
             return interaction.reply({

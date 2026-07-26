@@ -4,8 +4,6 @@ import PlayerProfile from '../../models/player.js';
 import { renderIngredientBook, getIngredientBookPageCount } from '../../renders/renderIngredientBook.js';
 import { errorEmbed } from '../../utils/embed.js';
 
-const ingredientMap = new Map();
-
 export default async function handleIngredientBook(interaction) {
     if (!interaction.customId.startsWith('ingredient_book_')) return;
 
@@ -21,24 +19,26 @@ export default async function handleIngredientBook(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
-    let page = ingredientMap.get(interaction.user.id) ?? 1;
+
     const totalPages = getIngredientBookPageCount();
 
-    if (interaction.customId === 'ingredient_book_previous') {
+    // customId is now e.g. "ingredient_book_previous_3" or "ingredient_book_next_3"
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'ingredient_book_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    ingredientMap.set(interaction.user.id, page);
-    const image = await renderIngredientBook(profile, page);
+    const image = await renderIngredientBook(page);
     const attachment = new AttachmentBuilder(image, { name: 'ingredients.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`ingredient_book_previous`)
+        .setCustomId(`ingredient_book_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -50,7 +50,7 @@ export default async function handleIngredientBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`ingredient_book_next`)
+        .setCustomId(`ingredient_book_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
