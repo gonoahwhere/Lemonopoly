@@ -6,7 +6,6 @@ import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const OWNED_DRINKS_PER_PAGE = 12;
-const drinkStockPageMap = new Map();
 
 export default async function handleDrinkStock(interaction) {
     if (!interaction.customId.startsWith('drink_stock_')) return;
@@ -23,27 +22,29 @@ export default async function handleDrinkStock(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
+
     const stockByKey = new Map((profile.drinks || []).map(stock => [stock.key, stock]));
     const ownedCount = RECIPES.filter(recipe => (stockByKey.get(recipe.id)?.quantity || 0) > 0).length;
-
-    let page = drinkStockPageMap.get(interaction.user.id) ?? 1;
     const totalPages = Math.max(1, Math.ceil(ownedCount / OWNED_DRINKS_PER_PAGE));
 
-    if (interaction.customId === 'drink_stock_previous') {
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    page = Math.min(Math.max(page, 1), totalPages);
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'drink_stock_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    drinkStockPageMap.set(interaction.user.id, page);
     const image = await renderDrinkStock(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-drinks.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`drink_stock_previous`)
+        .setCustomId(`drink_stock_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1);
@@ -55,7 +56,7 @@ export default async function handleDrinkStock(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`drink_stock_next`)
+        .setCustomId(`drink_stock_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages);

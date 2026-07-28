@@ -6,7 +6,6 @@ import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const RECIPES_PER_PAGE = 3;
-const ownRecipeMap = new Map();
 
 export default async function handleRecipeBook(interaction) {
     if (!interaction.customId.startsWith('recipe_view_')) return;
@@ -24,24 +23,27 @@ export default async function handleRecipeBook(interaction) {
         });
     }
 
-    let page = ownRecipeMap.get(interaction.user.id) ?? 1;
     const unlockedCount = profile.recipes.unlocked.length;
     const totalPages = Math.max(1, Math.ceil(unlockedCount / RECIPES_PER_PAGE));
 
-    if (interaction.customId === 'recipe_view_previous') {
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    page = Math.min(Math.max(page, 1), totalPages);
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'recipe_view_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    ownRecipeMap.set(interaction.user.id, page);
     const image = await renderMasteryBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-recipes.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`recipe_view_previous`)
+        .setCustomId(`recipe_view_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -53,7 +55,7 @@ export default async function handleRecipeBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`recipe_view_next`)
+        .setCustomId(`recipe_view_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)

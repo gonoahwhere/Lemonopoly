@@ -4,6 +4,7 @@ import { errorEmbed } from '../../utils/embed.js';
 import { renderStandDisplay } from '../../renders/renderStandDisplay.js';
 import { rollInitialEvents } from '../../helpers/weatherEvents.js';
 import logger from '../../utils/logger.js';
+import config from '../../../config.js';
 
 export default {
     devOnly: false,
@@ -25,11 +26,13 @@ export default {
         let profile;
         try {
             const { active, next } = rollInitialEvents();
+            const grantsPremium = interaction.guildId === config.premiumGrantGuildId;
             
             profile = await PlayerProfile.create({
                 discordId: interaction.user.id,
                 username: interaction.user.tag,
                 events: { active, next, history: [] },
+                entitlements: { premium: grantsPremium },
             });
         } catch (err) {
             if (err.code === 11000) {

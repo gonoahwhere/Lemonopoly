@@ -33,6 +33,11 @@ const RARITY_COLOURS = {
     },
 };
 
+const CATEGORY_COLOURS = {
+    premium: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
+    seasonal: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
+};
+
 const RECIPE_COLOURS = {
     ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
 };
@@ -267,23 +272,35 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
 
     let badgeFill;
     let badgeText;
+    let badgeBorder;
 
     if (isOwned) {
         badgeFill = COLOURS.greenSoft;
         badgeText = COLOURS.green;
+        badgeBorder = stateBorder;
     } else if (meetsRequirement) {
         badgeFill = 'rgba(214,214,214,0.18)';
         const grad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY);
         grad.addColorStop(0, RECIPE_COLOURS.ancient.gradient[0]);
         grad.addColorStop(1, RECIPE_COLOURS.ancient.gradient[1]);
         badgeText = grad;
+        badgeBorder = stateBorder;
+    } else if (recipe.unlock?.type === 'premium') {
+        badgeFill = CATEGORY_COLOURS.premium.bg;
+        badgeText = CATEGORY_COLOURS.premium.text;
+        badgeBorder = CATEGORY_COLOURS.premium.border;
+    } else if (recipe.unlock?.type === 'seasonal') {
+        badgeFill = CATEGORY_COLOURS.seasonal.bg;
+        badgeText = CATEGORY_COLOURS.seasonal.text;
+        badgeBorder = CATEGORY_COLOURS.seasonal.border;
     } else {
         badgeFill = 'rgba(240,102,78,0.12)';
         badgeText = COLOURS.red;
+        badgeBorder = stateBorder;
     }
 
     roundedRect(ctx, badgeX, badgeY, badgeW, badgeH, badgeH / 2, badgeFill);
-    ctx.strokeStyle = stateBorder;
+    ctx.strokeStyle = badgeBorder;
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, badgeX, badgeY, badgeW, badgeH, badgeH / 2);
     ctx.stroke();

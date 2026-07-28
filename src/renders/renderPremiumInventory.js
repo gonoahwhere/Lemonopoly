@@ -50,10 +50,6 @@ function toDisplayName(idOrName) {
     return idOrName.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function formatQuantity(n) {
-    return n.toLocaleString('en-US');
-}
-
 function truncate(ctx, text, maxWidth) {
     if (ctx.measureText(text).width <= maxWidth) return text;
     let trimmed = text;
@@ -76,7 +72,7 @@ function drawPill(ctx, x, y, label, colour, bg, borderColour, fontSize = 16, pad
     return w;
 }
 
-function drawHeader(ctx, width, totalOwned, profile) {
+function drawHeader(ctx, width, totalRedeemable, profile) {
     ctx.font = '42px FredokaOne';
 
     const title = 'THE VAULT';
@@ -102,11 +98,11 @@ function drawHeader(ctx, width, totalOwned, profile) {
     ctx.font = '20px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.fillText('Your unredeemed premium rewards', 54, 90);
-
-    const label = `${formatNumber(totalOwned)} ITEM${totalOwned === 1 ? '' : 'S'} BANKED`;
-    const fill = totalOwned > 0 ? COLOURS.premiumSoft : 'rgba(168,147,79,0.10)';
-    const colour = totalOwned > 0 ? COLOURS.premium : (COLOURS.muted ?? COLOURS.subtitle);
-    const border = totalOwned > 0 ? COLOURS.premium + '77' : colour + '55';
+    
+    const label = `${formatNumber(totalRedeemable)} ITEM${totalRedeemable === 1 ? '' : 'S'} BANKED`;
+    const fill = totalRedeemable > 0 ? COLOURS.premiumSoft : 'rgba(168,147,79,0.10)';
+    const colour = totalRedeemable > 0 ? COLOURS.premium : (COLOURS.muted ?? COLOURS.subtitle);
+    const border = totalRedeemable > 0 ? COLOURS.premium + '77' : colour + '55';
 
     ctx.font = '16px FredokaOne';
     const pillW = ctx.measureText(label).width + 28;
@@ -160,7 +156,7 @@ function drawLedgerRow(ctx, x, y, w, item, isLast) {
     }
 
     const textX = iconCx + iconR + 18;
-    const qtyText = formatQuantity(quantity);
+    const qtyText = formatNumber(quantity);
 
     ctx.font = 'bold 22px FredokaOne';
     const qtyWidth = ctx.measureText(qtyText).width;
@@ -209,6 +205,9 @@ export async function renderPremiumInventory(profile) {
         }));
 
     const totalOwned = items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalRedeemable = items
+        .filter((item) => item.claim.id !== 'premium_tokens')
+        .reduce((sum, item) => sum + item.quantity, 0);
 
     const width = 700;
     const HEADER_H = 130;
@@ -226,7 +225,7 @@ export async function renderPremiumInventory(profile) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, totalOwned, profile);
+    drawHeader(ctx, width, totalRedeemable, profile);
 
     const cardY = HEADER_H;
     roundedRectWithShadow(ctx, CARD_X, cardY, CARD_W, cardH, 20, COLOURS.card, COLOURS.cardShadow);
@@ -242,7 +241,7 @@ export async function renderPremiumInventory(profile) {
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.textAlign = 'center';
-    ctx.fillText(totalOwned > 0 ? 'use /the-vault redeem to spend these on your stand' : 'claim your monthly Sacred Squeeze to fill this up', width / 2, height - FOOTER_H / 2 + 5);
+    ctx.fillText(totalRedeemable > 0 ? 'use /the-vault redeem to spend these on your stand' : 'claim your monthly Sacred Squeeze to fill this up', width / 2, height - FOOTER_H / 2 + 5);
     ctx.textAlign = 'left';
 
     return canvas.toBuffer('image/png');

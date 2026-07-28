@@ -98,7 +98,7 @@ export function getRecipeUnlock(recipe, player) {
         }
 
         case 'premium': {
-            const hasAccess = player.entitlements?.premiumPass === true;
+            const hasAccess = player.entitlements?.premium === true;
 
             return {
                 unlocked: hasAccess,

@@ -5,6 +5,8 @@ import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
 import { INGREDIENTS } from "../../data/ingredients.js";
 import { getStorageCapacity } from "../../data/upgrades.js";
+import { getLiveEvent, getIngredientConsumptionMultiplier } from '../../helpers/eventEffects.js';
+import { isStandTooDamagedToMix, MIX_BLOCK_HEALTH_THRESHOLD } from '../../helpers/standRepair.js';
 
 function getIngredientEmoji(id) {
     const categories = config.emojis.ingredients;
@@ -40,6 +42,14 @@ export default {
         if (!player) {
             return interaction.reply({
                 components: [errorEmbed('You don\'t have a stand open yet!', 'You need to open your stand first - run `/start` to get going.')],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        if (isStandTooDamagedToMix(player)) {
+            return interaction.reply({
+                components: [errorEmbed('Stand too damaged!', `Your stand is down to **${player.stand.health}%** health — that's too damaged to mix anything. Repair it with \`/stand repair\` first.`)],
+                flags: MessageFlags.IsComponentsV2,
             });
         }
 
@@ -56,7 +66,7 @@ export default {
                 flags: MessageFlags.IsComponentsV2,
             });
         }
-        
+
         if (!recipe || !recipe.ingredients?.length) {
             return interaction.reply({
                 components: [errorEmbed('Something went wrong.', 'Your active recipe couldn\'t be found. Please try again later.')],
@@ -64,9 +74,19 @@ export default {
             });
         }
 
+        if (recipe.unlock?.type === 'premium' && recipe.unlock?.requiresPass && !player.entitlements?.premium) {
+            return interaction.reply({
+                components: [errorEmbed('Premium required!', `**${recipe.name}** is a premium recipe. Your premium pass has expired, so you can't mix this one until it's renewed. Set a different active recipe with \`/my-recipes\` in the meantime.`)],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
         const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
         const quantityOf = (id) => ingredientStock.get(id)?.quantity || 0;
-        const maxCraftable = recipe.ingredients.reduce((max, req) => Math.min(max, Math.floor(quantityOf(req.id) / req.amount)), 25);
+
+        const consumptionMultiplier = getIngredientConsumptionMultiplier(getLiveEvent(player));
+        const perCraftAmount = (baseAmount) => baseAmount * consumptionMultiplier;
+        const maxCraftable = recipe.ingredients.reduce((max, req) => Math.min(max, Math.floor(quantityOf(req.id) / perCraftAmount(req.amount))), 25);
 
         const drinkCap = getStorageCapacity(player);
         const currentDrinks = player.drinks.find((d) => d.key === recipe.id)?.quantity ?? 0;
@@ -74,8 +94,8 @@ export default {
 
         if (maxCraftable < 1) {
             const shortList = recipe.ingredients
-                .filter((req) => quantityOf(req.id) < req.amount)
-                .map((req) => `- ${getIngredientEmoji(req.id)} **(${quantityOf(req.id)}/${req.amount})**`)
+                .filter((req) => quantityOf(req.id) < perCraftAmount(req.amount))
+                .map((req) => `- ${getIngredientEmoji(req.id)} **(${quantityOf(req.id)}/${Math.ceil(perCraftAmount(req.amount))})**`)
                 .join('\n');
 
             return interaction.reply({
@@ -109,7 +129,9 @@ export default {
         }
 
         for (const req of recipe.ingredients) {
-            ingredientStock.get(req.id).quantity -= req.amount * count;
+            const used = Math.round(perCraftAmount(req.amount) * count);
+            const entry = ingredientStock.get(req.id);
+            entry.quantity = Math.max(0, entry.quantity - used);
         }
 
         const drinkEntry = player.drinks.find((d) => d.key === recipe.id);
@@ -122,7 +144,7 @@ export default {
         await player.save();
 
         const usedList = recipe.ingredients
-            .map((req) => `- ${getIngredientEmoji(req.id)} **x${req.amount * count}**`)
+            .map((req) => `- ${getIngredientEmoji(req.id)} **x${Math.round(perCraftAmount(req.amount) * count)}**`)
             .join('\n');
         const newTotal = player.drinks.find((d) => d.key === recipe.id).quantity;
 

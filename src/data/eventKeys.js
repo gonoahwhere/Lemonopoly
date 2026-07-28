@@ -48,6 +48,10 @@ export const EVENT_DETAILS = [
                 task: 'increased chance of worker customers appearing',
                 id: 'heatwave_eleven',
             },
+            {
+                task: 'increased chance of rich customers appearing',
+                id: 'heatwave_twelve',
+            },
         ]
     },
     {
@@ -262,25 +266,31 @@ export const EVENT_CUSTOMERS = [
         name: 'Tourist',
         id: 'tourist',
         job: 'pays more money per drink',
+        priceMultiplier: 1.3,
+        
     },
     {
         name: 'Kid',
         id: 'kid',
         job: 'prefers the fruit flavours',
+        priceMultiplier: 1,
     },
     {
         name: 'Worker',
         id: 'worker',
-        job: 'visits during mornings',
+        job: 'visits during the first 5 minutes',
+        priceMultiplier: 1,
     },
     {
         name: 'Rich',
         id: 'rich',
-        job: 'leaves bigger tips',
+        job: 'chooses the more expensive drinks',
+        priceMultiplier: 1.7,
     },
     {
         name: 'Angry',
         id: 'angry',
-        job: 'chooses the cheaper drinks'
+        job: 'chooses the cheaper drinks',
+        priceMultiplier: 0.8
     }
 ]

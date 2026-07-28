@@ -6,7 +6,6 @@ import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const RECIPES_PER_PAGE = 3;
-const recipeMap = new Map();
 
 export default async function handleRecipeBook(interaction) {
     if (!interaction.customId.startsWith('recipe_book_')) return;
@@ -23,24 +22,25 @@ export default async function handleRecipeBook(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
-    let page = recipeMap.get(interaction.user.id) ?? 1;
+
     const totalPages = Math.max(1, Math.ceil(RECIPES.length / RECIPES_PER_PAGE));
 
-    if (interaction.customId === 'recipe_book_previous') {
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'recipe_book_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    recipeMap.set(interaction.user.id, page);
     const image = await renderRecipeBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipes.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`recipe_book_previous`)
+        .setCustomId(`recipe_book_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -52,7 +52,7 @@ export default async function handleRecipeBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`recipe_book_next`)
+        .setCustomId(`recipe_book_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)

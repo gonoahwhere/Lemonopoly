@@ -713,7 +713,7 @@ export const RECIPES = [
             { id: 'diamond_ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: null
+        marketPrice: 200000
     },
     {
         id: 'golden_lemonade',
@@ -733,7 +733,7 @@ export const RECIPES = [
             { id: 'ice', amount: 3 },
             { id: 'water', amount: 3 },
         ],
-        marketPrice: null
+        marketPrice: 300000
     },
     {
         id: 'diamond_fizz',
@@ -752,7 +752,7 @@ export const RECIPES = [
             { id: 'diamond_ice', amount: 4 },
             { id: 'sparkling_water', amount: 3 },
         ],
-        marketPrice: null
+        marketPrice: 350000
     },
     {
         id: 'galaxy_lemonade',
@@ -772,7 +772,7 @@ export const RECIPES = [
             { id: 'diamond_ice', amount: 4 },
             { id: 'water', amount: 2 },
         ],
-        marketPrice: null
+        marketPrice: 500000
     },
     {
         id: 'pumpkin_lemonade',

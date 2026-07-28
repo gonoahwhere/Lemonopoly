@@ -5,8 +5,6 @@ import { renderIngredientMarket, getMarketIngredients, getIngredientMarketPageCo
 import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
-const marketViewIngredient = new Map();
-
 export default async function handleMarketIngredient(interaction) {
     if (!interaction.customId.startsWith('market_ingredient_')) return;
 
@@ -22,25 +20,27 @@ export default async function handleMarketIngredient(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
-    let page = marketViewIngredient.get(interaction.user.id) ?? 1;
-    let ingredients = getMarketIngredients(profile); 
+
     const totalPages = getIngredientMarketPageCount(profile);
 
-    if (interaction.customId === 'market_ingredient_previous') {
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    page = Math.min(Math.max(page, 1), totalPages);
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'market_ingredient_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    marketViewIngredient.set(interaction.user.id, page);
     const image = await renderIngredientMarket(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'ingredient-market.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`market_ingredient_previous`)
+        .setCustomId(`market_ingredient_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -52,7 +52,7 @@ export default async function handleMarketIngredient(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`market_ingredient_next`)
+        .setCustomId(`market_ingredient_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)

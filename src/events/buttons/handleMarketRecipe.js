@@ -5,8 +5,6 @@ import { renderRecipeMarket, getMarketRecipes } from '../../renders/renderRecipe
 import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
-const marketViewRecipe = new Map();
-
 export default async function handleMarketRecipe(interaction) {
     if (!interaction.customId.startsWith('market_recipe_')) return;
 
@@ -22,25 +20,28 @@ export default async function handleMarketRecipe(interaction) {
             flags: MessageFlags.IsComponentsV2,
         });
     }
-    
-    let page = marketViewRecipe.get(interaction.user.id) ?? 1;
-    let recipes = getMarketRecipes(profile); 
-    let totalPages = Math.max(1, Math.ceil(recipes.length / 3));
 
-    if (interaction.customId === 'market_recipe_previous') {
+    const recipes = getMarketRecipes(profile); 
+    const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
+
+    const [, , action, currentPageStr] = interaction.customId.split('_');
+    let page = parseInt(currentPageStr, 10) || 1;
+
+    page = Math.min(Math.max(page, 1), totalPages);
+
+    if (action === 'previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (interaction.customId === 'market_recipe_next') {
+    if (action === 'next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    marketViewRecipe.set(interaction.user.id, page);
     const image = await renderRecipeMarket(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipe-market.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`market_recipe_previous`)
+        .setCustomId(`market_recipe_previous_${page}`)
         .setEmoji(config.emojis.misc.left_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
@@ -52,7 +53,7 @@ export default async function handleMarketRecipe(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`market_recipe_next`)
+        .setCustomId(`market_recipe_next_${page}`)
         .setEmoji(config.emojis.misc.right_arrow)
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)

@@ -5,7 +5,7 @@ import config from "../../config.js";
 import PlayerProfile from "../models/player.js";
 import BotStats from '../models/botData.js';
 
-const PROFILE_EXEMPT_COMMANDS = ['start', 'help', 'about'];
+const PROFILE_EXEMPT_COMMANDS = ['start', 'help', 'about', 'getting-started'];
 
 async function incrementCommandsUsedGlobally() {
     try {

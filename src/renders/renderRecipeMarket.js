@@ -229,7 +229,7 @@ function drawRecipeCard(ctx, recipe, x, y, w, h) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText(recipe.name, textX, y + 44);
 
-    // Rarity pill + sell price pill
+    // Rarity/category pill + sell price pill
     const rarity = RARITY_COLOURS[recipe.rarity] || RARITY_COLOURS.Common;
     ctx.font = '14px FredokaOne';
 

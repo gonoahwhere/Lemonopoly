@@ -72,6 +72,18 @@ export const WEATHER_ICON_KEYS = [
     'wind_storm'
 ];
 
+export const GUIDE_ICON_KEYS = [
+    'core',
+    'utility',
+    'mastery',
+    'global_events',
+    'weather_events',
+    'achievements',
+    'workers',
+    'quests',
+    'customers',
+];
+
 export const ALL_ICON_KEYS = [
     ...CONFIG_ICON_KEYS,
     ...CURRENCY_ICON_KEYS,
@@ -82,6 +94,7 @@ export const ALL_ICON_KEYS = [
     ...STAND_ICON_KEYS,
     ...UPGRADE_ICON_KEYS,
     ...WEATHER_ICON_KEYS,
+    ...GUIDE_ICON_KEYS,
 ];
 
 export const ICON_CATEGORIES = {
@@ -94,6 +107,7 @@ export const ICON_CATEGORIES = {
     stand: STAND_ICON_KEYS,
     upgrades: UPGRADE_ICON_KEYS,
     weather: WEATHER_ICON_KEYS,
+    guide: GUIDE_ICON_KEYS,
 };
 
 export const ICON_KEY_TO_CATEGORY = Object.fromEntries(Object.entries(ICON_CATEGORIES).flatMap(([category, keys]) => keys.map((key) => [key, category])));

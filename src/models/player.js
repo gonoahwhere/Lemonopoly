@@ -100,6 +100,9 @@ const EventInstance = new Schema(
         optionId: { type: String, default: null },
         startsAt: { type: Date, default: null },
         endsAt: { type: Date, default: null },
+        lastDamageRollAt: { type: Date, default: null },
+        lastIngredientLossRollAt: { type: Date, default: null },
+        lastDrinkLossRollAt: { type: Date, default: null },
     },
     { _id: false }
 );
@@ -318,6 +321,7 @@ const Player = new Schema(
             timezone: { type: String, default: 'UTC' },
             leaderboardOptIn: { type: Boolean, default: false },
             autoServe: { type: Boolean, default: false },
+            autoServeLapseNoticeShown: { type: Boolean, default: false },
         },
     },
     {

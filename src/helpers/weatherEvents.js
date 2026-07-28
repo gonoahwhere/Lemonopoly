@@ -7,16 +7,25 @@ function randomDurationMs() {
     return Math.floor(Math.random() * (MAX_EVENT_DURATION_MS - MIN_EVENT_DURATION_MS + 1)) + MIN_EVENT_DURATION_MS;
 }
 
+function pickWeightedOption(options) {
+    const total = options.reduce((sum, o) => sum + (o.weight ?? 1), 0);
+    let roll = Math.random() * total;
+
+    for (const option of options) {
+        roll -= option.weight ?? 1;
+        if (roll <= 0) return option;
+    }
+    return options[options.length - 1];
+}
+
 function rollEvent(excludeType = null) {
-    const pool = excludeType
-        ? EVENT_DETAILS.filter((e) => e.type !== excludeType)
-        : EVENT_DETAILS;
+    const pool = excludeType ? EVENT_DETAILS.filter((e) => e.type !== excludeType) : EVENT_DETAILS;
 
     // fallback in case every event shares the same type - avoid crashing on an empty pool
     const source = pool.length > 0 ? pool : EVENT_DETAILS;
 
     const event = source[Math.floor(Math.random() * source.length)];
-    const option = event.options[Math.floor(Math.random() * event.options.length)];
+    const option = pickWeightedOption(event.options);
     return {
         key: event.id,
         type: event.type,
@@ -36,12 +45,14 @@ export function rollInitialEvents(now = new Date()) {
         ...rollEvent(),
         startsAt: activeStarts,
         endsAt: activeEnds,
+        lastDamageRollAt: null, // fresh cursor: stand-damage rolls (if applicable) start counting from startsAt
     };
 
     const next = {
         ...rollEvent(active.type),
         startsAt: activeEnds,
         endsAt: nextEnds,
+        lastDamageRollAt: null,
     };
 
     return { active, next };
@@ -69,6 +80,7 @@ export function advanceEvents(events, now = new Date()) {
             optionId: next.optionId,
             startsAt: next.startsAt,
             endsAt: next.endsAt,
+            lastDamageRollAt: null,
         };
 
         // roll a fresh "next" queued right after the new active ends, guaranteed a different type
@@ -79,6 +91,7 @@ export function advanceEvents(events, now = new Date()) {
             ...rollEvent(active.type),
             startsAt,
             endsAt,
+            lastDamageRollAt: null,
         };
     }
 

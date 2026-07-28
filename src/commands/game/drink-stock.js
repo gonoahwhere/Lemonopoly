@@ -11,15 +11,22 @@ export default {
     category: 'Game',
     data: new SlashCommandBuilder()
         .setName('drink-stock')
-        .setDescription('View the lemonade you\'ve mixed.'),
+        .setDescription('View the lemonade you\'ve mixed.')
+        .addIntegerOption(option =>
+            option.setName('page')
+                .setDescription('Jump to a specific page')
+                .setMinValue(1)
+                .setRequired(false)),
     async execute(interaction) {
         const profile = interaction.playerProfile;
 
         const stockByKey = new Map((profile.drinks || []).map(stock => [stock.key, stock]));
         const ownedCount = RECIPES.filter(recipe => (stockByKey.get(recipe.id)?.quantity || 0) > 0).length;
 
-        const page = 1;
         const totalPages = Math.max(1, Math.ceil(ownedCount / OWNED_DRINKS_PER_PAGE));
+        const requestedPage = interaction.options.getInteger('page');
+        const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+
         const image = await renderDrinkStock(profile, page);
         const attachment = new AttachmentBuilder(image, { name: 'my-drinks.png' });
 
@@ -27,7 +34,7 @@ export default {
 
         if (totalPages > 1) {
             const previousPage = new ButtonBuilder()
-                .setCustomId(`drink_stock_previous`)
+                .setCustomId(`drink_stock_previous_${page}`)
                 .setEmoji(config.emojis.misc.left_arrow)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === 1);
@@ -39,7 +46,7 @@ export default {
                 .setDisabled(true);
 
             const nextPage = new ButtonBuilder()
-                .setCustomId(`drink_stock_next`)
+                .setCustomId(`drink_stock_next_${page}`)
                 .setEmoji(config.emojis.misc.right_arrow)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === totalPages);

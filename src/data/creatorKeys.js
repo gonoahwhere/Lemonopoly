@@ -4,7 +4,7 @@ export const CREATOR_DETAILS = [
         id: '372456601266683914',
         role: 'Developer',
         tagline: 'Currently off the rails... but the cube is solved.',
-        prefix: 'N04H',
+        prefix: null, // 'N04H'
         accent: ['#F46FFF', '#F95D95', '#FF4B2B'],
         accentIndex: 1
     },
@@ -18,7 +18,7 @@ export const CREATOR_DETAILS = [
         accentIndex: 0
     },
     {
-        name: 'megan01life',
+        name: 'lucas01life',
         id: '269904947578011649',
         role: 'Coordinator',
         tagline: 'Need a tagline to replace this text.',
