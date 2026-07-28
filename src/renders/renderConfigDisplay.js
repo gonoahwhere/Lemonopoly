@@ -490,7 +490,7 @@ export async function renderConfigDisplay(profile) {
 
     // Row: Leaderboard / Auto-Serve / Notifications toggles
     drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
-    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
+    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Sell', autoServeEnabled, !isPremium, COLOURS.premium);
     drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
     y += TOGGLE_ROW_H + GAP;
 

@@ -1,21 +1,8 @@
 import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed, warningEmbed, successEmbed } from '../../utils/embed.js';
-import { RECIPES } from '../../data/recipes.js';
-import { calculateStars } from '../../utils/recipeMastery.js';
 import { formatNumber } from '../../helpers/renderHelper.js';
-import { getSellCooldownMs, getTipChance, getDoubleChance, TIP_RATE } from '../../data/upgrades.js';
-import { ensureEventsCurrent, getSellCooldownMultiplier, getSellPriceMultiplier, getTipChanceBonus, getBulkTipChanceBonus, getTipAmountMultiplier, getBonusSaleChance, getSaleFailChance } from '../../helpers/eventEffects.js';
-import { rollEventCustomer } from '../../helpers/eventCustomers.js';
-import { EVENT_CUSTOMERS } from '../../data/eventKeys.js';
-
-// Maps EVENT_CUSTOMERS ids -> profile.customers.byType field names (schema uses plurals for tourist/kid/worker)
-const EVENT_CUSTOMER_STAT_KEY = {
-    tourist: 'tourists',
-    kid: 'kids',
-    worker: 'workers',
-    rich: 'rich',
-    angry: 'angry',
-};
+import { ensureEventsCurrent } from '../../helpers/eventEffects.js';
+import { attemptSell, SELL_FAILURE } from '../../helpers/sellEngine.js';
 
 export default {
     devOnly: false,
@@ -27,130 +14,75 @@ export default {
     async execute(interaction) {
         const profile = interaction.playerProfile;
 
-        // Rotates profile.events past anything expires, while saving before we
-        // read the effects from it, rotation isn't sell specific so other commands
-        // will need to call this as well
+        // Auto-sell (premium-only) takes over manual selling entirely while it's on.
+        if (profile.settings?.autoServe && profile.entitlements?.premium) {
+            return interaction.reply({
+                components: [errorEmbed('Auto-sell is running!', 'Auto-sell is enabled, so your stand sells automatically in the background. Turn it off with `/autosell mode:disabled` to sell manually again.')],
+                flags: MessageFlags.IsComponentsV2,
+            });
+        }
+
+        if (profile.settings?.autoServe && !profile.entitlements?.premium && !profile.settings?.autoServeLapseNoticeShown) {
+            try {
+                await interaction.reply({
+                    components: [warningEmbed('Premium pass expired!', 'Your premium pass expired, so auto-sell has paused. You\'re back to selling manually with `/sell` — re-sub to premium to have it pick back up automatically.')],
+                    flags: MessageFlags.IsComponentsV2,
+                });
+                profile.settings.autoServeLapseNoticeShown = true;
+                profile.settings.autoServe = false;
+                await profile.save();
+            } catch (err) {
+                logger.error('[sell] Failed to send/save lapse notice:', err);
+            }
+            return;
+        }
+
         const { active: liveEvent } = await ensureEventsCurrent(profile);
+        const result = attemptSell(profile, liveEvent);
 
-        const activeRecipe = profile.recipes.unlocked.find((r) => r.isActive);
-        if (!activeRecipe) {
-            return interaction.reply({
-                components: [errorEmbed('No active recipe!', 'You don\'t have an active recipe set. Set one, then mix some up with `/mix`.')],
-                flags: MessageFlags.IsComponentsV2,
-            });
+        if (!result.ok) {
+            switch (result.reason) {
+                case SELL_FAILURE.NO_ACTIVE_RECIPE:
+                    return interaction.reply({
+                        components: [errorEmbed('No active recipe!', 'You don\'t have an active recipe set. Set one, then mix some up with `/mix`.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                case SELL_FAILURE.RECIPE_NOT_FOUND:
+                    return interaction.reply({
+                        components: [errorEmbed('Drink not found!', 'Your active recipe couldn\'t be found. Please try again later.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                case SELL_FAILURE.PREMIUM_REQUIRED:
+                    return interaction.reply({
+                        components: [errorEmbed('Premium required!', `**${result.recipe.name}** is a premium recipe. Your premium pass has expired, so you can't sell this one until it's renewed. Set a different active recipe with \`/my-recipes\` in the meantime.`)],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                case SELL_FAILURE.OUT_OF_STOCK:
+                    return interaction.reply({
+                        components: [errorEmbed('Nothing to sell!', `You're out of **${result.recipe.name}** — make more with \`/mix\`.`)],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                case SELL_FAILURE.ON_COOLDOWN:
+                    return interaction.reply({
+                        components: [warningEmbed('Hold on!', `Your next customer isn't ready yet — you can sell again in **${(result.remainingMs / 1000).toFixed(1)}s**.`)],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                case SELL_FAILURE.SALE_FAILED:
+                    return interaction.reply({
+                        components: [warningEmbed('Sale fell through!', `The weather scared off your customer before they could buy any **${result.recipe.name}s**.`)],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+                default:
+                    return interaction.reply({
+                        components: [errorEmbed('Something went wrong!', 'Please try again later.')],
+                        flags: MessageFlags.IsComponentsV2,
+                    });
+            }
         }
-
-        const recipe = RECIPES.find((r) => r.id === activeRecipe.key);
-        if (!recipe) {
-            return interaction.reply({
-                components: [errorEmbed('Drink not found!', 'Your active recipe couldn\'t be found. Please try again later.')],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-
-        if (recipe.unlock?.type === 'premium' && recipe.unlock?.requiresPass && !profile.entitlements?.premium) {
-            return interaction.reply({
-                components: [errorEmbed('Premium required!', `**${recipe.name}** is a premium recipe. Your premium pass has expired, so you can't sell this one until it's renewed. Set a different active recipe with \`/my-recipes\` in the meantime.`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-
-        const stock = profile.drinks.find((d) => d.key === activeRecipe.key);
-
-        const stock = profile.drinks.find((d) => d.key === activeRecipe.key);
-        if (!stock || stock.quantity <= 0) {
-            return interaction.reply({
-                components: [errorEmbed('Nothing to sell!', `You're out of **${recipe.name}** — make more with \`/mix\`.`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-
-        const PREMIUM_COOLDOWN_INCREASE_MS = 15_000;
-        const NON_PREMIUM_COOLDOWN_INCREASE_MS = 20_000;
-
-        // Cooldown -> base cooldown, plus a flat tiered penalty, adjusted by the
-        // event's sellCooldownMultiplier (1 if no active event/event expired)
-        const cooldownPenaltyMs = profile.entitlements?.premium ? PREMIUM_COOLDOWN_INCREASE_MS : NON_PREMIUM_COOLDOWN_INCREASE_MS;
-        const baseCooldownMs = getSellCooldownMs(profile) + cooldownPenaltyMs;
-        const cooldownMs = baseCooldownMs * getSellCooldownMultiplier(liveEvent);
-        const lastSold = profile.stand.lastSoldAt ? profile.stand.lastSoldAt.getTime() : 0;
-        const remainingMs = lastSold + cooldownMs - Date.now();
-
-        if (remainingMs > 0) {
-            return interaction.reply({
-                components: [warningEmbed('Hold on!', `Your next customer isn't ready yet — you can sell again in **${(remainingMs / 1000).toFixed(1)}s**.`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-
-        // Sale can fail outright during risky/harmful events (saleFailChance is 0 with no event)
-        const saleFailChance = getSaleFailChance(liveEvent);
-        if (saleFailChance > 0 && Math.random() < saleFailChance) {
-            return interaction.reply({
-                components: [warningEmbed('Sale fell through!', `The weather scared off your customer before they could buy any **${recipe.name}s**.`)],
-                flags: MessageFlags.IsComponentsV2,
-            });
-        }
-
-        const doubled = stock.quantity >= 2 && Math.random() < getDoubleChance(profile);
-        const cupsSold = doubled ? 2 : 1;
-
-        // Bonus sale -> an extra cup on top, sometimes at a discount (for example, event outcome for sudden_rain_ten)
-        const bonusSale = getBonusSaleChance(liveEvent);
-        let bonusCup = false;
-        let bonusDiscountMultiplier = 1;
-        if (bonusSale.chance > 0 && stock.quantity > cupsSold && Math.random() < bonusSale.chance) {
-            bonusCup = true;
-            bonusDiscountMultiplier = bonusSale.discounted ? bonusSale.discountMultiplier : 1;
-            cupsSold += 1;
-        }
-
-        // Price -> apply event sell price multiplier, then the bonus cup discount (if any) on that extra cup
-        const sellPriceMultiplier = getSellPriceMultiplier(liveEvent);
-        const unitPrice = recipe.sellPrice * sellPriceMultiplier;
-        const normalCups = bonusCup ? cupsSold - 1 : cupsSold;
-        const saleValue = (unitPrice * normalCups) + (bonusCup ? unitPrice * bonusDiscountMultiplier : 0);
-
-        // Tip chance -> base chance + event tip chance bonus (+ bulk bonus if this is a multi-cup sale)
-        let tipChance = getTipChance(profile) + getTipChanceBonus(liveEvent);
-        if (cupsSold > 1) tipChance += getBulkTipChanceBonus(liveEvent);
-        const tipped = Math.random() < tipChance;
-        const tipAmountMultiplier = getTipAmountMultiplier(liveEvent);
-        const tip = tipped ? Math.round(saleValue * TIP_RATE * tipAmountMultiplier) : 0;
-
-        const earnings = saleValue + tip;
-
-        // Event customer -> flavour/attribution only, does not affect earnings above.
-        // Gated by event type eligibility, recipe preference, and (for workers) the
-        // first 5 minutes window, all handled inside rollEventCustomer.
-        const eventCustomerId = rollEventCustomer(liveEvent, activeRecipe.key, RECIPES);
-        const eventCustomer = eventCustomerId ? EVENT_CUSTOMERS.find((c) => c.id === eventCustomerId) : null;
-
-        stock.quantity -= cupsSold;
-        if (stock.quantity <= 0) {
-            profile.drinks = profile.drinks.filter((d) => d.key !== activeRecipe.key);
-        }
-
-        profile.economy.cash += earnings;
-        profile.economy.lifetimeEarned.cash += earnings;
-        profile.stand.lastSoldAt = new Date();
-
-        profile.customers.cupsSold += cupsSold;
-        profile.customers.totalServed += cupsSold;
-        if (tip > 0) profile.customers.totalTipsEarned += tip;
-
-        if (eventCustomer) {
-            const statKey = EVENT_CUSTOMER_STAT_KEY[eventCustomer.id];
-            if (statKey) profile.customers.byType[statKey] += cupsSold;
-        }
-
-        activeRecipe.timesServed += cupsSold;
-        activeRecipe.progress.customersServed += cupsSold;
-        activeRecipe.progress.revenueEarned += earnings;
-        activeRecipe.stars = calculateStars(activeRecipe);
 
         await profile.save();
 
+        const { recipe, cupsSold, earnings, tip, doubled, bonusCup, eventCustomer } = result;
         const title = eventCustomer ? `A ${eventCustomer.name} stopped by!` : (bonusCup ? 'Bonus sale!' : (doubled ? 'Double sale!' : 'Drink sold!'));
         let detail = eventCustomer ? `A **${eventCustomer.name}** showed up — they ${eventCustomer.job}.\n` : '';
         detail += `You sold **${cupsSold}× ${recipe.name}** for **$${formatNumber(earnings)}**`;

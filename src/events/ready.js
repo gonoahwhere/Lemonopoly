@@ -3,6 +3,7 @@ import logger from '../utils/logger.js';
 import PlayerProfile from '../models/player.js';
 import BotStats from '../models/botData.js';
 import GuildStats from '../models/guildData.js';
+import { startAutoSellScheduler } from '../utils/autosell.js';
 
 export default {
     name: 'clientReady',
@@ -158,7 +159,8 @@ export default {
 
                 setBotPresence();
                 updateStats();
-
+                startAutoSellScheduler();
+                
                 setInterval(setBotPresence, 3600000);
                 setInterval(updateStats, 10000);
             }

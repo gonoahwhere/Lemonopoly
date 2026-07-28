@@ -321,6 +321,7 @@ const Player = new Schema(
             timezone: { type: String, default: 'UTC' },
             leaderboardOptIn: { type: Boolean, default: false },
             autoServe: { type: Boolean, default: false },
+            autoServeLapseNoticeShown: { type: Boolean, default: false },
         },
     },
     {

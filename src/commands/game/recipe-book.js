@@ -4,8 +4,8 @@ import { errorEmbed } from '../../utils/embed.js';
 import { renderRecipeBook } from '../../renders/renderRecipeBook.js';
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
-import { recipeBookSessionMap } from '../../helpers/recipeBookSession.js';
 
+const recipeBookSessionMap = new Map();
 const RECIPES_PER_PAGE = 3;
 
 export default {

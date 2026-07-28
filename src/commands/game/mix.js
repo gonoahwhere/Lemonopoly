@@ -82,8 +82,6 @@ export default {
         }
 
         const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
-
-        const ingredientStock = new Map(player.ingredients.map((s) => [s.key, s]));
         const quantityOf = (id) => ingredientStock.get(id)?.quantity || 0;
 
         const consumptionMultiplier = getIngredientConsumptionMultiplier(getLiveEvent(player));
