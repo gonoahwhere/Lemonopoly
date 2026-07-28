@@ -66,6 +66,7 @@ export function attemptSell(profile, liveEvent) {
 
     const saleFailChance = getSaleFailChance(liveEvent);
     if (saleFailChance > 0 && Math.random() < saleFailChance) {
+        profile.stand.lastSoldAt = new Date();
         return { ok: false, reason: SELL_FAILURE.SALE_FAILED, recipe };
     }
 
@@ -81,9 +82,14 @@ export function attemptSell(profile, liveEvent) {
         cupsSold += 1;
     }
 
+    // roll event customer BEFORE price calc, so its bonus can apply
+    const eventCustomerId = rollEventCustomer(liveEvent, activeRecipe.key, RECIPES);
+    const eventCustomer = eventCustomerId ? EVENT_CUSTOMERS.find((c) => c.id === eventCustomerId) : null;
+    const eventCustomerPriceMultiplier = eventCustomer?.priceMultiplier ?? 1;
+
     const sellPriceMultiplier = getSellPriceMultiplier(liveEvent);
     const masteryMultiplier = getMasterySellMultiplier(activeRecipe);
-    const unitPrice = recipe.sellPrice * sellPriceMultiplier * masteryMultiplier;
+    const unitPrice = recipe.sellPrice * sellPriceMultiplier * masteryMultiplier * eventCustomerPriceMultiplier;
     const normalCups = bonusCup ? cupsSold - 1 : cupsSold;
     const saleValue = (unitPrice * normalCups) + (bonusCup ? unitPrice * bonusDiscountMultiplier : 0);
 
@@ -94,9 +100,6 @@ export function attemptSell(profile, liveEvent) {
     const tip = tipped ? Math.round(saleValue * TIP_RATE * tipAmountMultiplier) : 0;
 
     const earnings = saleValue + tip;
-
-    const eventCustomerId = rollEventCustomer(liveEvent, activeRecipe.key, RECIPES);
-    const eventCustomer = eventCustomerId ? EVENT_CUSTOMERS.find((c) => c.id === eventCustomerId) : null;
 
     stock.quantity -= cupsSold;
     if (stock.quantity <= 0) {

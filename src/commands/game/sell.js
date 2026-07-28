@@ -68,6 +68,7 @@ export default {
                         flags: MessageFlags.IsComponentsV2,
                     });
                 case SELL_FAILURE.SALE_FAILED:
+                    await profile.save();
                     return interaction.reply({
                         components: [warningEmbed('Sale fell through!', `The weather scared off your customer before they could buy any **${result.recipe.name}s**.`)],
                         flags: MessageFlags.IsComponentsV2,

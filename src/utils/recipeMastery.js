@@ -8,19 +8,9 @@ export function calculateStars(recipe) {
 }
 
 export function getMasteryBonuses(recipe) {
-    const tierIndex = RARITY_TIERS.indexOf(recipe.rarity);
-    let sellPriceBonus = 0;
-    let ingredientDiscount = 0;
-
-    for (let i = 0; i < tierIndex; i++) {
-        const def = MASTERY_DEFS[RARITY_TIERS[i]];
-        sellPriceBonus += def.sellPriceBonusPerStar * 5;
-        ingredientDiscount += def.ingredientDiscountPerStar * 5;
-    }
-
     const currentDef = MASTERY_DEFS[recipe.rarity];
-    sellPriceBonus += currentDef.sellPriceBonusPerStar * recipe.stars;
-    ingredientDiscount += currentDef.ingredientDiscountPerStar * recipe.stars;
+    const sellPriceBonus = currentDef.sellPriceBonusPerStar * recipe.stars;
+    const ingredientDiscount = currentDef.ingredientDiscountPerStar * recipe.stars;
 
     return {
         sellPriceMultiplier: 1 + sellPriceBonus,
