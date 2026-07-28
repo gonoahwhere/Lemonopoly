@@ -22,6 +22,8 @@ export default {
 
     defaultCooldown: 5,
 
+    premiumGrantGuildId: '333949691962195969',
+    
     botid: '1523419467240177735',
     settings: {
         prefix: '/',

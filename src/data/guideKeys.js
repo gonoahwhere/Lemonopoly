@@ -8,22 +8,27 @@ export const COMMAND_CATEGORIES = [
         commands: [
             {
                 name: 'drink-stock',
-                usage: '/drink-stock',
+                usage: '/drink-stock [page]',
                 description: 'view your current stock of lemonade you\'ve mixed.'
             },
             {
                 name: 'getting-started',
-                usage: '/getting-started',
+                usage: '/getting-started [page] [section]',
                 description: 'view this detailed user manual for how lemonopoly works.'
             },
             {
                 name: 'ingredient-stock',
-                usage: '/ingredient-stock',
+                usage: '/ingredient-stock [page]',
                 description: 'view your current stock of the ingredients you\'ve purchased.'
             },
             {
+                name: 'mix',
+                usage: '/mix <amount>',
+                description: 'mix ingredients to create drinks for your active recipe.'
+            },
+            {
                 name: 'market purchase ingredient',
-                usage: '/market purchase ingredient <ingredient>',
+                usage: '/market purchase ingredient <ingredient> <amount>',
                 description: 'purchase ingredients so that you can make more drinks.'
             },
             {
@@ -82,7 +87,7 @@ export const COMMAND_CATEGORIES = [
             },
             {
                 name: 'ingredient-book',
-                usage: '/ingredient-book',
+                usage: '/ingredient-book [page]',
                 description: 'view the full list of ingredients and their prices, discounts do not show here.'
             },
             {
@@ -101,13 +106,23 @@ export const COMMAND_CATEGORIES = [
                 description: 'view the top 10 stands based on prestige counts.'
             },
             {
+                name: 'lemon-illuminati view',
+                usage: '/lemon-illuminati view',
+                description: 'view the rewards you get each month for owning the premium pass.'
+            },
+            {
                 name: 'market view',
-                usage: '/market view <type>',
+                usage: '/market view <type> [page]',
                 description: 'browse the market for new recipes you\'ve unlocked, or new ingredients.'
             },
             {
+                name: 'my-recipes master',
+                usage: '/my-recipes master <recipe>',
+                description: 'master recipes to increase their sell price and earn a discount.'
+            },
+            {
                 name: 'my-recipes view',
-                usage: '/my-recipes view',
+                usage: '/my-recipes view [page]',
                 description: 'view your purchased recipes and their current mastery statistics.'
             },
             {
@@ -117,13 +132,23 @@ export const COMMAND_CATEGORIES = [
             },
             {
                 name: 'recipe-book',
-                usage: '/recipe-book',
+                usage: '/recipe-book [page]',
                 description: 'view the full list of recipes, ingredients they need and how to unlock them.'
             },
             {
                 name: 'stand rename',
                 usage: '/stand rename <name>',
                 description: 'give your stand a brand new name, visible via viewing the stand.'
+            },
+            {
+                name: 'stand repair',
+                usage: '/stand repair <method>',
+                description: 'repair your stand back to full health after harmful weather events.'
+            },
+            {
+                name: 'the-vault view',
+                usage: '/the-vault view',
+                description: 'view an inventory of the items you earn from your monthly bonus claim each month.'
             },
             {
                 name: 'upgrade view',
@@ -139,6 +164,11 @@ export const COMMAND_CATEGORIES = [
         accent: '#9B4FD1',
         iconKey: 'premium',
         commands: [
+            {
+                name: 'autosell',
+                usage: '/autosell <mode>',
+                description: 'enable/disable autosell as a premium member perk.'
+            },
             {
                 name: 'config edit active_recipe',
                 usage: '/config edit active_recipe <recipe>',
@@ -170,16 +200,6 @@ export const COMMAND_CATEGORIES = [
                 description: 'reset the heading names back to their default colours.'
             },
             {
-                name: 'lemon-illuminati claim',
-                usage: '/lemon-illuminati claim',
-                description: 'claim the monthly bonus rewards for owning the premium pass.'
-            },
-            {
-                name: 'lemon-illuminati view',
-                usage: '/lemon-illuminati view',
-                description: 'view the rewards you get each month for owning the premium pass.'
-            },
-            {
                 name: 'leaderboard premium cash',
                 usage: '/leaderboard premium cash',
                 description: 'view the top 10 premium-pass owned stands based on earned cash. '
@@ -195,14 +215,14 @@ export const COMMAND_CATEGORIES = [
                 description: 'view the top 10 premium-pass owned stands based on prestige counts.'
             },
             {
+                name: 'lemon-illuminati claim',
+                usage: '/lemon-illuminati claim',
+                description: 'claim the monthly bonus rewards for owning the premium pass.'
+            },
+            {
                 name: 'the-vault redeem',
                 usage: '/the-vault redeem',
                 description: 'redeem one of your monthly reward items for additional perks.'
-            },
-            {
-                name: 'the-vault view',
-                usage: '/the-vault view',
-                description: 'view an inventory of the items you earn from your monthly bonus claim each month.'
             },
         ],
     },
@@ -224,9 +244,12 @@ export const FEATURES = [
                 'the customer will give cash per drink they order',
                 'upgrading appeal and speed will improve your selling',
                 'selling drinks will increase your mastery for your active recipe',
+                'if you\'re a premium member, you can utilise auto selling'
             ],
         },
-        tip: 'mastering drinks increases their sell price and provides an ingredient discount.'
+        tips: [
+            'mastering drinks increases their sell price and provides an ingredient discount.'
+        ]
     },
     {
         title: 'Mastering Recipes',
@@ -236,28 +259,48 @@ export const FEATURES = [
         content: {
             type: 'bullets',
             items: [
-                'example of first point',
-                'example of second point',
+                'to master a recipe you need to make sure you hit the requirements',
+                'as you sell drinks, you will work towards earning 5 stars',
+                'once a recipe has reached 5 stars and you have achieved the minimum income required',
+                'you can use the master option while viewing your own recipes to master a recipe',
+                'mastering increases its tier which ultimately increases the base sell price',
+                'mastering also increases the overall personal ingredient discount price'
             ],
         },
-        tip: ''
+        tips: [
+            'some tiers require achieving prestige milestones to unlock access.'
+        ]
     },
     {
         title: 'Premium Benefits',
         iconKey: 'premium',
         accent: '#9B4FD1',
-        description: 'premium members earn a monthly bundle of bonus items, banked in the vault until redeemed.',
+        description: 'premium members earn monthly rewards, banked in the vault until redeemed.',
         content: {
             type: 'bullets',
             items: [
-                'example of first point',
-                'example of second point',
+                'you can mix double the amount of drinks per mix',
+                'your accumulated ingredient discount is doubled',
+                'you can have the ability to use auto sell, disables manual selling',
+                'claimable bonus every month, rewards show in the vault',
+                'level skips are automatically applied per claim',
+                'you can give most headings in the renders a gradient via the config settings',
+                'you can give most borders in the renders a gradient via the config settings',
+                'your stand can now show on premium only leaderboards',
+                'there is now have a visible premium badge, upcoming update will make this togglable',
+                'premium members will have early access opportunities for upcoming updates',
+                'access to premium only channels in the Community Discord',
+                'access to premium only recipes via the market'
             ]
         },
-        tip: 'rewards can be claimed/reset on the 1st of every month.'
+        tips: [
+            'not all premium features have been implemented currently.', 
+            'rewards can be claimed/reset on the 1st of every month.'
+        ]
     },
     {
         title: 'Automation',
+        hidden: true,
         iconKey: 'workers',
         accent: '#8D6E63',
         description: '',
@@ -268,24 +311,34 @@ export const FEATURES = [
                 'example of second point',
             ],
         },
-        tip: ''
+        tips: [
+            ''
+        ]
     },
     {
         title: 'Weather Events',
         iconKey: 'weather_events',
         accent: '#42CDFF',
-        description: '',
+        description: 'personal weather events affect how your game progresses',
         content: {
             type: 'bullets',
             items: [
-                'example of first point',
-                'example of second point',
+                'there are 5 types of weather events available at random',
+                'each event can last anywhere from 10 minutes to 20 minutes',
+                'each event also has individual outcomes that can occur',
+                'only one outcome per event is selected at any one time',
+                'you can view the possible outcomes for each weather type via the weather-events command',
+                'you can also view the current event and which event is next',
+                'the events also display whether they are beneficial, risky or harmful to your stand',
             ],
         },
-        tip: ''
+        tips: [
+            'weather events are personal, so each stand has their own type/outcome at any given point.'
+        ]
     },
     {
         title: 'Global Events',
+        hidden: true,
         iconKey: 'global_events',
         accent: '#1976D2',
         description: '',
@@ -296,10 +349,13 @@ export const FEATURES = [
                 'example of second point',
             ],
         },
-        tip: ''
+        tips: [
+            ''
+        ]
     },
     {
         title: 'Quests',
+        hidden: true,
         iconKey: 'quests',
         accent: '#FF4B2B',
         description: '',
@@ -310,10 +366,13 @@ export const FEATURES = [
                 'example of second point',
             ],
         },
-        tip: ''
+        tips: [
+            ''
+        ]
     },
     {
         title: 'Achievements',
+        hidden: true,
         iconKey: 'achievements',
         accent: '#EC407A',
         description: '',
@@ -324,7 +383,9 @@ export const FEATURES = [
                 'example of second point',
             ],
         },
-        tip: ''
+        tips: [
+            ''
+        ]
     },
 ];
 

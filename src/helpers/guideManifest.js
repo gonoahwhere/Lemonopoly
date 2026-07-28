@@ -6,10 +6,19 @@ export function buildGuideManifest(categories, features) {
     const commandChapters = [];
     const featureChapters = [];
 
-    let cursor = 2; // page 1 is the table of contents
+    let cursor = 2;
+    
+    const visibleCategories = categories
+        .filter((category) => !category.hidden)
+        .map((category) => ({
+            ...category,
+            commands: category.commands.filter((command) => !command.hidden),
+        }));
+
+    const visibleFeatures = features.filter((feature) => !feature.hidden);
 
     // Command pages
-    categories.forEach((category) => {
+    visibleCategories.forEach((category) => {
         const chunks = planCommandPages(category.commands);
         const fromPage = cursor;
 
@@ -37,7 +46,7 @@ export function buildGuideManifest(categories, features) {
     });
 
     // Feature pages
-    features.forEach((feature) => {
+    visibleFeatures.forEach((feature) => {
         const parts = planFeaturePages(feature);
         const fromPage = cursor;
 

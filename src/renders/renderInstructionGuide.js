@@ -131,7 +131,7 @@ function getScratchCtx() {
 function drawGuideHeader(ctx, { eyebrow, title, accent, page, totalPages, profile }) {
     const customColours = profile?.entitlements?.premium ? profile.customization?.nameGradientColours : null;
     const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, accent];
+    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
     const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
 
     ctx.font = '38px FredokaOne';
@@ -378,6 +378,7 @@ const CONT_HEADER_H = 46;
 const DESC_LINE_H = 24;
 const DESC_GAP_AFTER = 22;
 const BULLET_GAP = 14;
+const BULLET_LINE_H = 20;
 const PARA_LINE_H = 24;
 const TIP_GAP_MIN = 16;
 
@@ -389,7 +390,7 @@ function measureDescription(ctx, description) {
 function measureFeatureBullet(ctx, text) {
     ctx.font = '17px FredokaOne';
     const lines = wrapText(ctx, text, CONTENT_W - 64, 8);
-    const h = Math.max(24, lines.length * 15 + 10);
+    const h = Math.max(24, lines.length * BULLET_LINE_H + 10);
     return { lines, h };
 }
 
@@ -398,22 +399,31 @@ function drawFeatureBullet(ctx, x, y, block, accent) {
     ctx.font = '17px FredokaOne';
     ctx.fillStyle = COLOURS.text;
     block.lines.forEach((line, i) => {
-        ctx.fillText(line, x + 44, y + 18 + i * 15);
+        ctx.fillText(line, x + 44, y + 18 + i * BULLET_LINE_H);
     });
 }
 
-function measureTip(ctx, tip) {
+function measureTip(ctx, tips) {
     ctx.font = '15px FredokaOne';
-    const lines = wrapText(ctx, tip, CONTENT_W - 20, 8);
-    const h = 20 + lines.length * 19 + 16;
-    return { lines, h };
+    const bulletIndent = 18;
+    const items = tips.map((tipText) => {
+        const lines = wrapText(ctx, tipText, CONTENT_W - 20 - bulletIndent, 8);
+        return { lines, h: lines.length * 19 };
+    });
+    const innerH = items.reduce((sum, item, i) => sum + item.h + (i > 0 ? 8 : 0), 0);
+    const h = 20 + innerH + 16;
+    return { items, h };
 }
 
 export function planFeaturePages(feature) {
     const ctx = getScratchCtx();
     const descLines = measureDescription(ctx, feature.description);
-    const tip = feature.tip ? measureTip(ctx, feature.tip) : null;
+    const tip = feature.tips?.length ? measureTip(ctx, feature.tips) : null;
     const content = feature.content ?? null;
+
+    const headerH = ICON_BLOCK_H + descLines.length * DESC_LINE_H + DESC_GAP_AFTER;
+    const tipH = tip ? tip.h + TIP_GAP_MIN : 0;
+    const availableH = CONTENT_H - headerH - tipH;
 
     let bulletBlocks = null;
     let paragraphLines = null;
@@ -426,8 +436,6 @@ export function planFeaturePages(feature) {
 
     let bulletIndex = 0;
     let paraLineIndex = 0;
-    let tipPlaced = !tip;
-    let needsFirstPage = true;
 
     const hasMoreContent = () => {
         if (bulletBlocks) return bulletIndex < bulletBlocks.length;
@@ -437,11 +445,8 @@ export function planFeaturePages(feature) {
 
     const pages = [];
 
-    while (needsFirstPage || hasMoreContent() || !tipPlaced) {
-        const isFirst = needsFirstPage;
-        let used = isFirst ? ICON_BLOCK_H : CONT_HEADER_H;
-        if (isFirst) used += descLines.length * DESC_LINE_H + DESC_GAP_AFTER;
-
+    do {
+        let used = 0;
         const pageBullets = [];
         const pageParaLines = [];
 
@@ -449,45 +454,29 @@ export function planFeaturePages(feature) {
             while (bulletIndex < bulletBlocks.length) {
                 const block = bulletBlocks[bulletIndex];
                 const addedH = pageBullets.length === 0 ? block.h : block.h + BULLET_GAP;
-                if (pageBullets.length > 0 && used + addedH > CONTENT_H) break;
+                if (pageBullets.length > 0 && used + addedH > availableH) break;
                 pageBullets.push(block);
                 used += addedH;
                 bulletIndex += 1;
             }
         } else if (paragraphLines) {
             while (paraLineIndex < paragraphLines.length) {
-                if (used + PARA_LINE_H > CONTENT_H) break;
+                if (used + PARA_LINE_H > availableH) break;
                 pageParaLines.push(paragraphLines[paraLineIndex]);
                 used += PARA_LINE_H;
                 paraLineIndex += 1;
             }
         }
 
-        let includeTip = false;
-        if (!tipPlaced && !hasMoreContent()) {
-            const tipTop = CONTENT_H - tip.h;
-            const gapNeeded = used > 0 ? TIP_GAP_MIN : 0;
-            if (used + gapNeeded <= tipTop) {
-                includeTip = true;
-                tipPlaced = true;
-            }
-        }
-
-        pages.push({ isFirst, bullets: pageBullets, paraLines: pageParaLines, includeTip });
-        needsFirstPage = false;
-
-        if (pageBullets.length === 0 && pageParaLines.length === 0 && !includeTip && !hasMoreContent() && !tipPlaced) {
-            pages[pages.length - 1].includeTip = true;
-            tipPlaced = true;
-        }
-    }
+        pages.push({ bullets: pageBullets, paraLines: pageParaLines });
+    } while (hasMoreContent());
 
     return pages.map((p, idx) => ({
         ...p,
         part: idx + 1,
         totalParts: pages.length,
         descLines,
-        tipLines: p.includeTip ? tip.lines : null,
+        tipItems: tip ? tip.items : null,
     }));
 }
 
@@ -502,53 +491,44 @@ export async function renderGuideFeature(feature, profile, page = 1, totalPages 
     let cursorY = CARD_Y + CARD_PAD_TOP;
     const centreX = CARD_X + CARD_W / 2;
 
-    if (part.isFirst) {
-        const iconR = 34;
-        const iconCy = cursorY + iconR;
+    // Icon + title + description now draw the same way on every page.
+    const iconR = 34;
+    const iconCy = cursorY + iconR;
 
+    ctx.beginPath();
+    ctx.arc(centreX, iconCy, iconR, 0, Math.PI * 2);
+    ctx.fillStyle = accent + '1F';
+    ctx.fill();
+    ctx.strokeStyle = accent + '55';
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+
+    const icon = getIconFromCache(feature.iconKey);
+    if (icon) {
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(centreX, iconCy, iconR, 0, Math.PI * 2);
-        ctx.fillStyle = accent + '1F';
-        ctx.fill();
-        ctx.strokeStyle = accent + '55';
-        ctx.lineWidth = 1.6;
-        ctx.stroke();
-
-        const icon = getIconFromCache(feature.iconKey);
-        if (icon) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(centreX, iconCy, iconR - 6, 0, Math.PI * 2);
-            ctx.clip();
-            ctx.drawImage(icon, centreX - iconR + 6, iconCy - iconR + 6, (iconR - 6) * 2, (iconR - 6) * 2);
-            ctx.restore();
-        }
-
-        ctx.font = '24px FredokaOne';
-        ctx.fillStyle = COLOURS.text;
-        ctx.textAlign = 'center';
-        ctx.fillText(feature.title, centreX, iconCy + iconR + 30);
-        ctx.textAlign = 'left';
-
-        cursorY += ICON_BLOCK_H;
-
-        ctx.font = '17px FredokaOne';
-        ctx.fillStyle = COLOURS.subtitle;
-        ctx.textAlign = 'center';
-        part.descLines.forEach((line, i) => {
-            ctx.fillText(line, centreX, cursorY + 15 + i * DESC_LINE_H);
-        });
-        ctx.textAlign = 'left';
-        cursorY += part.descLines.length * DESC_LINE_H + DESC_GAP_AFTER;
-    } else {
-        ctx.font = '22px FredokaOne';
-        ctx.fillStyle = COLOURS.text;
-        ctx.fillText(feature.title, CONTENT_X, cursorY + 20);
-        ctx.font = '14px FredokaOne';
-        ctx.fillStyle = COLOURS.subtitle;
-        ctx.fillText('continued', CONTENT_X, cursorY + 40);
-        cursorY += CONT_HEADER_H;
+        ctx.arc(centreX, iconCy, iconR - 6, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(icon, centreX - iconR + 6, iconCy - iconR + 6, (iconR - 6) * 2, (iconR - 6) * 2);
+        ctx.restore();
     }
+
+    ctx.font = '24px FredokaOne';
+    ctx.fillStyle = COLOURS.text;
+    ctx.textAlign = 'center';
+    ctx.fillText(feature.title, centreX, iconCy + iconR + 30);
+    ctx.textAlign = 'left';
+
+    cursorY += ICON_BLOCK_H;
+
+    ctx.font = '17px FredokaOne';
+    ctx.fillStyle = COLOURS.subtitle;
+    ctx.textAlign = 'center';
+    part.descLines.forEach((line, i) => {
+        ctx.fillText(line, centreX, cursorY + 15 + i * DESC_LINE_H);
+    });
+    ctx.textAlign = 'left';
+    cursorY += part.descLines.length * DESC_LINE_H + DESC_GAP_AFTER;
 
     if (part.bullets.length > 0) {
         part.bullets.forEach((block, i) => {
@@ -565,23 +545,31 @@ export async function renderGuideFeature(feature, profile, page = 1, totalPages 
         cursorY += part.paraLines.length * PARA_LINE_H;
     }
 
-    if (part.includeTip) {
-        const tipBoxH = 20 + part.tipLines.length * 19 + 16;
+    if (part.tipItems) {
+        const tipBoxH = 20 + part.tipItems.reduce((sum, item, i) => sum + item.h + (i > 0 ? 8 : 0), 0) + 16;
         const tipY = CARD_Y + CARD_H - CARD_PAD_BOTTOM - tipBoxH;
 
         roundedRect(ctx, CONTENT_X, tipY, CONTENT_W, tipBoxH, 14, COLOURS.tipSoft);
         ctx.strokeStyle = COLOURS.tip + '55';
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = 1.1;
         roundedRectPath(ctx, CONTENT_X, tipY, CONTENT_W, tipBoxH, 14);
         ctx.stroke();
 
         ctx.font = '15px FredokaOne';
         ctx.fillStyle = COLOURS.tip;
-        ctx.fillText('TIP', CONTENT_X + 16, tipY + 22);
+        ctx.fillText(part.tipItems.length > 1 ? 'TIPS' : 'TIP', CONTENT_X + 16, tipY + 22);
 
-        ctx.fillStyle = COLOURS.text;
-        part.tipLines.forEach((line, i) => {
-            ctx.fillText(line, CONTENT_X + 16, tipY + 42 + i * 19);
+        let tipCursorY = tipY + 42;
+        part.tipItems.forEach((item) => {
+            ctx.fillStyle = COLOURS.tip;
+            ctx.fillText('•', CONTENT_X + 16, tipCursorY);
+
+            ctx.fillStyle = COLOURS.text;
+            item.lines.forEach((line, i) => {
+                ctx.fillText(line, CONTENT_X + 34, tipCursorY + i * 19);
+            });
+
+            tipCursorY += item.h + 8;
         });
     }
 
