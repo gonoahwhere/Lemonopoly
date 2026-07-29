@@ -1,22 +1,33 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { MaxRectsPacker } from 'maxrects-packer';
-import { readdir } from 'node:fs/promises';
+import { lstat, readdir } from 'node:fs/promises';
 import { writeFile } from 'node:fs';
 import { join } from 'node:path';
 
 const MAX_SIZE = 8192 * 8192;
 
-async function loadSprites(key) {
-  const dir = `./images/${key}`;
+async function loadSprites(dirs) {
+  const dir = `./${dirs.join('/')}`;
 
-  return await Promise.all((await readdir(dir)).map(path => loadImage(join(dir, path)).then(image => ({
-    width: image.width,
-    height: image.height,
-    data: {
-      name: `${key.replace(/s?$/, '')}.${path.replace(/s?\.png$/, '')}`,
-      image
-    }
-  }))));
+  let sprites = await Promise.all((await readdir(dir)).filter(path => path !== 'old_images' && path !== 'sprites').map(async path => {
+    const fullPath = `${dir}/${path}`;
+
+    return await ((await lstat(fullPath)).isDirectory() ? loadSprites([...dirs, path]) : loadImage(fullPath).then(async image => ({
+      width: image.width,
+      height: image.height,
+      data: {
+        name: `${dirs.slice(1).join('.')}.${path.replace(/\.png$/, '')}`.replaceAll('s.', '.'),
+        size: (await lstat(fullPath)).size,
+        image
+      }
+    })));
+  }));
+
+  while (sprites.some(sprite => Array.isArray(sprite))) {
+    sprites = sprites.flat();
+  }
+
+  return sprites;
 }
 
 function getPackSize(width, height) {
@@ -53,11 +64,7 @@ function getPackSize(width, height) {
   };
 }
 
-const input = (await Promise.all([
-  loadSprites('drinks'),
-  loadSprites('ingredients'),
-  loadSprites('icons')
-])).flat();
+const input = await loadSprites(['images']);
 
 let smallestIndividualWidth = -1;
 let smallestIndividualHeight = -1;

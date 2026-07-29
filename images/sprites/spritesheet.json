@@ -1,1057 +1,1201 @@
 {
-  "drink.ace_in_the_glas": {
+  "profile.lemonopoly_banner": {
     "x": 0,
     "y": 0,
+    "w": 680,
+    "h": 240
+  },
+  "profile.lemonopoly_pfp": {
+    "x": 0,
+    "y": 240,
+    "w": 680,
+    "h": 680
+  },
+  "icon.guide.utility": {
+    "x": 680,
+    "y": 0,
+    "w": 512,
+    "h": 512
+  },
+  "drink.ace_in_the_glass": {
+    "x": 680,
+    "y": 512,
     "w": 198,
     "h": 252
   },
   "drink.arnold_palmer": {
-    "x": 198,
-    "y": 0,
+    "x": 680,
+    "y": 764,
     "w": 198,
     "h": 252
   },
   "drink.basil_lemonade": {
-    "x": 396,
-    "y": 0,
+    "x": 878,
+    "y": 512,
     "w": 198,
     "h": 252
   },
   "drink.binary_exception": {
-    "x": 594,
-    "y": 0,
+    "x": 878,
+    "y": 764,
     "w": 198,
     "h": 252
   },
   "drink.blueberry_lemonade": {
-    "x": 792,
-    "y": 0,
+    "x": 1076,
+    "y": 512,
     "w": 198,
     "h": 252
   },
   "drink.candy_cane_lemonade": {
-    "x": 990,
-    "y": 0,
+    "x": 1076,
+    "y": 764,
     "w": 198,
     "h": 252
   },
   "drink.caramel_lemonade": {
-    "x": 1188,
+    "x": 1192,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.character_customizer": {
-    "x": 1386,
-    "y": 0,
+    "x": 1192,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.cherry_lemonade": {
-    "x": 1584,
-    "y": 0,
+    "x": 1274,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.classic_lemonade": {
-    "x": 1782,
-    "y": 0,
+    "x": 1274,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.coconut_lemonade": {
-    "x": 1980,
+    "x": 1390,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.creamy_lemonade": {
-    "x": 2178,
-    "y": 0,
+    "x": 1390,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.diamond_fizz": {
-    "x": 2376,
+    "x": 1588,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.double_trouble": {
-    "x": 2574,
+    "x": 1786,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.dragon_fruit_lemonade": {
-    "x": 2772,
-    "y": 0,
+    "x": 1588,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.extra_sour_lemonade": {
-    "x": 2970,
-    "y": 0,
+    "x": 1786,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.flux_capacitea": {
-    "x": 3168,
-    "y": 0,
+    "x": 1472,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.galaxy_lemonade": {
-    "x": 3366,
-    "y": 0,
+    "x": 1472,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.ginger_lemonade": {
-    "x": 3564,
-    "y": 0,
+    "x": 1670,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.golden_lemonade": {
-    "x": 3762,
-    "y": 0,
+    "x": 1670,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.green_tea_lemonade": {
-    "x": 3960,
-    "y": 0,
+    "x": 1868,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.hibiscus_lemonade": {
-    "x": 4158,
-    "y": 0,
+    "x": 1868,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.hot_chocolate_lemonade": {
-    "x": 4356,
+    "x": 1984,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.island_splash": {
-    "x": 4554,
-    "y": 0,
+    "x": 1984,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.kitchen_sink_deluxe": {
-    "x": 4752,
-    "y": 0,
+    "x": 2066,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.kiwi_lemonade": {
-    "x": 4950,
-    "y": 0,
+    "x": 2066,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.lavender_lemonade": {
-    "x": 5148,
+    "x": 2182,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.light_lemonade": {
-    "x": 5346,
-    "y": 0,
+    "x": 2182,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.limeade": {
-    "x": 5544,
-    "y": 0,
+    "x": 2264,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.mango_lemonade": {
-    "x": 5742,
-    "y": 0,
+    "x": 2264,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.mint_condition": {
-    "x": 5940,
+    "x": 2380,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.mint_lemonade": {
-    "x": 6138,
-    "y": 0,
+    "x": 2380,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.orange_lemonade": {
-    "x": 6336,
-    "y": 0,
+    "x": 2462,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.passion_fruit_lemonade": {
-    "x": 6534,
-    "y": 0,
+    "x": 2462,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.peach_lemonade": {
-    "x": 6732,
+    "x": 2578,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.peach_tea_lemonade": {
-    "x": 6930,
-    "y": 0,
+    "x": 2578,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.pineapple_lemonade": {
-    "x": 7128,
-    "y": 0,
+    "x": 2660,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.pink_lemonade": {
-    "x": 7326,
-    "y": 0,
+    "x": 2660,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.pumpkin_lemonade": {
-    "x": 7524,
+    "x": 2776,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.rainbow_overload": {
-    "x": 7722,
-    "y": 0,
+    "x": 2776,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.raspberry_lemonade": {
-    "x": 7920,
-    "y": 0,
+    "x": 2858,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.raspberry_revolution": {
-    "x": 8118,
-    "y": 0,
+    "x": 2858,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.rosemary_lemonade": {
-    "x": 8316,
+    "x": 2974,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.royal_lemonade": {
-    "x": 8514,
-    "y": 0,
+    "x": 2974,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.spiced_lemonade": {
-    "x": 8712,
-    "y": 0,
+    "x": 3056,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.strawberry_lemonade": {
-    "x": 8910,
-    "y": 0,
+    "x": 3056,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.sunburst_splash": {
-    "x": 9108,
+    "x": 3172,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.sweet_lemonade": {
-    "x": 9306,
-    "y": 0,
+    "x": 3172,
+    "y": 252,
     "w": 198,
     "h": 252
   },
-  "drink.triple_citru": {
-    "x": 9504,
-    "y": 0,
+  "drink.triple_citrus": {
+    "x": 3254,
+    "y": 504,
     "w": 198,
     "h": 252
   },
   "drink.tropical_sunrise": {
-    "x": 9702,
-    "y": 0,
+    "x": 3254,
+    "y": 756,
     "w": 198,
     "h": 252
   },
   "drink.valentine_punch": {
-    "x": 9900,
+    "x": 3370,
     "y": 0,
     "w": 198,
     "h": 252
   },
   "drink.vanilla_lemonade": {
-    "x": 10098,
-    "y": 0,
+    "x": 3370,
+    "y": 252,
     "w": 198,
     "h": 252
   },
   "drink.watermelon_lemonade": {
-    "x": 10296,
-    "y": 0,
+    "x": 3452,
+    "y": 504,
     "w": 198,
     "h": 252
   },
-  "ingredient.agave": {
-    "x": 10494,
+  "icon.config.autoserve": {
+    "x": 3452,
+    "y": 756,
+    "w": 128,
+    "h": 128
+  },
+  "icon.config.beta": {
+    "x": 3452,
+    "y": 884,
+    "w": 128,
+    "h": 128
+  },
+  "icon.config.leaderboard": {
+    "x": 3580,
+    "y": 756,
+    "w": 128,
+    "h": 128
+  },
+  "icon.config.mix_all": {
+    "x": 3580,
+    "y": 884,
+    "w": 128,
+    "h": 128
+  },
+  "icon.config.notifications": {
+    "x": 3708,
     "y": 0,
     "w": 128,
     "h": 128
   },
-  "ingredient.aged_vanilla": {
-    "x": 10494,
+  "icon.config.seasonal": {
+    "x": 3568,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.config.timezone": {
+    "x": 3836,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.currency.cash": {
+    "x": 3964,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.currency.coins": {
+    "x": 3568,
     "y": 128,
     "w": 128,
     "h": 128
   },
-  "ingredient.almond_milk": {
-    "x": 10622,
+  "icon.guide.achievements": {
+    "x": 3568,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.core": {
+    "x": 3650,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.customers": {
+    "x": 3650,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.global_events": {
+    "x": 3696,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.mastery": {
+    "x": 3696,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.quests": {
+    "x": 3824,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.weather_events": {
+    "x": 3952,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.guide.workers": {
+    "x": 3824,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.leaderboard.bronze": {
+    "x": 3952,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.leaderboard.gold": {
+    "x": 3778,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.leaderboard.silver": {
+    "x": 3906,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.cooldown": {
+    "x": 3778,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.disabled": {
+    "x": 3906,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.enabled": {
+    "x": 3708,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.info": {
+    "x": 3708,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.left_arrow": {
+    "x": 3708,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.reply": {
+    "x": 3836,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.replyagain": {
+    "x": 3964,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.right_arrow": {
+    "x": 3836,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.misc.warning": {
+    "x": 3836,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.01": {
+    "x": 3964,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.02": {
+    "x": 3964,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.03": {
+    "x": 4034,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.04": {
+    "x": 4034,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.05": {
+    "x": 4080,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.06": {
+    "x": 4092,
     "y": 0,
     "w": 128,
     "h": 128
   },
+  "icon.number.07": {
+    "x": 4080,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.08": {
+    "x": 4092,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.09": {
+    "x": 4092,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.number.10": {
+    "x": 4092,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.free_staff": {
+    "x": 4162,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.gift_token": {
+    "x": 4162,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.ingredient_crate": {
+    "x": 4208,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.level_skip": {
+    "x": 4220,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.premium": {
+    "x": 4208,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.stand_repair": {
+    "x": 4220,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.storage_expand": {
+    "x": 4220,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.ticket": {
+    "x": 4220,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.premium.token": {
+    "x": 4290,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.stand.heart": {
+    "x": 4290,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.stand.level": {
+    "x": 4336,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.stand.location": {
+    "x": 4348,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.stand.prestige": {
+    "x": 4336,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.stand.recipe": {
+    "x": 4348,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.upgrade.appeal": {
+    "x": 4348,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "icon.upgrade.resilience": {
+    "x": 4348,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "icon.upgrade.speed": {
+    "x": 4418,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "icon.upgrade.storage": {
+    "x": 4418,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
+  "icon.weather.heatwave": {
+    "x": 4464,
+    "y": 128,
+    "w": 128,
+    "h": 128
+  },
+  "icon.weather.local_festival": {
+    "x": 4476,
+    "y": 0,
+    "w": 128,
+    "h": 128
+  },
+  "icon.weather.sudden_rain": {
+    "x": 4464,
+    "y": 256,
+    "w": 128,
+    "h": 128
+  },
+  "icon.weather.thunderstorm": {
+    "x": 4476,
+    "y": 640,
+    "w": 128,
+    "h": 128
+  },
+  "icon.weather.wind_storm": {
+    "x": 4476,
+    "y": 768,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.agave": {
+    "x": 4476,
+    "y": 896,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.aged_vanilla": {
+    "x": 4546,
+    "y": 384,
+    "w": 128,
+    "h": 128
+  },
+  "ingredient.almond_milk": {
+    "x": 4546,
+    "y": 512,
+    "w": 128,
+    "h": 128
+  },
   "ingredient.banana": {
-    "x": 10622,
+    "x": 4592,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.basil": {
-    "x": 10750,
+    "x": 4604,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.blackberry": {
-    "x": 10750,
-    "y": 128,
+    "x": 4592,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.black_tea": {
-    "x": 10878,
-    "y": 0,
+    "x": 4604,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.blueberry": {
-    "x": 10878,
-    "y": 128,
+    "x": 4604,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.brown_sugar": {
-    "x": 11006,
-    "y": 0,
+    "x": 4604,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.candy": {
-    "x": 11006,
-    "y": 128,
+    "x": 4674,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.candy_cane": {
-    "x": 11134,
-    "y": 0,
+    "x": 4674,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.caramel_syrup": {
-    "x": 11134,
+    "x": 4720,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.cardamom": {
-    "x": 11262,
+    "x": 4732,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.cherry": {
-    "x": 11262,
-    "y": 128,
+    "x": 4720,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.chocolate": {
-    "x": 11390,
-    "y": 0,
+    "x": 4732,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.cinnamon": {
-    "x": 11390,
-    "y": 128,
+    "x": 4732,
+    "y": 768,
     "w": 128,
     "h": 128
   },
-  "ingredient.clove": {
-    "x": 11518,
-    "y": 0,
+  "ingredient.cloves": {
+    "x": 4732,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.coconut": {
-    "x": 11518,
-    "y": 128,
+    "x": 4802,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.coconut_water": {
-    "x": 11646,
-    "y": 0,
+    "x": 4802,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.coffee": {
-    "x": 11646,
+    "x": 4848,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.cranberry": {
-    "x": 11774,
+    "x": 4860,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.cream": {
-    "x": 11774,
-    "y": 128,
+    "x": 4848,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.diamond_ice": {
-    "x": 11902,
-    "y": 0,
+    "x": 4860,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.dragonfruit": {
-    "x": 11902,
-    "y": 128,
+    "x": 4860,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.edible_glitter": {
-    "x": 12030,
-    "y": 0,
+    "x": 4860,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.firework_powder": {
-    "x": 12030,
-    "y": 128,
+    "x": 4930,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.ginger": {
-    "x": 12158,
-    "y": 0,
+    "x": 4930,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.gingerbread": {
-    "x": 12158,
+    "x": 4976,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.gold_leaf": {
-    "x": 12286,
+    "x": 4988,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.grape": {
-    "x": 12286,
-    "y": 128,
+    "x": 4976,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.green_apple": {
-    "x": 12414,
-    "y": 0,
+    "x": 4988,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.green_tea": {
-    "x": 12414,
-    "y": 128,
+    "x": 4988,
+    "y": 768,
     "w": 128,
     "h": 128
   },
-  "ingredient.heart_sprinkle": {
-    "x": 12542,
-    "y": 0,
+  "ingredient.heart_sprinkles": {
+    "x": 4988,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.hibiscus_tea": {
-    "x": 12542,
-    "y": 128,
+    "x": 5058,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.honey": {
-    "x": 12670,
-    "y": 0,
+    "x": 5058,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.ice": {
-    "x": 12670,
+    "x": 5104,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.kiwi": {
-    "x": 12798,
+    "x": 5116,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.lavender": {
-    "x": 12798,
-    "y": 128,
+    "x": 5104,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.lemon": {
-    "x": 12926,
-    "y": 0,
+    "x": 5116,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.lemon_slice": {
-    "x": 12926,
-    "y": 128,
+    "x": 5116,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.lime": {
-    "x": 13054,
-    "y": 0,
+    "x": 5116,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.lime_slice": {
-    "x": 13054,
-    "y": 128,
+    "x": 5186,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.mango": {
-    "x": 13182,
-    "y": 0,
+    "x": 5186,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.maple_syrup": {
-    "x": 13182,
+    "x": 5232,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.maraschino_cherry": {
-    "x": 13310,
+    "x": 5244,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.marshmallow": {
-    "x": 13310,
-    "y": 128,
+    "x": 5232,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.milk": {
-    "x": 13438,
-    "y": 0,
+    "x": 5244,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.mint": {
-    "x": 13438,
-    "y": 128,
+    "x": 5244,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.mint_leaf": {
-    "x": 13566,
-    "y": 0,
+    "x": 5244,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.nutmeg": {
-    "x": 13566,
-    "y": 128,
+    "x": 5314,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.oat_milk": {
-    "x": 13694,
-    "y": 0,
+    "x": 5314,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.orange": {
-    "x": 13694,
+    "x": 5360,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.orange_slice": {
-    "x": 13822,
+    "x": 5372,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.organic_lemon": {
-    "x": 13822,
-    "y": 128,
+    "x": 5360,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.passionfruit": {
-    "x": 13950,
-    "y": 0,
+    "x": 5372,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.peach_tea": {
-    "x": 13950,
-    "y": 128,
+    "x": 5372,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.peppermint": {
-    "x": 14078,
-    "y": 0,
+    "x": 5372,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.pineapple": {
-    "x": 14078,
-    "y": 128,
+    "x": 5442,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.pomegranate": {
-    "x": 14206,
-    "y": 0,
+    "x": 5442,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.premium_sugar": {
-    "x": 14206,
+    "x": 5488,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.pride_confetti": {
-    "x": 14334,
+    "x": 5500,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.prism_dust": {
-    "x": 14334,
-    "y": 128,
+    "x": 5488,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.pumpkin": {
-    "x": 14462,
-    "y": 0,
+    "x": 5500,
+    "y": 640,
     "w": 128,
     "h": 128
   },
-  "ingredient.rainbow_sprinkle": {
-    "x": 14462,
-    "y": 128,
+  "ingredient.rainbow_sprinkles": {
+    "x": 5500,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.rainbow_syrup": {
-    "x": 14590,
-    "y": 0,
+    "x": 5500,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.raspberry": {
-    "x": 14590,
-    "y": 128,
+    "x": 5570,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.red_apple": {
-    "x": 14718,
-    "y": 0,
+    "x": 5570,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.rosemary": {
-    "x": 14718,
+    "x": 5616,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.sage": {
-    "x": 14846,
+    "x": 5628,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.snowflake_ice": {
-    "x": 14846,
-    "y": 128,
+    "x": 5616,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.sparkling_water": {
-    "x": 14974,
-    "y": 0,
+    "x": 5628,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.stevia": {
-    "x": 14974,
-    "y": 128,
+    "x": 5628,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.strawberry": {
-    "x": 15102,
-    "y": 0,
+    "x": 5628,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.thyme": {
-    "x": 15102,
-    "y": 128,
+    "x": 5698,
+    "y": 384,
     "w": 128,
     "h": 128
   },
   "ingredient.umbrella": {
-    "x": 15230,
-    "y": 0,
+    "x": 5698,
+    "y": 512,
     "w": 128,
     "h": 128
   },
   "ingredient.vanilla": {
-    "x": 15230,
+    "x": 5744,
     "y": 128,
     "w": 128,
     "h": 128
   },
   "ingredient.vanilla_syrup": {
-    "x": 15358,
+    "x": 5756,
     "y": 0,
     "w": 128,
     "h": 128
   },
   "ingredient.water": {
-    "x": 15358,
-    "y": 128,
+    "x": 5744,
+    "y": 256,
     "w": 128,
     "h": 128
   },
   "ingredient.watermelon": {
-    "x": 15486,
-    "y": 0,
+    "x": 5756,
+    "y": 640,
     "w": 128,
     "h": 128
   },
   "ingredient.whipped_cream": {
-    "x": 15486,
-    "y": 128,
+    "x": 5756,
+    "y": 768,
     "w": 128,
     "h": 128
   },
   "ingredient.white_sugar": {
-    "x": 15614,
-    "y": 0,
+    "x": 5756,
+    "y": 896,
     "w": 128,
     "h": 128
   },
   "ingredient.wild_honey": {
-    "x": 15614,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.01": {
-    "x": 15742,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.02": {
-    "x": 15742,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.03": {
-    "x": 15870,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.04": {
-    "x": 15870,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.05": {
-    "x": 15998,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.06": {
-    "x": 15998,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.07": {
-    "x": 16126,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.08": {
-    "x": 16126,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.09": {
-    "x": 16254,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.10": {
-    "x": 16254,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.appeal": {
-    "x": 16382,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.autoserve": {
-    "x": 16382,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.beta": {
-    "x": 16510,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.bronze": {
-    "x": 16510,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.cash": {
-    "x": 16638,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.coin": {
-    "x": 16638,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.cooldown": {
-    "x": 16766,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.disabled": {
-    "x": 16766,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.enabled": {
-    "x": 16894,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.gold": {
-    "x": 16894,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.heart": {
-    "x": 17022,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.info": {
-    "x": 17022,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.leaderboard": {
-    "x": 17150,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.left_arrow": {
-    "x": 17150,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.level": {
-    "x": 17278,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.location": {
-    "x": 17278,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.mix_all": {
-    "x": 17406,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.notification": {
-    "x": 17406,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.premium": {
-    "x": 17534,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.prestige": {
-    "x": 17534,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.recipe": {
-    "x": 17662,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.reply": {
-    "x": 17662,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.replyagain": {
-    "x": 17790,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.resilience": {
-    "x": 17790,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.right_arrow": {
-    "x": 17918,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.seasonal": {
-    "x": 17918,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.silver": {
-    "x": 18046,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.speed": {
-    "x": 18046,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.storage": {
-    "x": 18174,
-    "y": 0,
-    "w": 128,
-    "h": 128
-  },
-  "icon.timezone": {
-    "x": 18174,
-    "y": 128,
-    "w": 128,
-    "h": 128
-  },
-  "icon.warning": {
-    "x": 18302,
-    "y": 0,
+    "x": 5826,
+    "y": 384,
     "w": 128,
     "h": 128
   }
