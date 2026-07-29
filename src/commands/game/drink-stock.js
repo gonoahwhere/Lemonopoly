@@ -23,7 +23,6 @@ export default {
         const stockByKey = new Map((profile.drinks || []).map(stock => [stock.key, stock]));
         const ownedCount = RECIPES.filter(recipe => (stockByKey.get(recipe.id)?.quantity || 0) > 0).length;
 
-        const page = 1;
         const totalPages = Math.max(1, Math.ceil(ownedCount / OWNED_DRINKS_PER_PAGE));
         const requestedPage = interaction.options.getInteger('page');
         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);

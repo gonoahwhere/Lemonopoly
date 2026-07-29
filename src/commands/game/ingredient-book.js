@@ -15,9 +15,6 @@ export default {
                 .setMinValue(1)
                 .setRequired(false)),
     async execute(interaction) {
-        const image = renderIngredientBook();
-
-        let page = 1;
         const totalPages = getIngredientBookPageCount();
         const requestedPage = interaction.options.getInteger('page');
         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);

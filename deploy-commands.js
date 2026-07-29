@@ -35,6 +35,10 @@ const route = config.guildId ? Routes.applicationGuildCommands(config.clientId, 
 const scope = config.guildId ? `guild ${config.guildId}` : 'global';
 
 try {
+  logger.info(`Clearing existing commands for ${scope}...`);
+  await rest.put(route, { body: [] });
+  logger.info(`Cleared commands for ${scope}.`);
+
   logger.info(`Deploying ${commands.length} command(s) ${scope}...`);
   const data = await rest.put(route, { body: commands });
   logger.info(`Successfully deployed ${data.length} command(s) to ${scope}.`);
