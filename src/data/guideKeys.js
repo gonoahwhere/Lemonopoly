@@ -294,7 +294,7 @@ export const FEATURES = [
             ]
         },
         tips: [
-            'not all premium features have been implemented currently.', 
+            'not all premium features have been implemented currently.',
             'rewards can be claimed/reset on the 1st of every month.'
         ]
     },

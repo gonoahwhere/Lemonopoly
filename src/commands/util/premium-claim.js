@@ -55,13 +55,13 @@ export default {
 
         const profile = interaction.playerProfile;
         const userIsPremium = Boolean(profile?.entitlements?.premium);
-        
+
         const now = new Date();
         const lastClaimedAt = profile?.premiumBonuses?.lastClaimedAt ? new Date(profile.premiumBonuses.lastClaimedAt) : null;
         const alreadyClaimedThisMonth = lastClaimedAt ? isSameMonth(lastClaimedAt, now) : false;
         const daysUntilClaim = alreadyClaimedThisMonth ? daysUntilNextMonth(now) : 0;
 
-        if (subcommand === 'view') {            
+        if (subcommand === 'view') {
             if (!userIsPremium) {
                 const buffer = await renderMonthlyClaim(profile, { hasPremium: false });
                 const attachment = new AttachmentBuilder(buffer, { name: 'premium-view.png' });

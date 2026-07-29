@@ -85,7 +85,7 @@ function drawStarBullet(ctx, cx, cy, outerR = 9) {
 
 function drawHeader(ctx, width, profile) {
     ctx.font = "42px FredokaOne";
-    
+
     const title = 'PREMIUM PASS';
     const isPremium = Boolean(profile?.entitlements?.premium);
     const customColours = isPremium ? profile.customization?.nameGradientColours : null;

@@ -98,7 +98,7 @@ function drawHeader(ctx, width, totalRedeemable, profile) {
     ctx.font = '20px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.fillText('Your unredeemed premium rewards', 54, 90);
-    
+
     const label = `${formatNumber(totalRedeemable)} ITEM${totalRedeemable === 1 ? '' : 'S'} BANKED`;
     const fill = totalRedeemable > 0 ? COLOURS.premiumSoft : 'rgba(168,147,79,0.10)';
     const colour = totalRedeemable > 0 ? COLOURS.premium : (COLOURS.muted ?? COLOURS.subtitle);

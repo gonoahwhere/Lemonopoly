@@ -53,7 +53,6 @@ function truncate(ctx, text, maxWidth) {
     return trimmed + '…';
 }
 
-
 function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);

@@ -267,7 +267,7 @@ export const EVENT_CUSTOMERS = [
         id: 'tourist',
         job: 'pays more money per drink',
         priceMultiplier: 1.3,
-        
+
     },
     {
         name: 'Kid',

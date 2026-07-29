@@ -2,7 +2,6 @@ import { renderGuideContents, renderGuideCommands, renderGuideFeature } from '..
 
 export const guideSessionMap = new Map();
 
-
 // Returns the ordered list of "page entries" for a given mode.
 //  - full: contents page + every manifest page
 //  - commands: only command category pages

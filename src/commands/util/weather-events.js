@@ -13,7 +13,7 @@ export default {
         .setDescription('View the possible outcomes for each weather event.'),
     async execute(interaction) {
         await interaction.deferReply();
-    
+
         const viewerProfile = interaction.playerProfile;
         const page = 1;
         const totalPages = EVENT_DETAILS.length;
@@ -27,13 +27,13 @@ export default {
             .setEmoji(config.emoji('misc', 'left_arrow'))
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(page === 1)
-            
+
         const eventPage = new ButtonBuilder()
             .setCustomId('weather_event_page')
             .setLabel(`${page} / ${totalPages}`)
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(true)
-        
+
         const nextPage = new ButtonBuilder()
             .setCustomId('weather_event_next')
             .setEmoji(config.emoji('misc', 'right_arrow'))

@@ -130,7 +130,7 @@ function drawHeader(ctx, player, prestige) {
         border: '#3B82F6',
         text: '#1D4ED8',
     });
-    
+
     drawRightPill(ctx, WIDTH - PAD, 96, 'cash', `$${formatNumber(player?.economy?.cash ?? 0)}`, {
         bg: COLOURS.greenSoft,
         border: COLOURS.green,

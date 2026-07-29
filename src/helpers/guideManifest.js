@@ -7,7 +7,7 @@ export function buildGuideManifest(categories, features) {
     const featureChapters = [];
 
     let cursor = 2;
-    
+
     const visibleCategories = categories
         .filter((category) => !category.hidden)
         .map((category) => ({

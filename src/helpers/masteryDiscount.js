@@ -10,7 +10,7 @@ export function getActiveIngredientDiscount(player) {
     if (unlocked.length === 0) return 0;
 
     let totalDiscount = 0;
-    
+
     for (const recipe of unlocked) {
         const def = MASTERY_DEFS[recipe.rarity];
         if (!def) continue;
