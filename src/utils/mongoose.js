@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const fl = require("fluident");
+import logger from '../utils/logger.js';
 
 module.exports = {
     init: () => {
@@ -16,22 +17,22 @@ module.exports = {
 
         mongoose.connect(process.env.MongoURI, dbOptions)
         .then(() => {
-            console.log(fl.green('[MONGOOSE] I have successfully connected to the Database!'));
+            logger.log(fl.green('[MONGOOSE] I have successfully connected to the Database!'));
         })
         .catch((err) => {
-            console.error(fl.red(`[MONGOOSE] I have encountered an error: \n${err.stack}`));
+            logger.error(fl.red(`[MONGOOSE] I have encountered an error: \n${err.stack}`));
         });
 
         mongoose.connection.on('connected', () => {
-            console.log(fl.green('\n[MONGOOSE] Connection to the database established.'));
+            logger.log(fl.green('\n[MONGOOSE] Connection to the database established.'));
         });
 
         mongoose.connection.on('disconnected', () => {
-            console.warn(fl.yellow('[MONGOOSE] Disconnected from the database.'));
+            logger.warn(fl.yellow('[MONGOOSE] Disconnected from the database.'));
         });
 
         mongoose.connection.on('error', (err) => {
-            console.error(fl.red(`[MONGOOSE] Error encountered: \n${err.stack}`));
+            logger.error(fl.red(`[MONGOOSE] Error encountered: \n${err.stack}`));
         });
     }
 };
