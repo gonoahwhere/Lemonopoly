@@ -18,7 +18,14 @@ export default {
     data: new SlashCommandBuilder()
         .setName('my-recipes')
         .setDescription('View and master your unlocked recipes.')
-        .addSubcommand((sub) => sub.setName('view').setDescription('View your recipe mastery book.'))
+        .addSubcommand((sub) => sub
+            .setName('view')
+            .setDescription('View your recipe mastery book.')
+            .addIntegerOption(option =>
+                option.setName('page')
+                    .setDescription('Jump to a specific page')
+                    .setMinValue(1)
+                    .setRequired(false)))
         .addSubcommand((sub) => sub
             .setName('master')
             .setDescription('Master a recipe that has reached 5 stars.')
@@ -54,8 +61,8 @@ export default {
             case 'view': {
                 const profile = interaction.playerProfile;
                 const unlockedCount = profile.recipes.unlocked.length;
-                const totalPages = Math.max(1, Math.ceil(unlockedCount / RECIPES_PER_PAGE));
-                const page = 1;
+                const requestedPage = interaction.options.getInteger('page');
+                const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
 
                 const image = renderMasteryBook(profile, page);
                 const attachment = new AttachmentBuilder(image, { name: 'my-recipes.png' });
@@ -63,24 +70,24 @@ export default {
                 const components = [];
                 if (totalPages > 1) {
                     const previousPage = new ButtonBuilder()
-                        .setCustomId(`recipe_view_previous`)
+                        .setCustomId(`recipe_view_previous_${page}`)
                         .setEmoji(config.emoji('misc', 'left_arrow'))
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === 1);
 
-                    const recipePage = new ButtonBuilder()
+                    const myRecipesPage = new ButtonBuilder()
                         .setCustomId(`recipe_view_page`)
                         .setLabel(`${page} / ${totalPages}`)
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(true);
 
                     const nextPage = new ButtonBuilder()
-                        .setCustomId(`recipe_view_next`)
+                        .setCustomId(`recipe_view_next_${page}`)
                         .setEmoji(config.emoji('misc', 'right_arrow'))
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === totalPages);
 
-                    components.push(new ActionRowBuilder().addComponents(previousPage, recipePage, nextPage));
+                    components.push(new ActionRowBuilder().addComponents(previousPage, myRecipesPage, nextPage));
                 }
 
                 return await interaction.editReply({ files: [attachment], components });
