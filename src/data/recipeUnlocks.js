@@ -8,7 +8,7 @@ export function getRecipeUnlock(recipe, player) {
                 progress: 100,
                 text: 'Unlocked',
             };
-        
+
         case 'playerLevel': {
             const current = player.stand.level ?? 1;
             const required = unlock.value;

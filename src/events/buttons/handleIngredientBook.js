@@ -4,11 +4,13 @@ import PlayerProfile from '../../models/player.js';
 import { renderIngredientBook, getIngredientBookPageCount } from '../../renders/renderIngredientBook.js';
 import { errorEmbed } from '../../utils/embed.js';
 
+const ingredientMap = new Map();
+
 export default async function handleIngredientBook(interaction) {
     if (!interaction.customId.startsWith('ingredient_book_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -20,29 +22,27 @@ export default async function handleIngredientBook(interaction) {
         });
     }
 
+    let page = ingredientMap.get(interaction.user.id) ?? 1;
     const totalPages = getIngredientBookPageCount();
 
-    // customId is now e.g. "ingredient_book_previous_3" or "ingredient_book_next_3"
-    const [, , action, currentPageStr] = interaction.customId.split('_');
-    let page = parseInt(currentPageStr, 10) || 1;
-
-    if (action === 'previous') {
+    if (interaction.customId === 'ingredient_book_previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (action === 'next') {
+    if (interaction.customId === 'ingredient_book_next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    const image = await renderIngredientBook(page);
+    ingredientMap.set(interaction.user.id, page);
+    const image = renderIngredientBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'ingredients.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`ingredient_book_previous_${page}`)
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setCustomId(`ingredient_book_previous`)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const ingredientPage = new ButtonBuilder()
         .setCustomId(`ingredient_book_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -50,11 +50,11 @@ export default async function handleIngredientBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`ingredient_book_next_${page}`)
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setCustomId(`ingredient_book_next`)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, ingredientPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;

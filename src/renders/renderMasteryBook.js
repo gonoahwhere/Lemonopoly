@@ -1,35 +1,36 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
+import { getSprite } from '../data/sprites.js';
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { wrapText } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const COLOURS = {
     ...BASE_COLOURS,
     progressBg: '#F1E6BE',
-    starEmpty: 'rgba(138,117,72,0.35)',
+    progressFillA: '#B7E75A',
+    progressFillB: '#5FCB4F',
+    starEmpty: '#8A754859',
 };
 
 // common -> mythic are flat colours. divine and up are gradients.
 const RARITY_COLOURS = {
-    common: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    uncommon: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    rare: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
-    epic: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    legendary: { text: '#E7A800', bg: 'rgba(231,168,0,0.12)', border: 'rgba(231,168,0,0.4)' },
-    mythic: { text: '#F0664E', bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)' },
-    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: 'rgba(139,92,246,0.45)' },
-    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: 'rgba(255,97,210,0.45)' },
-    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: 'rgba(0,198,255,0.45)' },
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
-    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: 'rgba(255,65,108,0.45)' },
-    eternal: { gradient: ['#2AF598', '#009EFD'], border: 'rgba(0,158,253,0.45)' },
-    exotic: { gradient: ['#FF9966', '#00F2FE'], border: 'rgba(255,153,102,0.45)' },
+    common: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    uncommon: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    rare: { text: '#3B82C4', bg: '#3B82C41F', border: '#3B82C466' },
+    epic: { text: '#9B4FD1', bg: '#9B4FD11F', border: '#9B4FD166' },
+    legendary: { text: '#E7A800', bg: '#E7A8001F', border: '#E7A80066' },
+    mythic: { text: '#F0664E', bg: '#F0664E1F', border: '#F0664E66' },
+    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: '#8B5CF673' },
+    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: '#FF61D273' },
+    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: '#00C6FF73' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
+    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: '#FF416C73' },
+    eternal: { gradient: ['#2AF598', '#009EFD'], border: '#009EFD73' },
+    exotic: { gradient: ['#FF9966', '#00F2FE'], border: '#FF996673' },
 };
 
 function getUnlockedRecipesForPlayer(player) {
@@ -37,7 +38,7 @@ function getUnlockedRecipesForPlayer(player) {
     return RECIPES.filter((r) => unlockedMap.has(r.id)).map((r) => ({ ...r, entry: unlockedMap.get(r.id), }));
 }
 
-export async function renderMasteryBook(player, page = 1) {
+export function renderMasteryBook(player, page = 1) {
     const recipesPerPage = 3;
     const unlockedRecipes = getUnlockedRecipesForPlayer(player);
     const start = (page - 1) * recipesPerPage;
@@ -49,7 +50,7 @@ export async function renderMasteryBook(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, unlockedRecipes.length, recipesPerPage, player);
+    drawHeader(ctx, width, page, unlockedRecipes.length, recipesPerPage);
     drawRecipes(ctx, pageRecipes, player);
     drawFooter(ctx, width, height, unlockedRecipes.length, recipesPerPage);
 
@@ -87,29 +88,21 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
     ctx.restore();
 }
 
-function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
+function drawHeader(ctx, width, page, totalRecipes, perPage) {
     const totalPages = Math.max(1, Math.ceil(totalRecipes / perPage));
 
     ctx.font = "58px FredokaOne";
+    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const title = 'OWNED RECIPES';
-    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
-
-    const nameWidth = ctx.measureText(title).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText(title, 50, 78);
+    ctx.strokeText('LEMONOPOLY', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText(title, 50, 78);
+    ctx.fillText("LEMONOPOLY", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -122,8 +115,8 @@ function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -131,9 +124,9 @@ function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -158,10 +151,10 @@ function drawRecipes(ctx, recipes, player) {
     const cardHeight = 305;
     const gap = 22;
 
-    recipes.forEach((recipe, i) => {
+    for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        drawRecipeCard(ctx, recipe, player, cardX, y, cardWidth, cardHeight);
-    });
+        drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
+    }
 }
 
 function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
@@ -177,12 +170,12 @@ function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
 
 function drawPuffyStarShape(ctx, cx, cy, outerR, innerR, roundness = 0.65) {
     const points = 5;
-    const verts = [];
-    for (let i = 0; i < points * 2; i++) {
+    const verts = Array.from({ length: points * 2 }, (_, i) => {
         const r = i % 2 === 0 ? outerR : innerR;
         const angle = (Math.PI / points) * i - Math.PI / 2;
-        verts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-    }
+
+        return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+    });
 
     ctx.beginPath();
     const n = verts.length;
@@ -276,8 +269,11 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const masterCheck = canMaster(entry, player.prestige.level);
 
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
-    const borderColours = player.entitlements?.premium ? player.customization?.cardBorderColours : null;
-    strokeCardBorder(ctx, x, y, w, h, 22, roundedRectPath, COLOURS.border, borderColours);
+
+    ctx.strokeStyle = COLOURS.border;
+    ctx.lineWidth = 1.5;
+    roundedRectPath(ctx, x, y, w, h, 22);
+    ctx.stroke();
 
     const imgSize = 96;
     const imgX = x + 26;
@@ -290,13 +286,13 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = getDrinkImageFromCache(recipe.image);
+    const drinkImg = getSprite(`drink.${recipe.id}`);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+        ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
         ctx.restore();
     }
 
@@ -333,11 +329,11 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     } else if (masterCheck.reason === 'PRESTIGE_LOCKED') {
         badgeLabel = 'PRESTIGE LOCKED';
         badgeColour = COLOURS.red;
-        badgeBg = 'rgba(240,102,78,0.12)';
+        badgeBg = '#F0664E1F';
     } else if (masterCheck.reason === 'MAX_TIER') {
         badgeLabel = 'MAX TIER';
         badgeColour = '#A1A1AA';
-        badgeBg = 'rgba(161,161,170,0.12)';
+        badgeBg = '#A1A1AA1F';
     }
 
     if (badgeLabel) {
@@ -363,9 +359,9 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.font = '15px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     const descLines = wrapText(ctx, recipe.description, textW, 2);
-    descLines.forEach((line, i) => {
-        ctx.fillText(line, textX, y + 108 + i * 20);
-    });
+    for (let i = 0; i < descLines.length; i++) {
+        ctx.fillText(descLines[i], textX, y + 108 + i * 20);
+    }
 
     const barX = x + 34;
     const barY = y + imgSize + 68;
@@ -375,7 +371,9 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
 
     const fraction = getStarProgressFraction(entry);
     if (fraction > 0) {
-        const fillGrad = getRarityFill(ctx, entry.rarity, barX, 0, barX + barW, 0);
+        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+        fillGrad.addColorStop(0, COLOURS.progressFillA);
+        fillGrad.addColorStop(1, COLOURS.progressFillB);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
@@ -383,9 +381,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
         ctx.fillRect(barX, barY, barW * fraction, barH);
         ctx.restore();
     }
-    
-    const def = RARITY_COLOURS[entry.rarity] || RARITY_COLOURS.common;
-    ctx.strokeStyle = def.border;
+    ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();
@@ -398,10 +394,10 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const chipSize = 46;
     const chipGap = 14;
     let chipX = x + 34;
-    recipe.ingredients.slice(0, 8).forEach((ing) => {
+    for (const ing of recipe.ingredients.slice(0, 8)) {
         drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
         chipX += chipSize + chipGap;
-    });
+    }
 }
 
 function drawIngredientChip(ctx, x, y, size, ing) {
@@ -413,14 +409,14 @@ function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ing.id);
+    const img = getSprite(`ingredient.${ing.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, x + pad / 2, y + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, x + pad / 2, y + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 

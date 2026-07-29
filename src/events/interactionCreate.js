@@ -1,23 +1,10 @@
-import { Collection, InteractionType, PermissionFlagsBits, MessageFlags } from "discord.js";
+import { Collection, PermissionFlagsBits, MessageFlags } from "discord.js";
 import { errorEmbed } from "../utils/embed.js";
 import logger from "../utils/logger.js";
 import config from "../../config.js";
 import PlayerProfile from "../models/player.js";
-import BotStats from '../models/botData.js';
 
-const PROFILE_EXEMPT_COMMANDS = ['start', 'help', 'about', 'getting-started'];
-
-async function incrementCommandsUsedGlobally() {
-    try {
-        await BotStats.findOneAndUpdate(
-            { name: 'bot_statistics' },
-            { $inc: { commandCount: 1 } },
-            { upsert: true, setDefaultsOnInsert: true }
-        );
-    } catch (err) {
-        logger.error(`[CMD COUNTER ERR]: ${err.message}`);
-    }
-}
+const PROFILE_EXEMPT_COMMANDS = ['start', 'help', 'about'];
 
 export default {
     name: "interactionCreate",
@@ -38,7 +25,7 @@ export default {
                 [PermissionFlagsBits.AttachFiles]: "Attach Files",
                 [PermissionFlagsBits.EmbedLinks]: "Embed Links"
             };
-            
+
             const missingPermissions = requiredPermissions.filter(perm => !channelPermissions?.has(perm));
 
             if (missingPermissions.length > 0) {
@@ -113,14 +100,13 @@ export default {
             // Execute Command
             try {
                 // Dev Guard
-                if (command.devOnly && !config.developerIds.includes(interaction.user.id)) {
+                if (command.devOnly && config.owners.every(owner => owner.id !== interaction.user.id)) {
                     return interaction.reply({
                         components: [errorEmbed("Developer Only", "You do not have permission to use this command.")],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
 
-                await incrementCommandsUsedGlobally();
                 await command.execute(interaction, client);
             } catch (err) {
                 //logger.error(`Error executing /${interaction.commandName}: ${err.stack}`);

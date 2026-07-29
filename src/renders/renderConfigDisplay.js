@@ -1,43 +1,40 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
-import { getIconFromCache } from "../data/iconImages.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { getMasteryBonuses, calculateStars } from "../utils/recipeMastery.js";
-import { formatNumber, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const COLOURS = {
     ...BASE_COLOURS,
-    redSoft: 'rgba(240,102,78,0.12)',
+    redSoft: '#F0664E1F',
     premium: '#9B4FD1',
-    premiumSoft: 'rgba(155,79,209,0.12)',
+    premiumSoft: '#9B4FD11F',
     seasonal: '#3B82C4',
-    seasonalSoft: 'rgba(59,130,196,0.12)',
-    beta: '#AA2014',
-    betaSoft: 'rgba(240,102,78,0.12)',
+    seasonalSoft: '#3B82C41F',
+    beta: '#F0664E',
+    betaSoft: '#F0664E1F',
     lockedGrey: '#A1A1AA',
-    lockedGreySoft: 'rgba(161,161,170,0.12)',
-    starEmpty: 'rgba(138,117,72,0.35)',
+    lockedGreySoft: '#A1A1AA1F',
+    starEmpty: '#8A754859',
     teal: '#2BAFA0',
 };
 
 const RARITY_COLOURS = {
-    common: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    uncommon: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    rare: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
-    epic: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    legendary: { text: '#E7A800', bg: 'rgba(231,168,0,0.12)', border: 'rgba(231,168,0,0.4)' },
-    mythic: { text: '#F0664E', bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)' },
-    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: 'rgba(139,92,246,0.45)' },
-    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: 'rgba(255,97,210,0.45)' },
-    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: 'rgba(0,198,255,0.45)' },
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
-    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: 'rgba(255,65,108,0.45)' },
-    eternal: { gradient: ['#2AF598', '#009EFD'], border: 'rgba(0,158,253,0.45)' },
-    exotic: { gradient: ['#FF9966', '#00F2FE'], border: 'rgba(255,153,102,0.45)' },
+    common: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    uncommon: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    rare: { text: '#3B82C4', bg: '#3B82C41F', border: '#3B82C466' },
+    epic: { text: '#9B4FD1', bg: '#9B4FD11F', border: '#9B4FD166' },
+    legendary: { text: '#E7A800', bg: '#E7A8001F', border: '#E7A80066' },
+    mythic: { text: '#F0664E', bg: '#F0664E1F', border: '#F0664E66' },
+    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: '#8B5CF673' },
+    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: '#FF61D273' },
+    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: '#00C6FF73' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
+    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: '#FF416C73' },
+    eternal: { gradient: ['#2AF598', '#009EFD'], border: '#009EFD73' },
+    exotic: { gradient: ['#FF9966', '#00F2FE'], border: '#FF996673' },
 };
 
 function roundedRectPath(ctx, x, y, w, h, r) {
@@ -88,13 +85,13 @@ function drawIconCircle(ctx, cx, cy, size, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - size / 2 + 3, cy - size / 2 + 3, size - 6, size - 6);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - size / 2 + 3, cy - size / 2 + 3, size - 6, size - 6);
         ctx.restore();
     }
 }
@@ -115,18 +112,11 @@ function drawPill(ctx, x, y, label, colour, bg, borderColour) {
 
 function drawHeader(ctx, width, profile) {
     ctx.font = "42px FredokaOne";
-    
-    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+    const titleGrad = ctx.createLinearGradient(50, 20, 450, 20);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const nameWidth = ctx.measureText(profile.stand.name).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.strokeText('STAND CONFIGURATION', 50, 62);
@@ -139,9 +129,9 @@ function drawHeader(ctx, width, profile) {
     ctx.fillText(profile.stand.name, 54, 90);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -165,7 +155,7 @@ function drawPremiumChip(ctx, x, y, w, h, isPremium) {
     ctx.fillStyle = COLOURS.premium;
     ctx.fillText('PREMIUM PASS', textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, isPremium ? 'ACTIVE' : 'FREE TIER', isPremium ? COLOURS.premium : COLOURS.muted, isPremium ? COLOURS.premiumSoft : '#A8934F1A');
 }
 
 function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
@@ -183,7 +173,7 @@ function drawMixAllCapChip(ctx, x, y, w, h, cap, isPremium) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText("MIX 'ALL' CAP", textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, `${cap} CUPS`, COLOURS.muted, 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, `${cap} CUPS`, COLOURS.muted, '#A8934F1A');
 
     if (isPremium) {
         ctx.font = '13px FredokaOne';
@@ -202,7 +192,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     ctx.stroke();
 
     if (!active) {
-        roundedRect(ctx, x, y, w, h, 18, 'rgba(255,255,255,0.35)');
+        roundedRect(ctx, x, y, w, h, 18, '#FFFFFF59');
     }
 
     const iconSize = 40;
@@ -213,7 +203,7 @@ function drawEntitlementChip(ctx, x, y, w, h, iconKey, label, active, accent, ac
     ctx.fillStyle = accent;
     ctx.fillText(label.toUpperCase(), textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, active ? 'ACTIVE' : 'INACTIVE', active ? accent : COLOURS.muted, active ? accentSoft : '#A8934F1A');
 }
 
 function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent = COLOURS.subtitle) {
@@ -238,7 +228,7 @@ function drawToggleChip(ctx, x, y, w, h, iconKey, label, enabled, locked, accent
 
     const pillLabel = enabled ? 'ACTIVE' : 'INACTIVE';
     const pillColour = enabled ? COLOURS.green : COLOURS.muted;
-    const pillBg = enabled ? COLOURS.greenSoft : 'rgba(168,147,79,0.10)';
+    const pillBg = enabled ? COLOURS.greenSoft : '#A8934F1A';
     drawPill(ctx, textX, y + h / 2 - 1, pillLabel, pillColour, pillBg);
 }
 
@@ -257,17 +247,17 @@ function drawTimezoneChip(ctx, x, y, w, h, timezone) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText('TIMEZONE', textX, y + h / 2 - 8);
 
-    drawPill(ctx, textX, y + h / 2 - 1, timezone, COLOURS.muted, 'rgba(168,147,79,0.10)');
+    drawPill(ctx, textX, y + h / 2 - 1, timezone, COLOURS.muted, '#A8934F1A');
 }
 
 function drawRarityPill(ctx, x, y, rarity) {
-    const label = rarity.toUpperCase();
-    ctx.font = '14px FredokaOne';
-    const w = ctx.measureText(label).width + 20;
-    const h = 26;
     const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.common;
+    const label = rarity.toUpperCase();
+    ctx.font = '13px FredokaOne';
+    const w = ctx.measureText(label).width + 16;
+    const h = 22;
 
-    roundedRectPath(ctx, x, y, w, h, 13);
+    roundedRectPath(ctx, x, y, w, h, h / 2);
     if (def.gradient) {
         const grad = ctx.createLinearGradient(x, y, x + w, y);
         grad.addColorStop(0, def.gradient[0]);
@@ -281,103 +271,28 @@ function drawRarityPill(ctx, x, y, rarity) {
         ctx.fillStyle = def.bg;
         ctx.fill();
     }
-
     ctx.strokeStyle = def.border;
-    ctx.lineWidth = 1.2;
-    roundedRectPath(ctx, x, y, w, h, 13);
+    ctx.lineWidth = 1.1;
+    roundedRectPath(ctx, x, y, w, h, h / 2);
     ctx.stroke();
 
-    ctx.fillStyle = def.gradient
-        ? (() => {
-              const textGrad = ctx.createLinearGradient(x, y, x + w, y);
-              textGrad.addColorStop(0, def.gradient[0]);
-              textGrad.addColorStop(1, def.gradient[1]);
-              return textGrad;
-          })()
-        : def.text;
-    ctx.fillText(label, x + 10, y + h / 2 + 5);
-
+    ctx.fillStyle = def.text ?? def.border;
+    ctx.fillText(label, x + 8, y + h / 2 + 4);
     return w;
 }
 
-function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
-    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.common;
-    if (def.gradient) {
-        const grad = ctx.createLinearGradient(x0, y0, x1, y1);
-        grad.addColorStop(0, def.gradient[0]);
-        grad.addColorStop(1, def.gradient[1]);
-        return grad;
-    }
-    return def.text;
-}
-
-function drawPuffyStarShape(ctx, cx, cy, outerR, innerR, roundness = 0.65) {
-    const points = 5;
-    const verts = [];
-    for (let i = 0; i < points * 2; i++) {
-        const r = i % 2 === 0 ? outerR : innerR;
-        const angle = (Math.PI / points) * i - Math.PI / 2;
-        verts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-    }
-
-    ctx.beginPath();
-    const n = verts.length;
-    for (let i = 0; i < n; i++) {
-        const curr = verts[i];
-        const next = verts[(i + 1) % n];
-        const prev = verts[(i - 1 + n) % n];
-
-        const distPrev = Math.hypot(curr.x - prev.x, curr.y - prev.y);
-        const distNext = Math.hypot(next.x - curr.x, next.y - curr.y);
-        const rPrev = distPrev * roundness * 0.5;
-        const rNext = distNext * roundness * 0.5;
-
-        const startX = curr.x + ((prev.x - curr.x) / distPrev) * rPrev;
-        const startY = curr.y + ((prev.y - curr.y) / distPrev) * rPrev;
-        const endX = curr.x + ((next.x - curr.x) / distNext) * rNext;
-        const endY = curr.y + ((next.y - curr.y) / distNext) * rNext;
-
-        if (i === 0) ctx.moveTo(startX, startY);
-        else ctx.lineTo(startX, startY);
-        ctx.quadraticCurveTo(curr.x, curr.y, endX, endY);
-    }
-    ctx.closePath();
-}
-
-function drawStarsRow(ctx, x, y, rarity, stars) {
-    const outerR = 12;
-    const innerR = 6.5;
-    const spacing = 27;
-    const fill = getRarityFill(ctx, rarity, x, y - outerR, x + spacing * 4 + outerR, y + outerR);
-
-    for (let i = 0; i < 5; i++) {
-        const cx = x + i * spacing + outerR;
-        drawPuffyStarShape(ctx, cx, y, outerR, innerR);
-        if (i < stars) {
-            ctx.fillStyle = fill;
-            ctx.fill();
-        } else {
-            ctx.strokeStyle = COLOURS.starEmpty;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-        }
-    }
-}
-
-function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber, profile) {
+function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber) {
     roundedRectWithShadow(ctx, x, y, w, h, 18, COLOURS.card, COLOURS.cardShadow);
-    const borderColours = profile.entitlements?.premium ? profile.customization?.cardBorderColours : null;
-    strokeCardBorder(ctx, x, y, w, h, 18, roundedRectPath, COLOURS.border, borderColours);
+    ctx.strokeStyle = COLOURS.border;
+    ctx.lineWidth = 1.2;
+    roundedRectPath(ctx, x, y, w, h, 18);
+    ctx.stroke();
 
     ctx.font = '13px FredokaOne';
     ctx.fillStyle = COLOURS.muted;
     ctx.fillText(`SLOT ${slotNumber}`, x + 18, y + 22);
 
     const def = RECIPES.find((r) => r.id === entry.key);
-    entry.stars = calculateStars(entry);
-    const bonuses = getMasteryBonuses(entry);
-    const effectivePrice = def ? (def.sellPrice * bonuses.sellPriceMultiplier) : null;
-
     const imgSize = 64;
     const imgX = x + 18;
     const imgY = y + 32;
@@ -389,14 +304,14 @@ function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber, profile) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if (def?.image) {
-        const drinkImg = getDrinkImageFromCache(def.image);
+    if (def) {
+        const drinkImg = getSprite(`drink.${def.id}`);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();
             ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+            ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
             ctx.restore();
         }
     }
@@ -406,25 +321,7 @@ function drawFilledSlotCard(ctx, x, y, w, h, entry, slotNumber, profile) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText(def?.name ?? entry.key, textX, imgY + 22);
 
-    const rarityPillW = drawRarityPill(ctx, textX, imgY + 34, entry.rarity);
-
-    let priceW = 0;
-    if (effectivePrice != null) {
-        ctx.font = '13px FredokaOne';
-        const priceLabel = `$${formatNumber(effectivePrice)}`;
-        const priceX = textX + rarityPillW + 10;
-        priceW = ctx.measureText(priceLabel).width + 20;
-        roundedRect(ctx, priceX, imgY + 34, priceW, 26, 13, COLOURS.greenSoft);
-        ctx.strokeStyle = COLOURS.green + '99';
-        ctx.lineWidth = 1.2;
-        roundedRectPath(ctx, priceX, imgY + 34, priceW, 26, 13);
-        ctx.stroke();
-        ctx.fillStyle = '#2E8B39';
-        ctx.fillText(priceLabel, priceX + 10, imgY + 52);
-    }
-
-    const starsX = textX + rarityPillW + (priceW ? priceW + 20 : 10);
-    drawStarsRow(ctx, starsX, imgY + 47, entry.rarity, entry.stars);
+    drawRarityPill(ctx, textX, imgY + 34, entry.rarity);
 }
 
 function drawEmptySlotCard(ctx, x, y, w, h, slotNumber) {
@@ -441,7 +338,7 @@ function drawEmptySlotCard(ctx, x, y, w, h, slotNumber) {
     ctx.textAlign = 'left';
 }
 
-export async function renderConfigDisplay(profile) {
+export function renderConfigDisplay(profile) {
     const width = 900;
 
     const isPremium = Boolean(profile.entitlements?.premium);
@@ -490,11 +387,11 @@ export async function renderConfigDisplay(profile) {
 
     // Row: Leaderboard / Auto-Serve / Notifications toggles
     drawToggleChip(ctx, 50, y, threeChipW, TOGGLE_ROW_H, 'leaderboard', 'Leaderboard', leaderboardOptIn, false, COLOURS.teal);
-    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Sell', autoServeEnabled, !isPremium, COLOURS.premium);
+    drawToggleChip(ctx, 50 + threeChipW + 18, y, threeChipW, TOGGLE_ROW_H, 'autoserve', 'Auto-Serve', autoServeEnabled, !isPremium, COLOURS.premium);
     drawToggleChip(ctx, 50 + (threeChipW + 18) * 2, y, threeChipW, TOGGLE_ROW_H, 'notifications', 'Notifications', notificationsEnabled, false, COLOURS.green);
     y += TOGGLE_ROW_H + GAP;
 
-    // Row: Timezone 
+    // Row: Timezone
     drawTimezoneChip(ctx, 50, y, 800, TIMEZONE_ROW_H, timezone);
     y += TIMEZONE_ROW_H + GAP;
 
@@ -506,7 +403,7 @@ export async function renderConfigDisplay(profile) {
     for (let i = 0; i < maxActiveSlots; i++) {
         const entry = activeEntries[i];
         if (entry) {
-            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1, profile);
+            drawFilledSlotCard(ctx, 50, y, 800, SLOT_CARD_H, entry, i + 1);
         } else {
             drawEmptySlotCard(ctx, 50, y, 800, SLOT_CARD_H, i + 1);
         }

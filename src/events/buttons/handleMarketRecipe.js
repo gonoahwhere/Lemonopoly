@@ -2,14 +2,15 @@ import { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Messag
 import config from '../../../config.js';
 import PlayerProfile from '../../models/player.js';
 import { renderRecipeMarket, getMarketRecipes } from '../../renders/renderRecipeMarket.js';
-import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
+
+const marketViewRecipe = new Map();
 
 export default async function handleMarketRecipe(interaction) {
     if (!interaction.customId.startsWith('market_recipe_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -21,31 +22,28 @@ export default async function handleMarketRecipe(interaction) {
         });
     }
 
-    const recipes = getMarketRecipes(profile); 
-    const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
+    let page = marketViewRecipe.get(interaction.user.id) ?? 1;
+    let recipes = getMarketRecipes(profile);
+    let totalPages = Math.max(1, Math.ceil(recipes.length / 3));
 
-    const [, , action, currentPageStr] = interaction.customId.split('_');
-    let page = parseInt(currentPageStr, 10) || 1;
-
-    page = Math.min(Math.max(page, 1), totalPages);
-
-    if (action === 'previous') {
+    if (interaction.customId === 'market_recipe_previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (action === 'next') {
+    if (interaction.customId === 'market_recipe_next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    const image = await renderRecipeMarket(profile, page);
+    marketViewRecipe.set(interaction.user.id, page);
+    const image = renderRecipeMarket(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipe-market.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`market_recipe_previous_${page}`)
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setCustomId(`market_recipe_previous`)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const recipeMarketPage = new ButtonBuilder()
         .setCustomId(`market_recipe_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -53,11 +51,11 @@ export default async function handleMarketRecipe(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`market_recipe_next_${page}`)
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setCustomId(`market_recipe_next`)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, recipeMarketPage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;

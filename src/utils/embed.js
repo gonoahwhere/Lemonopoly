@@ -4,20 +4,20 @@ import config from '../../config.js';
 export function successEmbed(title, description) {
     const container = new SilentContainer()
         .setStatus('success')
-        .addText(`${config.emojis.misc.enabled} ${title}`)
+        .addText(`${config.emoji('misc', 'enabled')} ${title}`)
 
     if (description) {
         container.addDivider()
         container.addText(description)
     }
-    
+
     return container
 }
 
 export function errorEmbed(title, description) {
     const container = new SilentContainer()
         .setStatus('error')
-        .addText(`${config.emojis.misc.disabled} ${title}`)
+        .addText(`${config.emoji('misc', 'disabled')} ${title}`)
 
     if (description) {
         container.addDivider()
@@ -30,7 +30,7 @@ export function errorEmbed(title, description) {
 export function infoEmbed(title, description) {
     const container = new SilentContainer()
         .setStatus('info')
-        .addText(`${config.emojis.misc.info} ${title}`)
+        .addText(`${config.emoji('misc', 'info')} ${title}`)
 
     if (description) {
         container.addDivider()
@@ -43,8 +43,8 @@ export function infoEmbed(title, description) {
 export function warningEmbed(title, description) {
     const container = new SilentContainer()
         .setStatus('warning')
-        .addText(`${config.emojis.misc.warning} ${title}`)
-    
+        .addText(`${config.emoji('misc', 'warning')} ${title}`)
+
     if (description) {
         container.addDivider()
         container.addText(description)

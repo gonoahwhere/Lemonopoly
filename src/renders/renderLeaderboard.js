@@ -1,8 +1,8 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
-import { getIconFromCache } from "../data/iconImages.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -63,13 +63,13 @@ function drawIconCircle(ctx, cx, cy, r, iconKey) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, r - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - r + 3, cy - r + 3, (r - 3) * 2, (r - 3) * 2);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - r + 3, cy - r + 3, (r - 3) * 2, (r - 3) * 2);
         ctx.restore();
     }
 }
@@ -83,8 +83,8 @@ const ROW_GAP = 10;
 const ROWS_TOP_GAP = 14;
 const FOOTER_H = 60;
 
-export async function renderLeaderboard(data) {
-    const { label, prefix, iconKey, accent, total, rows, viewer, viewerProfile } = data;
+export function renderLeaderboard(data) {
+    const { label, prefix, iconKey, accent, total, rows, viewer } = data;
 
     const rowsBlockH = rows.length * ROW_H + Math.max(0, rows.length - 1) * ROW_GAP;
     const height = HEADER_H + ROWS_TOP_GAP + rowsBlockH + ROWS_TOP_GAP + FOOTER_H;
@@ -93,7 +93,7 @@ export async function renderLeaderboard(data) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, WIDTH, height);
-    drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile });
+    drawHeader(ctx, { label, prefix, iconKey, accent, viewer });
 
     let cursorY = HEADER_H + ROWS_TOP_GAP;
     for (const row of rows) {
@@ -106,29 +106,19 @@ export async function renderLeaderboard(data) {
     return canvas.toBuffer('image/png');
 }
 
-function drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile }) {
+function drawHeader(ctx, { label, prefix, iconKey, accent, viewer }) {
     // Brand title
     ctx.font = '58px FredokaOne';
- 
-    const title = 'LEADERBOARD';
-    const isPremium = Boolean(viewerProfile?.entitlements?.premium);
-    const customColours = isPremium ? viewerProfile?.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
-
-    const nameWidth = ctx.measureText(title).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText(title, PAD, 78);
+    ctx.strokeText('LEMONOPOLY', PAD, 78);
 
+    const titleGrad = ctx.createLinearGradient(PAD, 30, PAD + 470, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
     ctx.fillStyle = titleGrad;
-    ctx.fillText(title, PAD, 78);
+    ctx.fillText('LEMONOPOLY', PAD, 78);
 
     // Leaderboard type line — icon + "{Label} Leaderboard"
     const iconR = 18;
@@ -138,7 +128,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile
 
     ctx.font = '26px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
-    ctx.fillText(`${label}`, iconCx + iconR + 12, 113);
+    ctx.fillText(`${label} Leaderboard`, iconCx + iconR + 12, 113);
 
     // "YOU" pill, top-right — shows the viewer's standing regardless of page.
     if (viewer) {
@@ -168,9 +158,9 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile
 
     // Divider
     const divGrad = ctx.createLinearGradient(PAD - 5, 0, WIDTH - PAD + 5, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -179,7 +169,7 @@ function drawHeader(ctx, { label, prefix, iconKey, accent, viewer, viewerProfile
     ctx.stroke();
 }
 
-function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer, showBadge }) {
+function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer }) {
     const x = PAD;
     const w = WIDTH - PAD * 2;
 
@@ -194,12 +184,13 @@ function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer, showBadg
     const badgeCx = x + 34;
     const badgeCy = y + ROW_H / 2;
 
+    // Rank badge: medal PNG for 1-3, number-tile PNG for 4-10, drawn circle as a fallback.
     const isMedal = Boolean(MEDAL_KEYS[rank]);
     const rankKey = MEDAL_KEYS[rank] ?? String(rank).padStart(2, '0');
-    const rankImg = getIconFromCache(rankKey);
+    const rankImg = getSprite(`icon.${rankKey}`);
     if (rankImg) {
         const size = isMedal ? 46 : 40;
-        ctx.drawImage(rankImg, badgeCx - size / 2, badgeCy - size / 2, size, size);
+        ctx.drawImage(rankImg.sheet, rankImg.x, rankImg.y, rankImg.w, rankImg.h, badgeCx - size / 2, badgeCy - size / 2, size, size);
     } else {
         ctx.beginPath();
         ctx.arc(badgeCx, badgeCy, badgeR, 0, Math.PI * 2);
@@ -224,18 +215,7 @@ function drawRow(ctx, y, { rank, name, value, prefix, accent, isViewer, showBadg
     ctx.fillText(valueLabel, x + w - 24, badgeCy + 8);
     ctx.textAlign = 'left';
 
-    let nameX = badgeCx + badgeR + 18;
-
-    // Premium badge — small icon right before the name
-    const premiumSize = 20;
-    if (showBadge) {
-        const premiumIcon = getIconFromCache('premium');
-        if (premiumIcon) {
-            ctx.drawImage(premiumIcon, nameX, badgeCy - premiumSize / 2, premiumSize, premiumSize);
-        }
-        nameX += premiumSize + 6;
-    }
-
+    const nameX = badgeCx + badgeR + 18;
     let nameMaxW = x + w - 24 - valueW - 20 - nameX;
 
     if (isViewer) {

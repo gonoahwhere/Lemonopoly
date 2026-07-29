@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed } from '../../utils/embed.js';
 import SilentContainer from 'silent-container';
-import fs from 'fs';
 import config from "../../../config.js";
 
 const commandInfo = {
@@ -37,7 +36,7 @@ export default {
         .setDescription('A display of the commands that I have.')
         .addStringOption(option => option
             .setName('cmd')
-            .setDescription('The command that you want detailed information for.') 
+            .setDescription('The command that you want detailed information for.')
             .setRequired(false)
             .addChoices(
                 { name: 'help', value: 'help' },
@@ -50,7 +49,7 @@ export default {
 
         const container = new SilentContainer()
             .setColor(config.containers.color)
-            .addHeading(`${config.emojis.misc.info} The Curbside Command Guide`)
+            .addHeading(`${config.emoji('misc', 'info')} The Curbside Command Guide`)
             .addText(`-# Here is a list of all the commands that I have to offer!`)
             .addDivider()
             .addText(`-# \`help\`, \`stand\`, \`start\``)
@@ -71,7 +70,7 @@ export default {
 
         const detailContainer = new SilentContainer()
             .setColor(config.containers.color)
-            .addHeading(`${config.emojis.misc.info} \`${command}\``)
+            .addHeading(`${config.emoji('misc', 'info')} \`${command}\``)
             .addText(`-# • Permission: ${info.permission}`)
             .addDivider();
 
@@ -81,7 +80,7 @@ export default {
                     `**\`/${command} ${subName}**\n` +
                     `-# • Required: ${sub.requiredArgs}\n` +
                     `-# • Optional: ${sub.optionalArgs}\n` +
-                    `-# • Usage: ${sub.usage}\n` + 
+                    `-# • Usage: ${sub.usage}\n` +
                     `-# • Use Count: ${sub.useCount}`
                 );
             }
@@ -89,7 +88,7 @@ export default {
             detailContainer.addLongText(
                 `-# • Required: ${info.requiredArgs}\n` +
                 `-# • Optional: ${info.optionalArgs}\n` +
-                `-# • Usage: ${info.usage}\n` + 
+                `-# • Usage: ${info.usage}\n` +
                 `-# • Use Count: ${info.useCount}`
             );
         }

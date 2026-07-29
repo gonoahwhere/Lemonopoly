@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
-const HEX_COLOUR_RE = /^#[0-9A-Fa-f]{6}$/;
 
 const IngredientStock = new Schema(
     {
@@ -77,32 +76,24 @@ const StaffMember = new Schema(
     { _id: false }
 );
 
-const EVENT_KEYS = [
-    'heatwave',
-    'local_festival',
-    'sudden_rain',
-    'thunderstorm',
-    'wind_storm',
-];
-
-const EventInstance = new Schema(
+const ActiveEvent = new Schema(
     {
         key: {
             type: String,
-            enum: EVENT_KEYS,
+            enum: [
+                'heatwave',
+                'local_festival',
+                'sudden_rain',
+                'thunderstorm',
+                'wind_storm',
+                'weekend_rush',
+            ],
             default: null,
         },
-        type: {
-            type: String,
-            enum: ['beneficial', 'risky', 'harmful'],
-            default: null,
-        },
-        optionId: { type: String, default: null },
-        startsAt: { type: Date, default: null },
+        startedAt: { type: Date, default: null },
         endsAt: { type: Date, default: null },
-        lastDamageRollAt: { type: Date, default: null },
-        lastIngredientLossRollAt: { type: Date, default: null },
-        lastDrinkLossRollAt: { type: Date, default: null },
+        effects: { type: Schema.Types.Mixed, default: {} },
+        choiceMade: { type: String, default: null },
     },
     { _id: false }
 );
@@ -142,32 +133,6 @@ const CompletedQuest = new Schema(
     { _id: false }
 );
 
-const Customization = new Schema(
-    {
-        cardBorderColours: {
-            type: [String],
-            default: [],
-            validate: {
-                validator: function (arr) {
-                    return arr.length <= 3 && arr.every((c) => HEX_COLOUR_RE.test(c));
-                },
-                message: 'cardBorderColours must contain 1-3 valid hex colours (e.g. "#FF6B00")',
-            },
-        },
-        nameGradientColours: {
-            type: [String],
-            default: [],
-            validate: {
-                validator: function (arr) {
-                    return (arr.length === 0 || arr.length === 2) && arr.every((c) => HEX_COLOUR_RE.test(c));
-                },
-                message: 'nameGradientColours must be empty or contain exactly 2 valid hex colours (e.g. "#FF6B00")',
-            },
-        },
-    },
-    { _id: false },
-)
-
 const Player = new Schema(
     {
         // Identity
@@ -176,14 +141,14 @@ const Player = new Schema(
 
         // Stand
         stand: {
-            name: { 
-                type: String, 
-                default: 'Unidentified Stand', 
-                maxlength: 32 
+            name: {
+                type: String,
+                default: 'Unidentified Stand',
+                maxlength: 32
             },
-            location: { 
-                type: String, 
-                default: 'Suburban Sidewalk' 
+            location: {
+                type: String,
+                default: 'Suburban Sidewalk'
             },
             theme: {
                 type: String,
@@ -196,7 +161,6 @@ const Player = new Schema(
             createdAt: { type: Date, default: Date.now },
             lastCollectedAt: { type: Date, default: Date.now },
             lastActiveAt: { type: Date, default: Date.now },
-            lastSoldAt: { type: Date, default: null },
         },
 
         // Economy
@@ -275,8 +239,8 @@ const Player = new Schema(
 
         // Events
         events: {
-            active: { type: EventInstance, default: () => ({}) },
-            next: { type: EventInstance, default: () => ({}) },
+            active: { type: ActiveEvent, default: () => ({}) },
+            nextEventAt:  { type: Date, default: null },
             history: { type: [EventHistoryEntry], default: [] },
         },
 
@@ -300,28 +264,13 @@ const Player = new Schema(
             completed: { type: [CompletedQuest], default: [] },
         },
 
-        // Customization
-        customization: { type: Customization, default: () => ({}) },
-
-        premiumBonuses: {
-            recipeTickets: { type: Number, default: 0 },
-            premiumTokens: { type: Number, default: 0 },
-            storageExpansion: { type: Number, default: 0 },
-            standRepair: { type: Number, default: 0 },
-            ingredientCrate: { type: Number, default: 0 },
-            giftToken: { type: Number, default: 0 },
-            freeStaff: { type: Number, default: 0 },
-            lastClaimedAt: { type: Date, default: null },
-        },
-
         // Settings
         settings: {
-            visibleLeaderboardBadge: { type: Boolean, default: true },
+            containerColor: { type: Boolean, default: true },
             notificationsEnabled: { type: Boolean, default: false },
             timezone: { type: String, default: 'UTC' },
             leaderboardOptIn: { type: Boolean, default: false },
             autoServe: { type: Boolean, default: false },
-            autoServeLapseNoticeShown: { type: Boolean, default: false },
         },
     },
     {

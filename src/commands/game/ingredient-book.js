@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
 import { renderIngredientBook, getIngredientBookPageCount } from '../../renders/renderIngredientBook.js';
 import config from "../../../config.js";
-import { INGREDIENTS } from "../../data/ingredients.js";
 
 export default {
     devOnly: false,
@@ -16,6 +15,9 @@ export default {
                 .setMinValue(1)
                 .setRequired(false)),
     async execute(interaction) {
+        const image = renderIngredientBook();
+
+        let page = 1;
         const totalPages = getIngredientBookPageCount();
         const requestedPage = interaction.options.getInteger('page');
         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
@@ -25,7 +27,7 @@ export default {
 
         const previousPage = new ButtonBuilder()
             .setCustomId(`ingredient_book_previous_${page}`)
-            .setEmoji(config.emojis.misc.left_arrow)
+            .setEmoji(config.emoji('misc', 'left_arrow'))
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(page === 1)
 
@@ -37,7 +39,7 @@ export default {
 
         const nextPage = new ButtonBuilder()
             .setCustomId(`ingredient_book_next_${page}`)
-            .setEmoji(config.emojis.misc.right_arrow)
+            .setEmoji(config.emoji('misc', 'right_arrow'))
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(page === totalPages)
 

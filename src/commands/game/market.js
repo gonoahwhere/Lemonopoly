@@ -4,12 +4,7 @@ import { renderRecipeMarket, getMarketRecipes } from '../../renders/renderRecipe
 import { renderIngredientMarket, getMarketIngredients, getIngredientMarketPageCount } from '../../renders/renderIngredientMarket.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from "../../data/recipes.js";
-import { INGREDIENTS } from '../../data/ingredients.js';
 import config from '../../../config.js';
-import { formatNumber } from '../../helpers/renderHelper.js';
-import { getStorageCapacity } from '../../data/upgrades.js';
-import { getLiveEvent, getIngredientCostMultiplier } from '../../helpers/eventEffects.js';
-import { getActiveIngredientDiscount } from '../../helpers/masteryDiscount.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';
@@ -33,12 +28,6 @@ export default {
                     { name: 'Ingredients', value: 'ingredient_market' }
                 )
                 .setRequired(true)
-            )
-            .addIntegerOption((opt) => opt
-                .setName('page')
-                .setDescription('Jump to a specific page')
-                .setMinValue(1)
-                .setRequired(false)
             )
         )
         .addSubcommandGroup((group) => group
@@ -95,176 +84,177 @@ export default {
         const group = interaction.options.getSubcommandGroup();
         const subcommand = interaction.options.getSubcommand();
         const profile = interaction.playerProfile;
-        
+
         await interaction.deferReply();
 
-        if (subcommand === 'view') {
-            const choice = interaction.options.getString('type');
-            const requestedPage = interaction.options.getInteger('page');
+        switch (subcommand) {
+            case 'view': {
+                switch (interaction.options.getString('type')) {
+                    case 'recipe_market': {
+                        let page = 1;
 
-            if (choice === 'recipe_market') {
-                const recipes = getMarketRecipes(profile); 
-                const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
-                const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+                        const recipes = getMarketRecipes(profile);
+                        const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
+                        const buffer = renderRecipeMarket(profile);
+                        const attachment = new AttachmentBuilder(buffer, { name: 'recipe-market.png' });
+                        const components = [];
 
-                const buffer = await renderRecipeMarket(profile, page);
-                const attachment = new AttachmentBuilder(buffer, { name: 'recipe-market.png' });
-                const components = [];
+                        if (totalPages > 1) {
+                            const previousPage = new ButtonBuilder()
+                                .setCustomId(`market_recipe_previous`)
+                                .setEmoji(config.emoji('misc', 'left_arrow'))
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(page === 1);
 
-                if (totalPages > 1) {
-                    const previousPage = new ButtonBuilder()
-                        .setCustomId(`market_recipe_previous_${page}`)
-                        .setEmoji(config.emojis.misc.left_arrow)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(page === 1);
+                            const recipeMarketPage = new ButtonBuilder()
+                                .setCustomId(`market_recipe_page`)
+                                .setLabel(`${page} / ${totalPages}`)
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(true);
 
-                    const recipeMarketPage = new ButtonBuilder()
-                        .setCustomId(`market_recipe_page`)
-                        .setLabel(`${page} / ${totalPages}`)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true);
+                            const nextPage = new ButtonBuilder()
+                                .setCustomId(`market_recipe_next`)
+                                .setEmoji(config.emoji('misc', 'right_arrow'))
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(page === totalPages);
 
-                    const nextPage = new ButtonBuilder()
-                        .setCustomId(`market_recipe_next_${page}`)
-                        .setEmoji(config.emojis.misc.right_arrow)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(page === totalPages);
+                            components.push(new ActionRowBuilder().addComponents(previousPage, recipeMarketPage, nextPage));
+                        }
+                        return await interaction.editReply({ files: [attachment], components });
+                    }
 
-                    components.push(new ActionRowBuilder().addComponents(previousPage, recipeMarketPage, nextPage));
+                    case 'ingredient_market': {
+                        let page = 1;
+
+                        const totalPages = getIngredientMarketPageCount();
+                        const buffer = renderIngredientMarket(profile);
+                        const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
+                        const components = [];
+
+                        if (totalPages > 1) {
+                            const previousPage = new ButtonBuilder()
+                                .setCustomId(`market_ingredient_previous`)
+                                .setEmoji(config.emoji('misc', 'left_arrow'))
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(page === 1);
+
+                            const ingredientMarketPage = new ButtonBuilder()
+                                .setCustomId(`market_ingredient_page`)
+                                .setLabel(`${page} / ${totalPages}`)
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(true);
+
+                            const nextPage = new ButtonBuilder()
+                                .setCustomId(`market_ingredient_next`)
+                                .setEmoji(config.emoji('misc', 'right_arrow'))
+                                .setStyle(ButtonStyle.Secondary)
+                                .setDisabled(page === totalPages);
+
+                            components.push(new ActionRowBuilder().addComponents(previousPage, ingredientMarketPage, nextPage));
+                        }
+                        return await interaction.editReply({ files: [attachment], components });
+                    }
                 }
-                await interaction.editReply({ files: [attachment], components });
+
+                break;
             }
 
-            if (choice === 'ingredient_market') {
-                const totalPages = getIngredientMarketPageCount(profile);
-                const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+            case 'recipe': {
+                if (group === 'purchase') {
+                    const id = interaction.options.getString('recipe', true);
+                    const recipe = RECIPES.find((r) => r.id === id);
 
-                const buffer = await renderIngredientMarket(profile, page);
-                const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
-                const components = [];
+                    if (!recipe) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Invalid recipe!', `That recipe doesn't exist.`)],
+                            flags: MessageFlags.IsComponentsV2,
+                        });
+                    }
 
-                if (totalPages > 1) {
-                    const previousPage = new ButtonBuilder()
-                        .setCustomId(`market_ingredient_previous_${page}`)
-                        .setEmoji(config.emojis.misc.left_arrow)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(page === 1);
+                    const price = recipe.marketPrice;
+                    if (profile.economy.cash < price) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Insufficient funds!', `You need **$${price}** to purchase the recipe for **${recipe.name}**, but you only have **${profile.economy.cash}**.`)],
+                            flags: MessageFlags.IsComponentsV2,
+                        });
+                    }
 
-                    const ingredientMarketPage = new ButtonBuilder()
-                        .setCustomId(`market_ingredient_page`)
-                        .setLabel(`${page} / ${totalPages}`)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true);
+                    profile.economy.cash -= price;
+                    profile.economy.lifetimeSpent.cash += price;
 
-                    const nextPage = new ButtonBuilder()
-                        .setCustomId(`market_ingredient_next_${page}`)
-                        .setEmoji(config.emojis.misc.right_arrow)
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(page === totalPages);
+                    profile.recipes.unlocked.push({
+                        key: recipe.id,
+                        rarity: toSchemaRarity(recipe.rarity),
+                    });
 
-                    components.push(new ActionRowBuilder().addComponents(previousPage, ingredientMarketPage, nextPage));
-                }
-                await interaction.editReply({ files: [attachment], components });
-            }
-        }
-
-        if (group === 'purchase') {
-            if (subcommand === 'recipe') {
-                const id = interaction.options.getString('recipe', true);
-
-                const marketRecipes = getMarketRecipes(profile);
-                const recipe = marketRecipes.find((r) => r.id === id);
-
-                if (!recipe) {
+                    await profile.save();
                     return interaction.editReply({
-                        components: [errorEmbed('Invalid recipe!', `That recipe isn't currently available on the market.`)],
+                        components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${price}**! It's been added to \`/my-recipes\`.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
 
-                const price = recipe.marketPrice;
-                if (profile.economy.cash < price) {
+                break;
+            }
+
+            case 'ingredient': {
+                if (group === 'purchase') {
+                    const ingredientId = interaction.options.getString('ingredient', true);
+                    const amount = interaction.options.getInteger('amount', true);
+
+                    const marketIngredients = getMarketIngredients(profile);
+                    const ingredient = marketIngredients.find((i) => i.id === ingredientId);
+
+                    if (!ingredient) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Invalid ingredient!', `That ingredient doesn't exist.`)],
+                            flags: MessageFlags.IsComponentsV2
+                        });
+                    }
+
+                    const stock = profile.ingredients.find((i) => i.key === ingredient.id);
+
+                    const currentQuantity = stock?.quantity ?? 0;
+                    const capacity = stock?.capacity ?? 40;
+
+                    if (currentQuantity + amount > capacity) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Exceeds storage capacity!', `You can only purchase **${capacity - currentQuantity}** more **${ingredient.name}**.`)],
+                            flags: MessageFlags.IsComponentsV2
+                        });
+                    }
+
+                    const totalPrice = ingredient.marketPrice * amount;
+
+                    if (profile.economy.cash < totalPrice) {
+                        return interaction.editReply({
+                            components: [errorEmbed('Insufficient funds!', `You need **$${totalPrice}** to purchase the ingredient **${ingredient.name}**, but you only have **${profile.economy.cash}**.`)],
+                            flags: MessageFlags.IsComponentsV2
+                        });
+                    }
+
+                    profile.economy.cash -= totalPrice;
+                    profile.economy.lifetimeSpent.cash += totalPrice;
+
+                    if (stock) {
+                        stock.quantity += amount;
+                    } else {
+                        profile.ingredients.push({
+                            key: ingredient.id,
+                            quantity: amount,
+                            capacity: 40,
+                        });
+                    }
+
+                    await profile.save();
+
                     return interaction.editReply({
-                        components: [errorEmbed('Insufficient funds!', `You need **$${formatNumber(price)}** to purchase the recipe for **${recipe.name}**, but you only have **${formatNumber(profile.economy.cash)}**.`)],
+                        components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${totalPrice}**! This has been added to \`/ingredient-stock\`.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
 
-                profile.economy.cash -= price;
-                profile.economy.lifetimeSpent.cash += price;
-
-                profile.recipes.unlocked.push({
-                    key: recipe.id,
-                    rarity: toSchemaRarity(recipe.rarity),
-                });
-
-                await profile.save();
-                return interaction.editReply({
-                    components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${formatNumber(price)}**! It's been added to \`/my-recipes\`.`)],
-                    flags: MessageFlags.IsComponentsV2,
-                });
-            }
-
-            if (subcommand === 'ingredient') {
-                const ingredientId = interaction.options.getString('ingredient', true);
-                const amount = interaction.options.getInteger('amount', true);
-
-                const marketIngredients = getMarketIngredients(profile);
-                const ingredient = marketIngredients.find((i) => i.id === ingredientId);
-
-                if (!ingredient) {
-                    return interaction.editReply({
-                        components: [errorEmbed('Invalid ingredient!', `That ingredient doesn't exist.`)],
-                        flags: MessageFlags.IsComponentsV2
-                    });
-                }
-
-                const stock = profile.ingredients.find((i) => i.key === ingredient.id);
-
-                const currentQuantity = stock?.quantity ?? 0;
-                const capacity = getStorageCapacity(profile);
-
-                if (currentQuantity + amount > capacity) {
-                    return interaction.editReply({
-                        components: [errorEmbed('Exceeds storage capacity!', `You currently have **${currentQuantity}/${capacity} ${ingredient.name}** so you can only purchase **${capacity - currentQuantity}** more. Upgrade storage with \`/upgrade buy\`.`)],
-                        flags: MessageFlags.IsComponentsV2
-                    });
-                }
-
-                const discount = getActiveIngredientDiscount(profile);
-                const discountedUnitPrice = ingredient.marketPrice * (1 - discount);
-
-                const costMultiplier = getIngredientCostMultiplier(getLiveEvent(profile));
-                const finalUnitPrice = discountedUnitPrice * costMultiplier;
-
-                const totalPrice = Math.round(finalUnitPrice * amount);
-
-                if (profile.economy.cash < totalPrice) {
-                    return interaction.editReply({
-                        components: [errorEmbed('Insufficient funds!', `You need **$${formatNumber(totalPrice)}** to purchase the ingredient **${ingredient.name}**, but you only have **${profile.economy.cash}**.`)],
-                        flags: MessageFlags.IsComponentsV2
-                    });
-                }
-
-                profile.economy.cash -= totalPrice;
-                profile.economy.lifetimeSpent.cash += totalPrice;
-
-                if (stock) {
-                    stock.quantity += amount;
-                } else {
-                    profile.ingredients.push({
-                        key: ingredient.id,
-                        quantity: amount,
-                        capacity,
-                    });
-                }
-
-                await profile.save();
-
-                return interaction.editReply({
-                    components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${formatNumber(totalPrice)}**! This has been added to \`/ingredient-stock\`.`)],
-                    flags: MessageFlags.IsComponentsV2,
-                });
+                break;
             }
         }
     }

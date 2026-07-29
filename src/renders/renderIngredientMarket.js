@@ -1,26 +1,25 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, shadeHex, blendHex } from '../helpers/renderHelper.js';
-import { getActiveIngredientDiscount } from '../helpers/masteryDiscount.js';
+import { wrapText } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const TYPE_COLOURS = {
-    Base: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    Drink: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    Herb: { gradient: ['#134E13', '#3E8E41'], border: 'rgba(62,142,65,0.45)' },
-    Fruit: { gradient: ['#FDC830', '#F37335'], border: 'rgba(243,115,53,0.45)' },
-    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: 'rgba(232,93,117,0.5)' },
-    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: 'rgba(255,65,44,0.45)' },
-    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: 'rgba(123,47,247,0.45)' },
-    Premium: { gradient: ['#D4A017', '#C026D3'], border: 'rgba(192,38,211,0.5)' },
-    Event: { gradient: ['#5D5FEF', '#232526'], border: 'rgba(93,95,239,0.45)' },
+    Base: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    Drink: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    Herb: { gradient: ['#134E13', '#3E8E41'], border: '#3E8E4173' },
+    Fruit: { gradient: ['#FDC830', '#F37335'], border: '#F3733573' },
+    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: '#E85D7580' },
+    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: '#FF412C73' },
+    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: '#7B2FF773' },
+    Premium: { gradient: ['#D4A017', '#C026D3'], border: '#C026D380' },
+    Event: { gradient: ['#5D5FEF', '#232526'], border: '#5D5FEF73' },
 };
 
-const TYPE_ORDER = ['Base', 'Drink', 'Herb', 'Fruit', 'Sweetener', 'Spice', 'Garnish', 'Premium', 'Event'];
+const TYPE_ORDER = Object.keys(TYPE_COLOURS);
 
 const INGREDIENTS_PER_PAGE = 20;
 const COLUMNS = 5;
@@ -30,13 +29,8 @@ export function computeIngredientPrice(basePrice, discount = 0) {
     return Math.max(0, Math.round(basePrice * (1 - discount) * 100) / 100);
 }
 
-function formatDiscountPercent(discount) {
-    const pct = Math.round(discount * 100 * 100) / 100;
-    return pct % 1 === 0 ? pct.toString() : pct.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-}
-
 export function getMarketIngredients(player) {
-    const discount = getActiveIngredientDiscount(player);
+    const discount = player?.prestige?.lifetimeMultiplier?.ingredientDiscount ?? 0;
     return Object.entries(INGREDIENTS).map(([id, data]) => ({
         id,
         name: data.name,
@@ -71,16 +65,9 @@ function buildTypePages(allIngredients, perPage) {
     return pages;
 }
 
-export function getIngredientMarketPageCount(player) {
+export function getIngredientMarketPageCount() {
     const allIngredients = Object.entries(INGREDIENTS).map(([id, data]) => ({ id, ...data }));
     return buildTypePages(allIngredients, INGREDIENTS_PER_PAGE).length;
-}
-
-function hexToRgba(hex, alpha) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
 }
 
 function getTypeFill(ctx, type, x0, y0, x1, y1) {
@@ -95,12 +82,11 @@ function getTypeFill(ctx, type, x0, y0, x1, y1) {
 }
 
 function getTypeBorder(type) {
-    const def = TYPE_COLOURS[type] || TYPE_COLOURS.Base;
-    return def.border;
+    return (TYPE_COLOURS[type] || TYPE_COLOURS.Base).border;
 }
 
-export async function renderIngredientMarket(player, page = 1) {
-    const discount = getActiveIngredientDiscount(player);
+export function renderIngredientMarket(player, page = 1) {
+    const discount = player?.prestige?.lifetimeMultiplier?.ingredientDiscount ?? 0;
 
     const allIngredients = Object.entries(INGREDIENTS).map(([id, data]) => ({ id, ...data }));
     const typePages = buildTypePages(allIngredients, INGREDIENTS_PER_PAGE);
@@ -114,7 +100,7 @@ export async function renderIngredientMarket(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, totalPages, discount, player);
+    drawHeader(ctx, width, page, totalPages, discount);
     const gridStartY = drawTypePill(ctx, width, current.type, current.pageInType, current.totalPagesInType);
     drawMarketGrid(ctx, current.items, width, gridStartY, discount);
     drawFooter(ctx, width, height, discount);
@@ -142,27 +128,19 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
     ctx.fill();
 }
 
-function drawHeader(ctx, width, page, totalPages, discount, player) {
-    ctx.font = "48px FredokaOne";
-    
-    const title = 'BUY INGREDIENTS';
-    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+function drawHeader(ctx, width, page, totalPages, discount) {
+    ctx.font = "58px FredokaOne";
+    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const nameWidth = ctx.measureText(title).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText(title, 50, 78);
+    ctx.strokeText('LEMONOPOLY', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText(title, 50, 78);
+    ctx.fillText("LEMONOPOLY", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -175,8 +153,8 @@ function drawHeader(ctx, width, page, totalPages, discount, player) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -184,11 +162,11 @@ function drawHeader(ctx, width, page, totalPages, discount, player) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     if (discount > 0) {
-        const discLabel = `-${formatDiscountPercent(discount)}% DISCOUNT`;
+        const discLabel = `-${Math.round(discount * 100)}% DISCOUNT`;
         const discW = ctx.measureText(discLabel).width + pillPadX * 2;
         const discX = pillX - 14 - discW;
-        roundedRect(ctx, discX, pillY, discW, pillH, pillH / 2, hexToRgba(COLOURS.green, 0.15));
-        ctx.strokeStyle = hexToRgba(COLOURS.green, 0.5);
+        roundedRect(ctx, discX, pillY, discW, pillH, pillH / 2, `${COLOURS.green}26`);
+        ctx.strokeStyle = `${COLOURS.green}80`;
         ctx.lineWidth = 1.5;
         roundedRectPath(ctx, discX, pillY, discW, pillH, pillH / 2);
         ctx.stroke();
@@ -197,9 +175,9 @@ function drawHeader(ctx, width, page, totalPages, discount, player) {
     }
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -261,13 +239,13 @@ function drawMarketGrid(ctx, ingredients, width, gridTop, discount) {
     const circleSize = 86;
     const rowHeight = 195;
 
-    ingredients.forEach((ingredient, i) => {
+    for (let i = 0; i < ingredients.length; i++) {
         const col = i % COLUMNS;
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawMarketTile(ctx, cx, cy, circleSize, ingredient, colWidth - 24, discount);
-    });
+        drawMarketTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 24, discount);
+    }
 }
 
 function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
@@ -291,14 +269,14 @@ function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ingredient.id);
+    const img = getSprite(`ingredient.${ingredient.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 
@@ -306,9 +284,9 @@ function drawMarketTile(ctx, cx, cy, size, ingredient, maxTextWidth, discount) {
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'center';
     const lines = wrapText(ctx, ingredient.name, maxTextWidth, 2);
-    lines.forEach((line, i) => {
-        ctx.fillText(line, cx, cy + size / 2 + 28 + i * 17);
-    });
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, cy + size / 2 + 28 + i * 17);
+    }
 
     const priceY = cy + size / 2 + 20 + lines.length * 17 + 4;
     drawPriceTag(ctx, cx, priceY, ingredient.basePrice, discount);
@@ -325,8 +303,8 @@ function drawPricePill(ctx, cx, y, label, colour, strikethrough) {
     const pillW = measurePillWidth(ctx, label, padX);
     const pillX = cx - pillW / 2;
 
-    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, hexToRgba(colour, 0.15));
-    ctx.strokeStyle = hexToRgba(colour, 0.5);
+    roundedRect(ctx, pillX, y, pillW, pillH, pillH / 2, `${colour}26`);
+    ctx.strokeStyle = `${colour}80`;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, pillX, y, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -380,7 +358,7 @@ function drawFooter(ctx, width, height, discount) {
     ctx.font = '22px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.textAlign = 'center';
-    const label = discount > 0 ? `\u2022 prices shown include your ${formatDiscountPercent(discount)}% discount \u2022` : `\u2022 stock up before your next rush \u2022`;
+    const label = discount > 0 ? `\u2022 prices shown include your ${Math.round(discount * 100)}% discount \u2022` : `\u2022 stock up before your next rush \u2022`;
     ctx.fillText(label, width / 2, height - 24);
     ctx.textAlign = 'left';
 }

@@ -12,7 +12,7 @@ export async function loadButtons() {
         (f) => f.endsWith('.js') && f !== 'index.js'
     );
 
-    for (const file of files) {
+    await Promise.all(files.map(async file => {
         const filePath = join(BUTTONS_DIR, file);
 
         try {
@@ -20,15 +20,14 @@ export async function loadButtons() {
 
             if (typeof handler !== 'function') {
                 logger.warn(`[Buttons] ${file} does not export a default function.`);
-                continue;
+            } else {
+                handlers.push(handler);
+                logger.info(`[Buttons] Loaded ${file}`);
             }
-
-            handlers.push(handler);
-            logger.info(`[Buttons] Loaded ${file}`);
         } catch (err) {
             logger.error(`[Buttons] Failed to load ${file}: ${err.message}`);
         }
-    }
+    }));
 
     return handlers;
 }

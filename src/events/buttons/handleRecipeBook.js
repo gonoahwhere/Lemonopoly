@@ -6,12 +6,13 @@ import { RECIPES } from '../../data/recipes.js';
 import { errorEmbed } from '../../utils/embed.js';
 
 const RECIPES_PER_PAGE = 3;
+const recipeMap = new Map();
 
 export default async function handleRecipeBook(interaction) {
     if (!interaction.customId.startsWith('recipe_book_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -23,28 +24,27 @@ export default async function handleRecipeBook(interaction) {
         });
     }
 
+    let page = recipeMap.get(interaction.user.id) ?? 1;
     const totalPages = Math.max(1, Math.ceil(RECIPES.length / RECIPES_PER_PAGE));
 
-    const [, , action, currentPageStr] = interaction.customId.split('_');
-    let page = parseInt(currentPageStr, 10) || 1;
-
-    if (action === 'previous') {
+    if (interaction.customId === 'recipe_book_previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (action === 'next') {
+    if (interaction.customId === 'recipe_book_next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    const image = await renderRecipeBook(profile, page);
+    recipeMap.set(interaction.user.id, page);
+    const image = renderRecipeBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'recipes.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`recipe_book_previous_${page}`)
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setCustomId(`recipe_book_previous`)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
-    
+
     const recipePage = new ButtonBuilder()
         .setCustomId(`recipe_book_page`)
         .setLabel(`${page} / ${totalPages}`)
@@ -52,11 +52,11 @@ export default async function handleRecipeBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`recipe_book_next_${page}`)
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setCustomId(`recipe_book_next`)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
-    
+
     const row = new ActionRowBuilder().addComponents(previousPage, recipePage, nextPage)
     await interaction.update({ files: [attachment], components: [row] });
     return true;

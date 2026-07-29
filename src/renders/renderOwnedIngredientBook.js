@@ -1,25 +1,25 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { INGREDIENTS } from "../data/ingredients.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
+import { getSprite } from '../data/sprites.js';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { wrapText } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const TYPE_COLOURS = {
-    Base: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    Drink: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    Herb: { gradient: ['#134E13', '#3E8E41'], border: 'rgba(62,142,65,0.45)' },
-    Fruit: { gradient: ['#FDC830', '#F37335'], border: 'rgba(243,115,53,0.45)' },
-    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: 'rgba(232,93,117,0.5)' },
-    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: 'rgba(255,65,44,0.45)' },
-    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: 'rgba(123,47,247,0.45)' },
-    Premium: { gradient: ['#D4A017', '#C026D3'], border: 'rgba(192,38,211,0.5)' },
-    Event: { gradient: ['#5D5FEF', '#232526'], border: 'rgba(93,95,239,0.45)' },
+    Base: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    Drink: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    Herb: { gradient: ['#134E13', '#3E8E41'], border: '#3E8E4173' },
+    Fruit: { gradient: ['#FDC830', '#F37335'], border: '#F3733573' },
+    Sweetener: { gradient: ['#FF8C42', '#E85D75'], border: '#E85D7580' },
+    Spice: { gradient: ['#FF416C', '#FF4B2B'], border: '#FF412C73' },
+    Garnish: { gradient: ['#C471ED', '#7B2FF7'], border: '#7B2FF773' },
+    Premium: { gradient: ['#D4A017', '#C026D3'], border: '#C026D380' },
+    Event: { gradient: ['#5D5FEF', '#232526'], border: '#5D5FEF73' },
 };
 
-const TYPE_ORDER = ['Base', 'Drink', 'Herb', 'Fruit', 'Sweetener', 'Spice', 'Garnish', 'Premium', 'Event'];
+const TYPE_ORDER = Object.keys(TYPE_COLOURS);
 
 const OWNED_INGREDIENTS_PER_PAGE = 20;
 const COLUMNS = 5;
@@ -36,8 +36,7 @@ function getTypeFill(ctx, type, x0, y0, x1, y1) {
 }
 
 function getTypeBorder(type) {
-    const def = TYPE_COLOURS[type] || TYPE_COLOURS.Base;
-    return def.border;
+    return (TYPE_COLOURS[type] || TYPE_COLOURS.Base).border;
 }
 
 function buildTypePages(ingredients, perPage) {
@@ -84,7 +83,7 @@ export function getOwnedIngredientBookPageCount(player) {
     return Math.max(1, buildTypePages(ownedIngredients, OWNED_INGREDIENTS_PER_PAGE).length);
 }
 
-export async function renderOwnedIngredientBook(player, page = 1) {
+export function renderOwnedIngredientBook(player, page = 1) {
     const ownedIngredients = getOwnedIngredients(player);
     const typePages = buildTypePages(ownedIngredients, OWNED_INGREDIENTS_PER_PAGE);
     const totalPages = Math.max(1, typePages.length);
@@ -97,7 +96,7 @@ export async function renderOwnedIngredientBook(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, totalPages, player);
+    drawHeader(ctx, width, page, totalPages);
 
     let gridStartY = 175;
     if (current) {
@@ -130,27 +129,19 @@ function roundedRect(ctx, x, y, w, h, r, fill) {
     ctx.fill();
 }
 
-function drawHeader(ctx, width, page, totalPages, player) {
+function drawHeader(ctx, width, page, totalPages) {
     ctx.font = "58px FredokaOne";
+    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const title = 'YOUR INGREDIENTS';
-    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
-
-    const nameWidth = ctx.measureText(title).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText(title, 50, 78);
+    ctx.strokeText('LEMONOPOLY', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText(title, 50, 78);
+    ctx.fillText("LEMONOPOLY", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -163,8 +154,8 @@ function drawHeader(ctx, width, page, totalPages, player) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -172,9 +163,9 @@ function drawHeader(ctx, width, page, totalPages, player) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -236,13 +227,13 @@ function drawIngredientGrid(ctx, ingredients, width, gridTop) {
     const circleSize = 84;
     const rowHeight = 186;
 
-    ingredients.forEach((ingredient, i) => {
+    for (let i = 0; i < ingredients.length; i++) {
         const col = i % COLUMNS;
         const row = Math.floor(i / COLUMNS);
         const cx = marginX + colWidth * col + colWidth / 2;
         const cy = gridTop + row * rowHeight;
-        drawIngredientTile(ctx, cx, cy, circleSize, ingredient, colWidth - 16);
-    });
+        drawIngredientTile(ctx, cx, cy, circleSize, ingredients[i], colWidth - 16);
+    }
 }
 
 function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
@@ -266,14 +257,14 @@ function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ingredient.id);
+    const img = getSprite(`ingredient.${ingredient.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, cx - size / 2 + pad / 2, cy - size / 2 + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 
@@ -283,28 +274,34 @@ function drawIngredientTile(ctx, cx, cy, size, ingredient, maxTextWidth) {
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'center';
     const lines = wrapText(ctx, ingredient.name, maxTextWidth, 2);
-    lines.forEach((line, i) => {
-        ctx.fillText(line, cx, cy + size / 2 + 28 + i * 17);
-    });
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, cy + size / 2 + 28 + i * 17);
+    }
 
     ctx.textAlign = 'left';
 }
 
 function drawQuantityBadge(ctx, cx, cy, size, quantity) {
-    const label = `x${formatNumber(quantity)}`;
-    ctx.font = '15px FredokaOne';
+    const label = `x${quantity}`;
+    ctx.font = '13px FredokaOne';
     const textW = ctx.measureText(label).width;
-    const padX = 8;
-    const pillW = textW + padX * 2;
-    const pillH = 22;
-    const pillX = cx + size / 2 - pillW + 4;
-    const pillY = cy + size / 2 - pillH + 4;
+    const badgeR = Math.max(16, textW / 2 + 8);
 
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, COLOURS.title);
-    ctx.fillStyle = '#FFFDF6';
-    ctx.font = '15px FredokaOne';
+    const bx = cx + size / 2 * 0.72;
+    const by = cy - size / 2 * 0.72;
+
+    ctx.beginPath();
+    ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
+    ctx.fillStyle = COLOURS.card;
+    ctx.fill();
+    ctx.strokeStyle = COLOURS.title;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.font = '13px FredokaOne';
+    ctx.fillStyle = COLOURS.title;
     ctx.textAlign = 'center';
-    ctx.fillText(label, pillX + pillW / 2, pillY + pillH / 2 + 5);
+    ctx.fillText(label, bx, by + 4);
     ctx.textAlign = 'left';
 }
 

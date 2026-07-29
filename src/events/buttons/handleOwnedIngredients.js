@@ -4,11 +4,13 @@ import PlayerProfile from '../../models/player.js';
 import { renderOwnedIngredientBook, getOwnedIngredientBookPageCount } from '../../renders/renderOwnedIngredientBook.js';
 import { errorEmbed } from '../../utils/embed.js';
 
+const ownedIngredientMap = new Map();
+
 export default async function handleOwnedIngredientBook(interaction) {
     if (!interaction.customId.startsWith('ingredient_stock_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -20,27 +22,24 @@ export default async function handleOwnedIngredientBook(interaction) {
         });
     }
 
+    let page = ownedIngredientMap.get(interaction.user.id) ?? 1;
     const totalPages = getOwnedIngredientBookPageCount(profile);
 
-    const [, , action, currentPageStr] = interaction.customId.split('_');
-    let page = parseInt(currentPageStr, 10) || 1;
-
-    page = Math.min(Math.max(page, 1), totalPages);
-
-    if (action === 'previous') {
+    if (interaction.customId === 'ingredient_stock_previous') {
         page = Math.max(1, page - 1);
     }
 
-    if (action === 'next') {
+    if (interaction.customId === 'ingredient_stock_next') {
         page = Math.min(totalPages, page + 1);
     }
 
-    const image = await renderOwnedIngredientBook(profile, page);
+    ownedIngredientMap.set(interaction.user.id, page);
+    const image = renderOwnedIngredientBook(profile, page);
     const attachment = new AttachmentBuilder(image, { name: 'my-ingredients.png' });
 
     const previousPage = new ButtonBuilder()
-        .setCustomId(`ingredient_stock_previous_${page}`)
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setCustomId(`ingredient_stock_previous`)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1)
 
@@ -51,8 +50,8 @@ export default async function handleOwnedIngredientBook(interaction) {
         .setDisabled(true);
 
     const nextPage = new ButtonBuilder()
-        .setCustomId(`ingredient_stock_next_${page}`)
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setCustomId(`ingredient_stock_next`)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages)
 

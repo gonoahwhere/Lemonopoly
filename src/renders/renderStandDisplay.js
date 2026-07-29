@@ -1,14 +1,11 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
-import { getIconFromCache } from "../data/iconImages.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
+import { getSprite } from '../data/sprites.js';
 import { getMasteryBonuses, canMaster, getStarProgressFraction, calculateStars } from "../utils/recipeMastery.js";
 import { UPGRADE_ICON_KEYS } from "../data/iconKeys.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
-import { getEventOption } from '../helpers/weatherEvents.js';
+import { wrapText, formatNumber } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -17,28 +14,28 @@ const COLOURS = {
     progressBg: '#F1E6BE',
     progressFillA: '#B7E75A',
     progressFillB: '#5FCB4F',
-    starEmpty: 'rgba(138,117,72,0.35)',
+    starEmpty: '#8A754859',
     premium: '#9B4FD1',
     seasonal: '#3B82C4',
-    beta: '#AA2014',
-    eventBg: 'rgba(240,102,78,0.10)',
-    eventBorder: 'rgba(240,102,78,0.4)',
+    beta: '#F0664E',
+    eventBg: '#F0664E1A',
+    eventBorder: '#F0664E66',
 };
 
 const RARITY_COLOURS = {
-    common: { text: '#8A7548', bg: 'rgba(138,117,72,0.12)', border: 'rgba(138,117,72,0.4)' },
-    uncommon: { text: '#4FBF5B', bg: 'rgba(79,191,91,0.12)', border: 'rgba(79,191,91,0.4)' },
-    rare: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
-    epic: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    legendary: { text: '#E7A800', bg: 'rgba(231,168,0,0.12)', border: 'rgba(231,168,0,0.4)' },
-    mythic: { text: '#F0664E', bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)' },
-    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: 'rgba(139,92,246,0.45)' },
-    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: 'rgba(255,97,210,0.45)' },
-    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: 'rgba(0,198,255,0.45)' },
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
-    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: 'rgba(255,65,108,0.45)' },
-    eternal: { gradient: ['#2AF598', '#009EFD'], border: 'rgba(0,158,253,0.45)' },
-    exotic: { gradient: ['#FF9966', '#00F2FE'], border: 'rgba(255,153,102,0.45)' },
+    common: { text: '#8A7548', bg: '#8A75481F', border: '#8A754866' },
+    uncommon: { text: '#4FBF5B', bg: '#4FBF5B1F', border: '#4FBF5B66' },
+    rare: { text: '#3B82C4', bg: '#3B82C41F', border: '#3B82C466' },
+    epic: { text: '#9B4FD1', bg: '#9B4FD11F', border: '#9B4FD166' },
+    legendary: { text: '#E7A800', bg: '#E7A8001F', border: '#E7A80066' },
+    mythic: { text: '#F0664E', bg: '#F0664E1F', border: '#F0664E66' },
+    divine: { gradient: ['#F8FAFC', '#8B5CF6'], border: '#8B5CF673' },
+    cosmic: { gradient: ['#5D5FEF', '#FF61D2'], border: '#FF61D273' },
+    transcendent: { gradient: ['#00C6FF', '#7F00FF'], border: '#00C6FF73' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
+    primal: { gradient: ['#F46FFF', '#FF4B2B'], border: '#FF416C73' },
+    eternal: { gradient: ['#2AF598', '#009EFD'], border: '#009EFD73' },
+    exotic: { gradient: ['#FF9966', '#00F2FE'], border: '#FF996673' },
 };
 
 const THEME_LABELS = {
@@ -87,22 +84,17 @@ export function fillTextWithKernedDollars(ctx, text, x, y, align = 'left', kernP
     }
 }
 
+// layout constants
 const HEADER_H = 150;
 const STAT_ROW_H = 76;
 const UPGRADES_ROW_H = 76;
 const ECONOMY_ROW_H = 76;
-const EVENT_BANNER_H = 110;
+const EVENT_BANNER_H = 70;
 const RECIPE_CARD_H = 340;
 const FOOTER_H = 74;
 const GAP = 24;
 
-const EVENT_TYPE_STYLES = {
-    beneficial: { text: '#2E8B39', bg: 'rgba(46,139,57,0.12)', border: 'rgba(46,139,57,0.4)', label: 'BENEFICIAL' },
-    risky: { text: '#3C8FD1', bg: 'rgba(60,143,209,0.12)', border: 'rgba(60,143,209,0.4)', label: 'RISKY' },
-    harmful: { text: COLOURS.red, bg: 'rgba(240,102,78,0.12)', border: 'rgba(240,102,78,0.4)', label: 'HARMFUL' },
-};
-
-export async function renderStandDisplay(profile) {
+export function renderStandDisplay(profile) {
     const width = 900;
 
     const height = HEADER_H + STAT_ROW_H + GAP + UPGRADES_ROW_H + GAP + ECONOMY_ROW_H + GAP + EVENT_BANNER_H + GAP + RECIPE_CARD_H + GAP + FOOTER_H;
@@ -165,18 +157,11 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
 
 function drawHeader(ctx, width, profile) {
     ctx.font = "50px FredokaOne";
+    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const customColours = profile.entitlements?.premium ? profile.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
-
-    const nameWidth = ctx.measureText(profile.stand.name).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
     ctx.strokeText(profile.stand.name, 50, 70);
@@ -190,47 +175,34 @@ function drawHeader(ctx, width, profile) {
     ctx.fillText(subtitle, 54, 100);
 
     const badges = [];
-    if (profile.entitlements?.premium) badges.push({ label: 'PREMIUM', colour: COLOURS.premium, iconKey: 'premium' });
-    if (profile.entitlements?.betaTester) badges.push({ label: 'BETA', colour: COLOURS.beta, iconKey: 'beta' });
+    if (profile.entitlements?.premium) badges.push({ label: 'PREMIUM', colour: COLOURS.premium });
+    if (profile.entitlements?.seasonal) badges.push({ label: 'SEASONAL', colour: COLOURS.seasonal });
+    if (profile.entitlements?.betaTester) badges.push({ label: 'BETA', colour: COLOURS.beta });
 
     if (badges.length) {
-        ctx.font = '20px FredokaOne';
-        const iconSize = 24;
-        const gap = 8;
-        const padX = 14;
-        const pillH = 40;
+        ctx.font = '13px FredokaOne';
         let bx = width - 50;
-        const by = 22;
-
+        const by = 34;
+        const bh = 26;
         for (let i = badges.length - 1; i >= 0; i--) {
-            const { label, colour, iconKey } = badges[i];
-            const icon = getIconFromCache(iconKey);
-            const textW = ctx.measureText(label).width;
-            const bw = padX + (icon ? iconSize + gap : 0) + textW + padX;
+            const { label, colour } = badges[i];
+            const bw = ctx.measureText(label).width + 20;
             bx -= bw;
-
-            roundedRect(ctx, bx, by, bw, pillH, pillH / 2, colour + '1F');
+            roundedRect(ctx, bx, by, bw, bh, bh / 2, colour + '1F');
             ctx.strokeStyle = colour + '77';
             ctx.lineWidth = 1.2;
-            roundedRectPath(ctx, bx, by, bw, pillH, pillH / 2);
+            roundedRectPath(ctx, bx, by, bw, bh, bh / 2);
             ctx.stroke();
-
-            if (icon) ctx.drawImage(icon, bx + padX, by + (pillH - iconSize) / 2, iconSize, iconSize);
-
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
             ctx.fillStyle = colour;
-            ctx.fillText(label, bx + padX + (icon ? iconSize + gap : 0), by + pillH / 2 + 1);
-            ctx.textBaseline = 'alphabetic';
-
-            bx -= 10;
+            ctx.fillText(label, bx + 10, by + bh / 2 + 4.5);
+            bx -= 8;
         }
     }
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -257,13 +229,13 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
         ctx.restore();
     }
 
@@ -280,8 +252,8 @@ function drawStatChip(ctx, x, y, w, h, iconKey, label, value, accent) {
 function drawStatRow(ctx, width, profile, y) {
     const h = STAT_ROW_H;
     const gap = 22;
-    const startX = 50;
-    const chipW = (800 - gap * 3) / 4; // = 183.5
+    const chipW = 176;
+    const startX = (width - (chipW * 4 + gap * 3)) / 2;
 
     drawStatChip(ctx, startX, y, chipW, h, 'level', 'Level', `Lv. ${profile.stand.level}`);
     drawStatChip(ctx, startX + (chipW + gap), y, chipW, h, 'heart', 'Health', `${profile.stand.health}/100`, profile.stand.health < 40 ? COLOURS.red : COLOURS.text);
@@ -298,15 +270,15 @@ function drawStatRow(ctx, width, profile, y) {
 function drawUpgradesRow(ctx, width, profile, y) {
     const h = UPGRADES_ROW_H;
     const gap = 22;
-    const startX = 50;
-    const chipW = (800 - gap * 3) / 4;
+    const chipW = 176;
+    const startX = (width - (chipW * 4 + gap * 3)) / 2;
     const keys = ['speed', 'storage', 'resilience', 'appeal'];
 
-    keys.forEach((key, i) => {
+    for (let i = 0; i < keys.length; i++) {
         const x = startX + (chipW + gap) * i;
-        const level = profile.upgrades?.[key]?.level ?? 0;
-        drawUpgradeChip(ctx, x, y, chipW, h, key, level);
-    });
+        const level = profile.upgrades?.[keys[i]]?.level ?? 0;
+        drawUpgradeChip(ctx, x, y, chipW, h, keys[i], level);
+    }
 }
 
 function drawUpgradeChip(ctx, x, y, w, h, key, level) {
@@ -327,13 +299,13 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(key);
+    const icon = getSprite(`icon.${UPGRADE_ICON_KEYS[key]}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
         ctx.restore();
     }
 
@@ -350,8 +322,8 @@ function drawUpgradeChip(ctx, x, y, w, h, key, level) {
 function drawEconomyRow(ctx, width, profile, y) {
     const h = ECONOMY_ROW_H;
     const gap = 22;
-    const startX = 50;
-    const chipW = (800 - gap * 3) / 4;
+    const chipW = 176;
+    const startX = (width - (chipW * 4 + gap * 3)) / 2;
 
     drawEconomyChip(ctx, startX, y, chipW, h, 'cash', 'Cash Earned', profile.economy.lifetimeEarned.cash, COLOURS.green, '$');
     drawEconomyChip(ctx, startX + (chipW + gap), y, chipW, h, 'cash', 'Cash Spent', profile.economy.lifetimeSpent.cash, COLOURS.red, '$');
@@ -377,13 +349,13 @@ function drawEconomyChip(ctx, x, y, w, h, iconKey, label, value, accent, prefix 
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, iconX + 3, iconY + 3, iconSize - 6, iconSize - 6);
         ctx.restore();
     }
 
@@ -397,153 +369,72 @@ function drawEconomyChip(ctx, x, y, w, h, iconKey, label, value, accent, prefix 
     ctx.fillText(`${prefix}${formatNumber(value)}`, textX, y + h / 2 + 22);
 }
 
-function drawEventIcon(ctx, x, y, size, key, style) {
-    ctx.beginPath();
-    ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
-    ctx.fillStyle = '#FFF4D6';
-    ctx.fill();
-    ctx.strokeStyle = COLOURS.border;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    const icon = key ? getIconFromCache(key) : null;
-    if (icon) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(x + size / 2, y + size / 2, size / 2 - 3, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.drawImage(icon, x + 3, y + 3, size - 6, size - 6);
-        ctx.restore();
-    } else {
-        const label = key ? (EVENT_LABELS[key] ?? key).charAt(0).toUpperCase() : '?';
-        ctx.font = `${size * 0.42}px FredokaOne`;
-        ctx.fillStyle = style?.text ?? COLOURS.muted;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(label, x + size / 2, y + size / 2 + 1);
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'alphabetic';
-    }
-}
-
-function drawEventTypeLabel(ctx, x, y, style) {
-    ctx.font = '13px FredokaOne';
-    ctx.fillStyle = style.text;
-    ctx.fillText(style.label, x, y);
-    return ctx.measureText(style.label).width;
-}
-
-function drawEventCardBody(ctx, x, y, w, h, key, style, eventName, outcomeText) {
-    const HEADER_H = 34;
-    const iconSize = 40;
-    const textX = x + 18 + iconSize + 16;
-    const textW = x + w - textX - 18;
-
-    ctx.font = '18px FredokaOne';
-    const nameLineH = 22;
-    ctx.font = '14px FredokaOne';
-    const outcomeLines = wrapText(ctx, outcomeText, textW, 3);
-    const outcomeLineH = 17;
-    const textBlockH = nameLineH + outcomeLines.length * outcomeLineH;
-
-    const availableTop = y + HEADER_H;
-    const availableH = h - HEADER_H - 12;
-    const blockTop = availableTop + (availableH - Math.max(iconSize, textBlockH)) / 2;
-
-    const iconY = blockTop + (textBlockH - iconSize) / 2;
-    drawEventIcon(ctx, x + 18, Math.max(availableTop, iconY), iconSize, key, style);
-
-    let cursorY = blockTop + nameLineH - 4;
-    ctx.font = '18px FredokaOne';
-    ctx.fillStyle = style.text;
-    ctx.fillText(eventName, textX, cursorY);
-
-    ctx.font = '14px FredokaOne';
-    ctx.fillStyle = COLOURS.text;
-    outcomeLines.forEach((line) => {
-        cursorY += outcomeLineH;
-        ctx.fillText(line, textX, cursorY);
-    });
-}
-
 function drawCurrentEventChip(ctx, x, y, w, h, profile) {
     const active = profile.events?.active;
-    const option = active?.key ? getEventOption(active.key, active.optionId) : null;
-    const style = option ? (EVENT_TYPE_STYLES[active.type] ?? EVENT_TYPE_STYLES.beneficial) : null;
+    const hasEvent = Boolean(active?.key);
 
-    roundedRectWithShadow(ctx, x, y, w, h, 16, COLOURS.card, COLOURS.cardShadow, 10, 4);
-    ctx.strokeStyle = option ? style.border : COLOURS.border;
+    roundedRectWithShadow(ctx, x, y, w, h, 16, hasEvent ? COLOURS.eventBg : COLOURS.card, COLOURS.cardShadow, 10, 4);
+    ctx.strokeStyle = hasEvent ? COLOURS.eventBorder : COLOURS.border;
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, x, y, w, h, 16);
     ctx.stroke();
 
     ctx.font = '13px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
-    ctx.fillText('CURRENT EVENT:', x + 20, y + 22);
+    ctx.fillText('CURRENT EVENT', x + 20, y + 22);
 
-    if (!option) {
-        const iconSize = 44;
-        drawEventIcon(ctx, x + 18, y + h / 2 - iconSize / 2, iconSize, null, null);
+    if (hasEvent) {
+        const label = EVENT_LABELS[active.key] ?? active.key;
+        ctx.font = '18px FredokaOne';
+        ctx.fillStyle = COLOURS.red;
+        ctx.fillText(`⚡ ${label}`, x + 20, y + h - 14);
+
+        if (active.endsAt) {
+            const msLeft = new Date(active.endsAt).getTime() - Date.now();
+            if (msLeft > 0) {
+                const minsLeft = Math.max(1, Math.round(msLeft / 60000));
+                ctx.font = '13px FredokaOne';
+                ctx.fillStyle = COLOURS.muted;
+                ctx.textAlign = 'right';
+                ctx.fillText(`ENDS IN ${minsLeft}M`, x + w - 18, y + h - 14);
+                ctx.textAlign = 'left';
+            }
+        }
+    } else {
         ctx.font = '16px FredokaOne';
         ctx.fillStyle = COLOURS.muted;
-        ctx.fillText('NO ACTIVE EVENT', x + 18 + iconSize + 16, y + h / 2 + 6);
-        return;
+        ctx.fillText('NO ACTIVE EVENT', x + 20, y + h - 14);
     }
-
-    const labelW = ctx.measureText('CURRENT EVENT:').width;
-    drawEventTypeLabel(ctx, x + 20 + labelW + 8, y + 22, style);
-
-    if (active.endsAt) {
-        const msLeft = new Date(active.endsAt).getTime() - Date.now();
-        const label = msLeft > 0 ? `ENDS IN ${Math.max(1, Math.round(msLeft / 60000))}M` : 'ENDING NOW';
-        ctx.font = '13px FredokaOne';
-        ctx.fillStyle = COLOURS.muted;
-        ctx.textAlign = 'right';
-        ctx.fillText(label, x + w - 18, y + 22);
-        ctx.textAlign = 'left';
-    }
-
-    const outcomeText = option.task.charAt(0) + option.task.slice(1);
-    drawEventCardBody(ctx, x, y, w, h, active.key, style, option.eventName.toUpperCase(), outcomeText);
 }
 
 function drawNextEventChip(ctx, x, y, w, h, profile) {
-    const next = profile.events?.next;
-    const option = next?.key ? getEventOption(next.key, next.optionId) : null;
-    const style = option ? (EVENT_TYPE_STYLES[next.type] ?? EVENT_TYPE_STYLES.beneficial) : null;
-
     roundedRectWithShadow(ctx, x, y, w, h, 16, COLOURS.card, COLOURS.cardShadow, 10, 4);
-    ctx.strokeStyle = option ? style.border : COLOURS.border;
+    ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, x, y, w, h, 16);
     ctx.stroke();
 
     ctx.font = '13px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
-    ctx.fillText('NEXT EVENT:', x + 20, y + 22);
+    ctx.fillText('NEXT EVENT', x + 20, y + 22);
 
-    if (!option) {
-        const iconSize = 44;
-        drawEventIcon(ctx, x + 18, y + h / 2 - iconSize / 2, iconSize, null, null);
+    const nextAt = profile.events?.nextEventAt;
+    const msLeft = nextAt ? new Date(nextAt).getTime() - Date.now() : null;
+
+    if (msLeft != null && msLeft > 0) {
+        const minsLeft = Math.max(1, Math.round(msLeft / 60000));
+        ctx.font = '18px FredokaOne';
+        ctx.fillStyle = COLOURS.text;
+        ctx.fillText(`In ${minsLeft}m`, x + 20, y + h - 14);
+    } else if (msLeft != null) {
         ctx.font = '16px FredokaOne';
         ctx.fillStyle = COLOURS.muted;
-        ctx.fillText('NOT SCHEDULED', x + 18 + iconSize + 16, y + h / 2 + 6);
-        return;
+        ctx.fillText('DUE ANY MOMENT', x + 20, y + h - 14);
+    } else {
+        ctx.font = '16px FredokaOne';
+        ctx.fillStyle = COLOURS.muted;
+        ctx.fillText('NOT SCHEDULED', x + 20, y + h - 14);
     }
-
-    const labelW = ctx.measureText('NEXT EVENT:').width;
-    drawEventTypeLabel(ctx, x + 20 + labelW + 8, y + 22, style);
-
-    const startMs = new Date(next.startsAt).getTime() - Date.now();
-    const startsLabel = startMs > 0 ? `STARTS IN ${Math.max(1, Math.round(startMs / 60000))}M` : 'STARTING NOW';
-    ctx.font = '13px FredokaOne';
-    ctx.fillStyle = COLOURS.muted;
-    ctx.textAlign = 'right';
-    ctx.fillText(startsLabel, x + w - 18, y + 22);
-    ctx.textAlign = 'left';
-
-    const outcomeText = option.task.charAt(0) + option.task.slice(1);
-    drawEventCardBody(ctx, x, y, w, h, next.key, style, option.eventName.toUpperCase(), outcomeText);
 }
 
 function drawEventRow(ctx, profile, y) {
@@ -570,12 +461,11 @@ function getRarityFill(ctx, rarity, x0, y0, x1, y1) {
 
 function drawPuffyStarShape(ctx, cx, cy, outerR, innerR, roundness = 0.65) {
     const points = 5;
-    const verts = [];
-    for (let i = 0; i < points * 2; i++) {
+    const verts = Array.from({ length: points * 2 }, (_, i) => {
         const r = i % 2 === 0 ? outerR : innerR;
         const angle = (Math.PI / points) * i - Math.PI / 2;
-        verts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
-    }
+        return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+    });
 
     ctx.beginPath();
     const n = verts.length;
@@ -665,8 +555,10 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const entry = profile.recipes.unlocked.find((r) => r.isActive);
 
     roundedRectWithShadow(ctx, x, y, w, h, 22, COLOURS.card, COLOURS.cardShadow);
-    const borderColours = profile.entitlements?.premium ? profile.customization?.cardBorderColours : null;
-    strokeCardBorder(ctx, x, y, w, h, 22, roundedRectPath, COLOURS.border, borderColours);
+    ctx.strokeStyle = COLOURS.border;
+    ctx.lineWidth = 1.5;
+    roundedRectPath(ctx, x, y, w, h, 22);
+    ctx.stroke();
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
@@ -682,7 +574,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const def = RECIPES.find((r) => r.id === entry.key);
     entry.stars = calculateStars(entry);
     const bonuses = getMasteryBonuses(entry);
-    const effectivePrice = def ? (def.sellPrice * bonuses.sellPriceMultiplier) : null;
+    const effectivePrice = def ? Math.round(def.sellPrice * bonuses.sellPriceMultiplier) : null;
 
     const imgSize = 96;
     const imgX = x + 26;
@@ -695,14 +587,14 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    if (def?.image) {
-        const drinkImg = getDrinkImageFromCache(def.image);
+    if (def?.id) {
+        const drinkImg = getSprite(`drink.${def.id}`);
         if (drinkImg) {
             ctx.save();
             ctx.beginPath();
             ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+            ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
             ctx.restore();
         }
     }
@@ -734,6 +626,7 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
     const starsX = textX + tierPillW + (priceW ? priceW + 20 : 10);
     drawStarsRow(ctx, starsX, imgY + 49, entry.rarity, entry.stars);
 
+    // Mastery status badge, top-right
     if (entry.stars === 5) {
         const masterCheck = canMaster(entry, profile.prestige.level);
 
@@ -746,11 +639,11 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         } else if (masterCheck.reason === 'PRESTIGE_LOCKED') {
             badgeLabel = 'PRESTIGE LOCKED';
             badgeColour = COLOURS.red;
-            badgeBg = 'rgba(240,102,78,0.12)';
+            badgeBg = '#F0664E1F';
         } else if (masterCheck.reason === 'MAX_TIER') {
             badgeLabel = 'MAX TIER';
             badgeColour = '#A1A1AA';
-            badgeBg = 'rgba(161,161,170,0.12)';
+            badgeBg = '#A1A1AA1F';
         }
 
         if (badgeLabel) {
@@ -778,9 +671,9 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         ctx.font = '15px FredokaOne';
         ctx.fillStyle = COLOURS.subtitle;
         const lines = wrapText(ctx, def.description, textW, 2);
-        lines.forEach((line, i) => {
-            ctx.fillText(line, textX, imgY + 88 + i * 20);
-        });
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], textX, imgY + 88 + i * 20);
+        }
     }
 
     const barX = x + 34;
@@ -791,7 +684,9 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
 
     const fraction = getStarProgressFraction(entry);
     if (fraction > 0) {
-        const fillGrad = getRarityFill(ctx, entry.rarity, barX, 0, barX + barW, 0);
+        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+        fillGrad.addColorStop(0, COLOURS.progressFillA);
+        fillGrad.addColorStop(1, COLOURS.progressFillB);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
@@ -799,12 +694,12 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         ctx.fillRect(barX, barY, barW * fraction, barH);
         ctx.restore();
     }
-    const rarityDef = RARITY_COLOURS[entry.rarity] || RARITY_COLOURS.common;
-    ctx.strokeStyle = rarityDef.border;
+    ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();
 
+    // Ingredients label + chips
     let servedTextY = barY + 40;
     if (def?.ingredients?.length) {
         ctx.font = '16px FredokaOne';
@@ -815,10 +710,10 @@ function drawActiveRecipeCard(ctx, profile, x, y, w, h) {
         const chipSize = 46;
         const chipGap = 14;
         let chipX = x + 34;
-        def.ingredients.slice(0, 10).forEach((ing) => {
+        for (const ing of def.ingredients.slice(0, 10)) {
             drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
             chipX += chipSize + chipGap;
-        });
+        }
 
         servedTextY = chipY + chipSize + 34;
     }
@@ -839,14 +734,14 @@ function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ing.id);
+    const img = getSprite(`ingredient.${ing.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, x + pad / 2, y + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, x + pad / 2, y + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 
@@ -872,7 +767,7 @@ function drawFooter(ctx, width, height, profile) {
         `${formatNumber(profile.recipes.unlocked.length)} recipes unlocked`,
         `${formatNumber(profile.staff.length)} staff hired`,
         `${formatNumber(profile.achievements.length)} achievements`,
-        `${formatNumber(profile.prestige.level)} ${profile.prestige.level === 1 ? 'prestige' : 'prestiges'}`,
+        `Prestige ${formatNumber(profile.prestige.level)}`,
     ].join('   •   ');
 
     const line2 = [

@@ -2,47 +2,43 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { RECIPES } from "../data/recipes.js";
 import { getRecipeUnlock } from "../data/recipeUnlocks.js";
-import { getIngredientFromCache } from "../data/ingredientImages.js";
-import { getDrinkImageFromCache } from "../data/drinkImages.js";
+import { getSprite } from "../data/sprites.js";
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { wrapText, formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { wrapText } from '../helpers/renderHelper.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
 const COLOURS = {
     ...BASE_COLOURS,
     progressBg: '#F1E6BE',
-    locked: 'rgba(74, 58, 26, 0.55)',
+    progressFillA: '#B7E75A',
+    progressFillB: '#5FCB4F',
+    locked: '#4A3A1A8C',
 };
 
 const RARITY_COLOURS = {
-    Common: { 
-        text: '#8A7548', 
-        bg: 'rgba(138,117,72,0.12)', 
-        border: 'rgba(138,117,72,0.4)' 
+    Common: {
+        text: '#8A7548',
+        bg: '#8A75481F',
+        border: '#8A754866'
     },
-    Rare: { 
-        text: '#3B82C4', 
-        bg: 'rgba(59,130,196,0.12)', 
-        border: 'rgba(59,130,196,0.4)' 
+    Rare: {
+        text: '#3B82C4',
+        bg: '#3B82C41F',
+        border: '#3B82C466'
     },
-    Epic: { 
-        text: '#9B4FD1', 
-        bg: 'rgba(155,79,209,0.12)', 
-        border: 'rgba(155,79,209,0.4)' 
+    Epic: {
+        text: '#9B4FD1',
+        bg: '#9B4FD11F',
+        border: '#9B4FD166'
     },
-};
-
-const CATEGORY_COLOURS = {
-    premium: { text: '#9B4FD1', bg: 'rgba(155,79,209,0.12)', border: 'rgba(155,79,209,0.4)' },
-    seasonal: { text: '#3B82C4', bg: 'rgba(59,130,196,0.12)', border: 'rgba(59,130,196,0.4)' },
 };
 
 const RECIPE_COLOURS = {
-    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: 'rgba(91,91,91,0.45)' },
+    ancient: { gradient: ['#D6D6D6', '#5B5B5B'], border: '#5B5B5B73' },
 };
 
-export async function renderRecipeBook(player, page = 1) {
+export function renderRecipeBook(player, page = 1) {
     const recipesPerPage = 3;
     const start = (page - 1) * recipesPerPage;
     const pageRecipes = RECIPES.slice(start, start + recipesPerPage);
@@ -53,7 +49,7 @@ export async function renderRecipeBook(player, page = 1) {
     const ctx = canvas.getContext('2d');
 
     drawBackground(ctx, width, height);
-    drawHeader(ctx, width, page, RECIPES.length, recipesPerPage, player);
+    drawHeader(ctx, width, page, RECIPES.length, recipesPerPage);
     drawRecipes(ctx, pageRecipes, player);
     drawFooter(ctx, width, height, page, RECIPES.length, recipesPerPage);
 
@@ -91,29 +87,21 @@ function roundedRectWithShadow(ctx, x, y, w, h, r, fill, shadowColor, blur = 18,
     ctx.restore();
 }
 
-function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
+function drawHeader(ctx, width, page, totalRecipes, perPage) {
     const totalPages = Math.max(1, Math.ceil(totalRecipes / perPage));
 
     ctx.font = "58px FredokaOne";
-    
-    const title = 'ALL RECIPES';
-    const customColours = player.entitlements?.premium ? player.customization?.nameGradientColours : null;
-    const hasCustomGradient = Array.isArray(customColours) && customColours.length === 2;
-    const fillColours = hasCustomGradient ? customColours : [COLOURS.title, '#FFDD70'];
-    const strokeColour = hasCustomGradient ? shadeHex(blendHex(customColours[0], customColours[1]), -0.45) : COLOURS.text;
+    const titleGrad = ctx.createLinearGradient(50, 30, 520, 30);
+    titleGrad.addColorStop(0, COLOURS.title);
+    titleGrad.addColorStop(1, '#FFDD70');
 
-    const nameWidth = ctx.measureText(title).width;
-    const titleGrad = ctx.createLinearGradient(50, 30, 50 + nameWidth, 30);
-    titleGrad.addColorStop(0, fillColours[0]);
-    titleGrad.addColorStop(1, fillColours[1]);
-
-    ctx.strokeStyle = strokeColour;
+    ctx.strokeStyle = COLOURS.text;
     ctx.lineWidth = 5;
     ctx.lineJoin = 'round';
-    ctx.strokeText(title, 50, 78);
+    ctx.strokeText('LEMONOPOLY', 50, 78);
 
     ctx.fillStyle = titleGrad;
-    ctx.fillText(title, 50, 78);
+    ctx.fillText("LEMONOPOLY", 50, 78);
 
     ctx.font = "26px FredokaOne";
     ctx.fillStyle = COLOURS.subtitle;
@@ -126,8 +114,8 @@ function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
     const pillH = 42;
     const pillX = width - 50 - pillW;
     const pillY = 40;
-    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, 'rgba(138, 117, 72, 0.12)');
-    ctx.strokeStyle = 'rgba(138, 117, 72, 0.4)';
+    roundedRect(ctx, pillX, pillY, pillW, pillH, pillH / 2, '#8A75481F');
+    ctx.strokeStyle = '#8A754866';
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
     ctx.stroke();
@@ -135,9 +123,9 @@ function drawHeader(ctx, width, page, totalRecipes, perPage, player) {
     ctx.fillText(pageLabel, pillX + pillPadX, pillY + pillH / 2 + 7);
 
     const divGrad = ctx.createLinearGradient(45, 0, width - 45, 0);
-    divGrad.addColorStop(0, 'rgba(231,168,0,0)');
-    divGrad.addColorStop(0.5, 'rgba(231,168,0,0.5)');
-    divGrad.addColorStop(1, 'rgba(231,168,0,0)');
+    divGrad.addColorStop(0, '#E7A80000');
+    divGrad.addColorStop(0.5, '#E7A80080');
+    divGrad.addColorStop(1, '#E7A80000');
     ctx.strokeStyle = divGrad;
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -162,15 +150,10 @@ function drawRecipes(ctx, recipes, player) {
     const cardHeight = 305;
     const gap = 22;
 
-    recipes.forEach((recipe, i) => {
+    for (let i = 0; i < recipes.length; i++) {
         const y = cardYStart + i * (cardHeight + gap);
-        drawRecipeCard(ctx, recipe, player, cardX, y, cardWidth, cardHeight);
-    });
-}
-
-function getRarityFill(rarity) {
-    const def = RARITY_COLOURS[rarity] || RARITY_COLOURS.Common;
-    return def.text;
+        drawRecipeCard(ctx, recipes[i], player, cardX, y, cardWidth, cardHeight);
+    }
 }
 
 function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
@@ -220,13 +203,13 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    const drinkImg = getDrinkImageFromCache(recipe.image);
+    const drinkImg = getSprite(`drink.${recipe.id}`);
     if (drinkImg) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(imgX + imgSize / 2, imgY + imgSize / 2, imgSize / 2 - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(drinkImg, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
+        ctx.drawImage(drinkImg.sheet, drinkImg.x, drinkImg.y, drinkImg.w, drinkImg.h, imgX + 3, imgY + 3, imgSize - 6, imgSize - 6);
         ctx.restore();
     }
 
@@ -250,7 +233,7 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.fillStyle = rarity.text;
     ctx.fillText(rarityLabel, textX + 10, y + 74);
 
-    const priceLabel = `$${formatNumber(recipe.sellPrice)}`;
+    const priceLabel = `$${recipe.sellPrice}`;
     const priceX = textX + rarityW + 10;
     const priceW = ctx.measureText(priceLabel).width + 20;
     roundedRect(ctx, priceX, y + 56, priceW, 26, 13, COLOURS.greenSoft);
@@ -272,35 +255,23 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
 
     let badgeFill;
     let badgeText;
-    let badgeBorder;
 
     if (isOwned) {
         badgeFill = COLOURS.greenSoft;
         badgeText = COLOURS.green;
-        badgeBorder = stateBorder;
     } else if (meetsRequirement) {
-        badgeFill = 'rgba(214,214,214,0.18)';
+        badgeFill = '#D6D6D62E';
         const grad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY);
         grad.addColorStop(0, RECIPE_COLOURS.ancient.gradient[0]);
         grad.addColorStop(1, RECIPE_COLOURS.ancient.gradient[1]);
         badgeText = grad;
-        badgeBorder = stateBorder;
-    } else if (recipe.unlock?.type === 'premium') {
-        badgeFill = CATEGORY_COLOURS.premium.bg;
-        badgeText = CATEGORY_COLOURS.premium.text;
-        badgeBorder = CATEGORY_COLOURS.premium.border;
-    } else if (recipe.unlock?.type === 'seasonal') {
-        badgeFill = CATEGORY_COLOURS.seasonal.bg;
-        badgeText = CATEGORY_COLOURS.seasonal.text;
-        badgeBorder = CATEGORY_COLOURS.seasonal.border;
     } else {
-        badgeFill = 'rgba(240,102,78,0.12)';
+        badgeFill = '#F0664E1F';
         badgeText = COLOURS.red;
-        badgeBorder = stateBorder;
     }
 
     roundedRect(ctx, badgeX, badgeY, badgeW, badgeH, badgeH / 2, badgeFill);
-    ctx.strokeStyle = badgeBorder;
+    ctx.strokeStyle = stateBorder;
     ctx.lineWidth = 1.5;
     roundedRectPath(ctx, badgeX, badgeY, badgeW, badgeH, badgeH / 2);
     ctx.stroke();
@@ -310,9 +281,9 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     ctx.font = '15px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     const descLines = wrapText(ctx, recipe.description, textW, 2);
-    descLines.forEach((line, i) => {
-        ctx.fillText(line, textX, y + 108 + i * 20);
-    });
+    for (let i = 0; i < descLines.length; i++) {
+        ctx.fillText(descLines[i], textX, y + 108 + i * 20);
+    }
 
     const barX = x + 34;
     const barY = y + imgSize + 60;
@@ -322,15 +293,17 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
 
     const percent = Math.max(0, Math.min(1, unlock.progress / 100));
     if (percent > 0) {
+        const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+        fillGrad.addColorStop(0, COLOURS.progressFillA);
+        fillGrad.addColorStop(1, COLOURS.progressFillB);
         ctx.save();
         roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
         ctx.clip();
-        ctx.fillStyle = getRarityFill(recipe.rarity);
+        ctx.fillStyle = fillGrad;
         ctx.fillRect(barX, barY, barW * percent, barH);
         ctx.restore();
     }
-    const rarityDef = RARITY_COLOURS[recipe.rarity] || RARITY_COLOURS.Common;
-    ctx.strokeStyle = rarityDef.border;
+    ctx.strokeStyle = COLOURS.border;
     ctx.lineWidth = 1;
     roundedRectPath(ctx, barX, barY, barW, barH, barH / 2);
     ctx.stroke();
@@ -343,16 +316,16 @@ function drawRecipeCard(ctx, recipe, player, x, y, w, h) {
     const chipSize = 46;
     const chipGap = 14;
     let chipX = x + 34;
-    recipe.ingredients.slice(0, 10).forEach((ing) => {
+    for (const ing of recipe.ingredients.slice(0, 10)) {
         drawIngredientChip(ctx, chipX, chipY, chipSize, ing);
         chipX += chipSize + chipGap;
-    });
+    }
 
     if (!isOwned) {
         ctx.save();
         roundedRectPath(ctx, x, y, w, h, 22);
         ctx.clip();
-        ctx.fillStyle = 'rgba(255,253,246,0.35)';
+        ctx.fillStyle = '#FFFDF659';
         ctx.fillRect(x, y, w, h);
         ctx.restore();
         drawLockBadge(ctx, x + w - 56, y + h - 56, 24);
@@ -368,14 +341,14 @@ function drawIngredientChip(ctx, x, y, size, ing) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const img = getIngredientFromCache(ing.id);
+    const img = getSprite(`ingredient.${ing.id}`);
     if (img) {
         const pad = size * 0.16;
         ctx.save();
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2 - pad / 2, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, x + pad / 2, y + pad / 2, size - pad, size - pad);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, x + pad / 2, y + pad / 2, size - pad, size - pad);
         ctx.restore();
     }
 

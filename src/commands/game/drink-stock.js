@@ -23,11 +23,12 @@ export default {
         const stockByKey = new Map((profile.drinks || []).map(stock => [stock.key, stock]));
         const ownedCount = RECIPES.filter(recipe => (stockByKey.get(recipe.id)?.quantity || 0) > 0).length;
 
+        const page = 1;
         const totalPages = Math.max(1, Math.ceil(ownedCount / OWNED_DRINKS_PER_PAGE));
         const requestedPage = interaction.options.getInteger('page');
         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
 
-        const image = await renderDrinkStock(profile, page);
+        const image = renderDrinkStock(profile, page);
         const attachment = new AttachmentBuilder(image, { name: 'my-drinks.png' });
 
         const components = [];
@@ -35,7 +36,7 @@ export default {
         if (totalPages > 1) {
             const previousPage = new ButtonBuilder()
                 .setCustomId(`drink_stock_previous_${page}`)
-                .setEmoji(config.emojis.misc.left_arrow)
+                .setEmoji(config.emoji('misc', 'left_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === 1);
 
@@ -47,7 +48,7 @@ export default {
 
             const nextPage = new ButtonBuilder()
                 .setCustomId(`drink_stock_next_${page}`)
-                .setEmoji(config.emojis.misc.right_arrow)
+                .setEmoji(config.emoji('misc', 'right_arrow'))
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(page === totalPages);
 
