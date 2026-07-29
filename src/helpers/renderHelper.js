@@ -49,3 +49,46 @@ export function formatNumber(value) {
     const formatted = rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(2);
     return `${sign}${formatted}`;
 }
+
+export function strokeCardBorder(ctx, x, y, w, h, r, roundedRectPathFn, defaultColour, customColours) {
+    roundedRectPathFn(ctx, x, y, w, h, r);
+
+    if (!customColours || customColours.length === 0) {
+        ctx.strokeStyle = defaultColour;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        return;
+    }
+
+    if (customColours.length === 1) {
+        ctx.strokeStyle = customColours[0];
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        return;
+    }
+
+    const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+    const step = 1 / (customColours.length - 1);
+    customColours.forEach((c, i) => grad.addColorStop(i * step, c));
+
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+}
+
+export function shadeHex(hex, percent) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, Math.max(0, (n >> 16) + Math.round(255 * percent)));
+    const g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + Math.round(255 * percent)));
+    const b = Math.min(255, Math.max(0, (n & 0xff) + Math.round(255 * percent)));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+}
+
+export function blendHex(hexA, hexB) {
+    const a = parseInt(hexA.slice(1), 16);
+    const b = parseInt(hexB.slice(1), 16);
+    const r = Math.round(((a >> 16) + (b >> 16)) / 2);
+    const g = Math.round((((a >> 8) & 0xff) + ((b >> 8) & 0xff)) / 2);
+    const bl = Math.round(((a & 0xff) + (b & 0xff)) / 2);
+    return `#${((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1).toUpperCase()}`;
+}
