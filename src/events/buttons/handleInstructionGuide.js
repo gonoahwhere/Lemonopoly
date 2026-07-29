@@ -12,7 +12,7 @@ export default async function handleGuideView(interaction) {
     if (!interaction.customId.startsWith('guide_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     const profile = await PlayerProfile.findOne({ discordId: interaction.user.id });
@@ -45,7 +45,7 @@ export default async function handleGuideView(interaction) {
 
     const previousPage = new ButtonBuilder()
         .setCustomId('guide_previous')
-        .setEmoji(config.emojis.misc.left_arrow)
+        .setEmoji(config.emoji('misc', 'left_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === 1);
 
@@ -57,7 +57,7 @@ export default async function handleGuideView(interaction) {
 
     const nextPage = new ButtonBuilder()
         .setCustomId('guide_next')
-        .setEmoji(config.emojis.misc.right_arrow)
+        .setEmoji(config.emoji('misc', 'right_arrow'))
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(page === totalPages);
 

@@ -12,7 +12,7 @@ export default async function handlePrestige(interaction) {
     if (!interaction.customId.startsWith('prestige_')) return;
 
     if (interaction.user.id !== interaction.message.interaction?.user.id) {
-        return interaction.reply({ content: `${config.emojis.misc.disabled} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
+        return interaction.reply({ content: `${config.emoji('misc', 'disabled')} Only the original user can interact with this.`, flags: MessageFlags.Ephemeral });
     }
 
     if (interaction.customId === 'prestige_cancel') {

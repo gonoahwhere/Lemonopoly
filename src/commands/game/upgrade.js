@@ -12,7 +12,7 @@ const STAT_LABELS = {
     resilience: 'Resilience',
 };
 
-const cash = () => config.emojis.currency.cash;
+const cash = config.emoji('currency', 'cash');
 
 export default {
     devOnly: false,
@@ -80,7 +80,7 @@ export default {
         if (profile.economy.cash < totalCost) {
             const plural = buying === 1 ? 'level' : 'levels';
             return interaction.reply({
-                components: [errorEmbed('Insufficient funds!', `Upgrading **${label}** by **${buying} ${plural}** costs ${cash()} **${formatNumber(totalCost)}**, but you only have ${cash()} **${formatNumber(profile.economy.cash)}**.`)],
+                components: [errorEmbed('Insufficient funds!', `Upgrading **${label}** by **${buying} ${plural}** costs ${cash} **${formatNumber(totalCost)}**, but you only have ${cash} **${formatNumber(profile.economy.cash)}**.`)],
                 flags: MessageFlags.IsComponentsV2,
             });
         }
@@ -93,7 +93,7 @@ export default {
         await profile.save();
 
         const reachedMax = track.level >= UPGRADE_LEVEL_CAP ? ' (MAX)' : '';
-        const description = `Upgraded **${label}** to **Lv. ${track.level}**${reachedMax} for ${cash()} **${formatNumber(totalCost)}**.\n> Now: ${formatUpgradeEffect(stat, track.level, prestige)}\n\nYou have ${cash()} **${formatNumber(profile.economy.cash)}** left.`;
+        const description = `Upgraded **${label}** to **Lv. ${track.level}**${reachedMax} for ${cash} **${formatNumber(totalCost)}**.\n> Now: ${formatUpgradeEffect(stat, track.level, prestige)}\n\nYou have ${cash} **${formatNumber(profile.economy.cash)}** left.`;
 
         return interaction.reply({
             components: [successEmbed('Upgrade purchased!', description)],

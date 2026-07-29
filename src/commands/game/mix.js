@@ -1,13 +1,8 @@
 import { SlashCommandBuilder, MessageFlags } from 'discord.js';
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
+import { getIngredientEmoji } from "../../helpers/emojiLookup.js";
 import config from "../../../config.js";
 import { RECIPES } from "../../data/recipes.js";
-
-function getIngredientEmoji(id) {
-    const category = Object.keys(config.emojis.ingredients).find(k => id in config.emojis.ingredients[k]);
-
-    return category ? config.emoji('ingredients', category, id) : '';
-}
 
 export default {
     devOnly: false,

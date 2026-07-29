@@ -1,26 +1,11 @@
 import config from '../../config.js';
-const FALLBACK_INGREDIENT_EMOJI = '';
-const FALLBACK_RECIPE_EMOJI = config.emojis.stand?.recipe ?? '';
 
-function flattenIngredientEmojis() {
-    const groups = config.emojis.ingredients ?? {};
-    const flat = {};
+function getIngredientEmoji(id) {
+    const category = Object.keys(config.emojis.ingredients).find(k => id in config.emojis.ingredients[k]);
 
-    for (const group of Object.values(groups)) {
-        for (const [key, emoji] of Object.entries(group)) {
-            flat[key] = emoji;
-        }
-    }
-
-    return flat;
+    return category ? config.emoji('ingredients', category, id) : '';
 }
 
-const INGREDIENT_EMOJIS = flattenIngredientEmojis();
-
-export function getIngredientEmoji(key) {
-    return INGREDIENT_EMOJIS[key] ?? FALLBACK_INGREDIENT_EMOJI;
-}
-
-export function getRecipeEmoji(recipeId) {
-    return config.emojis.drinks?.[recipeId] ?? FALLBACK_RECIPE_EMOJI;
+function getRecipeEmoji(id) {
+    return config.emoji('drinks', id) ?? '';
 }
