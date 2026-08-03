@@ -69,7 +69,9 @@ export function strokeCardBorder(ctx, x, y, w, h, r, roundedRectPathFn, defaultC
 
     const grad = ctx.createLinearGradient(x, y, x + w, y + h);
     const step = 1 / (customColours.length - 1);
-    customColours.forEach((c, i) => grad.addColorStop(i * step, c));
+    for (let i = 0; i < customColours.length; i++) {
+        grad.addColorStop(i * step, customColours[i]);
+    }
 
     ctx.strokeStyle = grad;
     ctx.lineWidth = 2.5;

@@ -2,9 +2,9 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
-import { getIconFromCache } from '../data/iconImages.js';
 import { UPGRADE_ICON_KEYS } from '../data/iconKeys.js';
 import { UPGRADE_STATS, UPGRADE_LEVEL_CAP, isPrestigeReady, getPrestigeLevelRequirement } from '../data/upgrades.js';
+import { getSprite } from '../data/sprites.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -58,13 +58,13 @@ function drawIconBadge(ctx, cx, cy, radius, iconKey) {
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, radius - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - radius + 3, cy - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - radius + 3, cy - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
         ctx.restore();
     }
 }
@@ -110,8 +110,8 @@ function drawHeader(ctx, prestige, ready, player) {
     ctx.lineWidth = 1.3;
     roundedRectPath(ctx, x, y, pillW, pillH, pillH / 2);
     ctx.stroke();
-    const icon = getIconFromCache('prestige');
-    if (icon) ctx.drawImage(icon, x + padX, y + (pillH - iconSize) / 2, iconSize, iconSize);
+    const icon = getSprite('icon.prestige');
+    if (icon) ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, x + padX, y + (pillH - iconSize) / 2, iconSize, iconSize);
     ctx.fillStyle = '#1D4ED8';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
@@ -147,10 +147,10 @@ function drawRequirementRow(ctx, x, y, w, h, iconKey, name, valueText, met) {
     ctx.fillStyle = COLOURS.text;
     ctx.fillText(name, badgeCx + badgeR + 16, y + h / 2 + 1);
 
-    const statusIcon = getIconFromCache(met ? 'enabled' : 'disabled');
+    const statusIcon = getSprite(`icon.${met ? 'enabled' : 'disabled'}`);
     const statusSize = 28;
     const rightX = x + w - 20;
-    if (statusIcon) ctx.drawImage(statusIcon, rightX - statusSize, y + h / 2 - statusSize / 2, statusSize, statusSize);
+    if (statusIcon) ctx.drawImage(statusIcon.sheet, statusIcon.x, statusIcon.y, statusIcon.w, statusIcon.h, rightX - statusSize, y + h / 2 - statusSize / 2, statusSize, statusSize);
 
     ctx.textAlign = 'right';
     ctx.font = '20px FredokaOne';

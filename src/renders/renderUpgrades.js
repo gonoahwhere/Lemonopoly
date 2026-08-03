@@ -2,9 +2,9 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { formatNumber, shadeHex, blendHex } from '../helpers/renderHelper.js';
-import { getIconFromCache } from '../data/iconImages.js';
 import { UPGRADE_ICON_KEYS } from '../data/iconKeys.js';
 import { UPGRADE_STATS, UPGRADE_LEVEL_CAP, upgradeCost, formatUpgradeEffect } from '../data/upgrades.js';
+import { getSprite } from '../data/sprites.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -58,13 +58,13 @@ function drawIconBadge(ctx, cx, cy, radius, iconKey) {
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
+    const icon = getSprite(`icon.${iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, radius - 3, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, cx - radius + 3, cy - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, cx - radius + 3, cy - radius + 3, (radius - 3) * 2, (radius - 3) * 2);
         ctx.restore();
     }
 }
@@ -90,8 +90,8 @@ function drawRightPill(ctx, rightX, cy, iconKey, text, colours) {
     roundedRectPath(ctx, x, y, pillW, pillH, pillH / 2);
     ctx.stroke();
 
-    const icon = getIconFromCache(iconKey);
-    if (icon) ctx.drawImage(icon, x + padX, cy - iconSize / 2, iconSize, iconSize);
+    const icon = getSprite(`icon.${iconKey}`);
+    if (icon) ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, x + padX, cy - iconSize / 2, iconSize, iconSize);
 
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
@@ -185,8 +185,8 @@ function drawCostPill(ctx, cx, cy, stat, level, prestige) {
     roundedRectPath(ctx, x, cy - pillH / 2, pillW, pillH, pillH / 2);
     ctx.stroke();
 
-    const icon = getIconFromCache('cash');
-    if (icon) ctx.drawImage(icon, x + padX, cy - iconSize / 2, iconSize, iconSize);
+    const icon = getSprite('icon.cash');
+    if (icon) ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, x + padX, cy - iconSize / 2, iconSize, iconSize);
 
     ctx.fillStyle = COLOURS.text;
     ctx.textAlign = 'left';

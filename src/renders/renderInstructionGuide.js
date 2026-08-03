@@ -1,6 +1,6 @@
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
-import { getIconFromCache } from '../data/iconImages.js';
+import { getSprite } from '../data/sprites.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
 import { wrapText, strokeCardBorder, shadeHex, blendHex } from '../helpers/renderHelper.js';
 
@@ -244,7 +244,7 @@ export async function renderGuideContents(sections, profile, page = 1, totalPage
             ctx.lineWidth = 1.4;
             ctx.stroke();
 
-            const icon = getIconFromCache(chapter.iconKey);
+            const icon = getSprite(`icon.${chapter.iconKey}`);
 
             if (icon) {
                 ctx.save();
@@ -252,7 +252,7 @@ export async function renderGuideContents(sections, profile, page = 1, totalPage
                 ctx.beginPath();
                 ctx.arc(iconCx, iconCy, iconR - 4, 0, Math.PI * 2);
                 ctx.clip();
-                ctx.drawImage(icon, iconCx - iconR + 4, iconCy - iconR + 4, (iconR - 4) * 2, (iconR - 4) * 2);
+                ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, iconCx - iconR + 4, iconCy - iconR + 4, (iconR - 4) * 2, (iconR - 4) * 2);
 
                 ctx.restore();
             }
@@ -503,13 +503,13 @@ export async function renderGuideFeature(feature, profile, page = 1, totalPages 
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    const icon = getIconFromCache(feature.iconKey);
+    const icon = getSprite(`icon.${feature.iconKey}`);
     if (icon) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(centreX, iconCy, iconR - 6, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(icon, centreX - iconR + 6, iconCy - iconR + 6, (iconR - 6) * 2, (iconR - 6) * 2);
+        ctx.drawImage(icon.sheet, icon.x, icon.y, icon.w, icon.h, centreX - iconR + 6, iconCy - iconR + 6, (iconR - 6) * 2, (iconR - 6) * 2);
         ctx.restore();
     }
 

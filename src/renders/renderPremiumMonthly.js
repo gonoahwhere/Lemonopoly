@@ -2,8 +2,8 @@ import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 import path from 'path';
 import { MONTHLY_CLAIMS } from '../data/passBenefits.js';
 import { COLOURS as BASE_COLOURS, drawBackground } from '../helpers/backgroundRender.js';
-import { getIconFromCache } from '../data/iconImages.js';
 import { shadeHex, blendHex } from '../helpers/renderHelper.js';
+import { getSprite } from '../data/sprites.js';
 
 GlobalFonts.registerFromPath(path.join(process.cwd(), 'src', 'fonts', 'Fredoka-Bold.ttf'), 'FredokaOne');
 
@@ -168,13 +168,13 @@ function drawRewardBox(ctx, x, y, w, h, claim) {
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    const img = getIconFromCache(claim.icon);
+    const img = getSprite(`icon.${claim.icon}`);
     if (img) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(iconCx, iconCy, iconR - 5, 0, Math.PI * 2);
         ctx.clip();
-        ctx.drawImage(img, iconCx - iconR + 5, iconCy - iconR + 5, (iconR - 5) * 2, (iconR - 5) * 2);
+        ctx.drawImage(img.sheet, img.x, img.y, img.w, img.h, iconCx - iconR + 5, iconCy - iconR + 5, (iconR - 5) * 2, (iconR - 5) * 2);
         ctx.restore();
     } else {
         ctx.font = '19px FredokaOne';

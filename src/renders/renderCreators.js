@@ -204,7 +204,9 @@ async function drawCard(ctx, y, creator) {
     roundedRectWithShadow(ctx, x, y, w, CARD_H, 18, COLOURS.card, COLOURS.cardShadow, 12, 5);
 
     const borderGrad = ctx.createLinearGradient(x, y, x + w, y + CARD_H);
-    colours.forEach((c, i) => borderGrad.addColorStop(i / (colours.length - 1), c));
+    for (let i = 0; i < colours.length; i++) {
+        borderGrad.addColorStop(i / (colours.length - 1), colours[i]);
+    }
     ctx.strokeStyle = borderGrad;
     ctx.lineWidth = 2.5;
     roundedRectPath(ctx, x, y, w, CARD_H, 18);
