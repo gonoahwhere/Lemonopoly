@@ -24,11 +24,11 @@ export default {
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId('prestige_confirm')
-                .setEmoji(config.emojis.stand.prestige)
+                .setEmoji(config.emoji('stand', 'prestige'))
                 .setStyle(ButtonStyle.Success),
             new ButtonBuilder()
                 .setCustomId('prestige_cancel')
-                .setEmoji(config.emojis.misc.disabled)
+                .setEmoji(config.emoji('misc', 'disabled'))
                 .setStyle(ButtonStyle.Secondary),
         );
 
