@@ -159,9 +159,9 @@ function drawOptionRow(ctx, x, y, w, option, colour, measureOnly = false) {
     if (!measureOnly) {
         drawStarBullet(ctx, x + 22, y + 13, colour, 9);
         ctx.fillStyle = BASE_COLOURS.text;
-        lines.forEach((line, i) => {
-            ctx.fillText(line, x + 44, y + 18 + i * lineHeight);
-        });
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], x + 44, y + 18 + i * lineHeight);
+        }
     }
 
     return lines.length;
@@ -201,10 +201,10 @@ export async function renderWeatherEvent(event, profile, page = 1, totalPages = 
     strokeCardBorder(ctx, CARD_X, cardY, CARD_W, cardH, 20, roundedRectPath, style.accent + '55', [style.accent]);
 
     let rowY = cardY + CARD_PAD_TOP;
-    event.options.forEach((option, i) => {
-        drawOptionRow(ctx, CARD_X + 20, rowY, CARD_W - 40, option.task, style.accent);
+    for (let i = 0; i < event.options.length; i++) {
+        drawOptionRow(ctx, CARD_X + 20, rowY, CARD_W - 40, event.options[i].task, style.accent);
         rowY += rowHeights[i] + ROW_GAP;
-    });
+    }
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = BASE_COLOURS.subtitle;

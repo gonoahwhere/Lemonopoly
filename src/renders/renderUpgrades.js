@@ -287,13 +287,13 @@ export async function renderUpgrades(player) {
     drawHeader(ctx, player, prestige);
 
     const gridY = PAD + HEADER_H;
-    UPGRADE_STATS.forEach((stat, i) => {
+    for (let i = 0; i < UPGRADE_STATS.length; i++) {
         const col = i % COLS;
         const row = Math.floor(i / COLS);
         const x = PAD + col * (cardW + CARD_GAP);
         const y = gridY + row * (CARD_H + CARD_GAP);
-        drawUpgradeCard(ctx, x, y, cardW, CARD_H, stat, player, prestige);
-    });
+        drawUpgradeCard(ctx, x, y, cardW, CARD_H, UPGRADE_STATS[i], player, prestige);
+    }
 
     drawFooter(ctx, gridY + gridH + FOOTER_H / 2);
 

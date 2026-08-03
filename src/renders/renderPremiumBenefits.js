@@ -142,9 +142,9 @@ function drawPerkRow(ctx, x, y, w, perk, measureOnly = false) {
     if (!measureOnly) {
         drawStarBullet(ctx, x + 22, y + 13, 9);
         ctx.fillStyle = COLOURS.text;
-        lines.forEach((line, i) => {
-            ctx.fillText(line, x + 44, y + 18 + i * lineHeight);
-        });
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], x + 44, y + 18 + i * lineHeight);
+        }
     }
 
     return lines.length;
@@ -198,10 +198,10 @@ export async function renderPremiumPerks(profile) {
     strokeCardBorder(ctx, CARD_X, cardY, CARD_W, cardH, 20, roundedRectPath, COLOURS.premium + '55', borderColours);
 
     let rowY = cardY + CARD_PAD_TOP;
-    PREMIUM_PERKS.forEach((perk, i) => {
-        drawPerkRow(ctx, CARD_X + 20, rowY, CARD_W - 40, perk);
+    for (let i = 0; i < PREMIUM_PERKS.length; i++) {
+        drawPerkRow(ctx, CARD_X + 20, rowY, CARD_W - 40, PREMIUM_PERKS[i]);
         rowY += rowHeights[i] + ROW_GAP;
-    });
+    }
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;

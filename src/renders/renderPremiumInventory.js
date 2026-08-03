@@ -233,10 +233,10 @@ export async function renderPremiumInventory(profile) {
     strokeCardBorder(ctx, CARD_X, cardY, CARD_W, cardH, 20, roundedRectPath, COLOURS.premium + '55', borderColours);
 
     let rowY = cardY + CARD_PAD_TOP;
-    items.forEach((item, i) => {
-        drawLedgerRow(ctx, CARD_X + 20, rowY, CARD_W - 40, item, i === items.length - 1);
+    for (let i = 0; i < items.length; i++) {
+        drawLedgerRow(ctx, CARD_X + 20, rowY, CARD_W - 40, items[i], i === items.length - 1);
         rowY += ROW_H;
-    });
+    }
 
     ctx.font = '16px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;

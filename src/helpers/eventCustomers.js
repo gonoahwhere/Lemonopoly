@@ -6,21 +6,13 @@ const BASE_CUSTOMER_CHANCE = 0.05;
 const WORKER_WINDOW_MS = 5 * 60 * 1000;
 
 const EVENT_CUSTOMER_ELIGIBILITY = Object.fromEntries(
-    EVENT_DETAILS.map((event) => {
-        const ids = new Set();
-        for (const option of event.options) {
-            const effect = OUTCOME_EFFECTS[option.id];
-            if (effect?.customer) ids.add(effect.customer);
-        }
-        return [event.id, ids];
-    })
+    EVENT_DETAILS.map((event) => [event.id, OUTCOME_EFFECTS[option.id].map(effect => effect.customer).filter(customer => customer)])
 );
 
 function getEventId(activeEvent) {
     const optionId = activeEvent?.optionId;
     if (!optionId) return null;
-    const event = EVENT_DETAILS.find((e) => optionId.startsWith(`${e.id}_`));
-    return event?.id ?? null;
+    return EVENT_DETAILS.find((e) => optionId.startsWith(`${e.id}_`))?.id ?? null;
 }
 
 function isWorkerWindowOpen(activeEvent) {

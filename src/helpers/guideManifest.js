@@ -18,15 +18,15 @@ export function buildGuideManifest(categories, features) {
     const visibleFeatures = features.filter((feature) => !feature.hidden);
 
     // Command pages
-    visibleCategories.forEach((category) => {
+    for (const category of visibleCategories) {
         const chunks = planCommandPages(category.commands);
         const fromPage = cursor;
 
-        chunks.forEach((chunk, i) => {
+        for (let i = 0; i < chunks.length; i++) {
             pages.push({
                 type: 'commands',
                 category,
-                commands: chunk,
+                commands: chunks[i],
                 part: {
                     index: i + 1,
                     totalParts: chunks.length,
@@ -34,7 +34,7 @@ export function buildGuideManifest(categories, features) {
             });
 
             cursor += 1;
-        });
+        }
 
         commandChapters.push({
             label: category.title,
@@ -43,14 +43,14 @@ export function buildGuideManifest(categories, features) {
             fromPage,
             toPage: cursor - 1,
         });
-    });
+    }
 
     // Feature pages
-    visibleFeatures.forEach((feature) => {
+    for (const feature of visibleFeatures) {
         const parts = planFeaturePages(feature);
         const fromPage = cursor;
 
-        parts.forEach((part) => {
+        for (const part of parts) {
             pages.push({
                 type: 'feature',
                 feature,
@@ -58,7 +58,7 @@ export function buildGuideManifest(categories, features) {
             });
 
             cursor += 1;
-        });
+        }
 
         featureChapters.push({
             label: feature.title,
@@ -67,7 +67,7 @@ export function buildGuideManifest(categories, features) {
             fromPage,
             toPage: cursor - 1,
         });
-    });
+    }
 
     const totalPages = cursor - 1;
 

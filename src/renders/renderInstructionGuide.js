@@ -325,9 +325,9 @@ function drawCommandRow(ctx, x, y, w, measured, accent) {
     ctx.font = '15px FredokaOne';
     ctx.fillStyle = COLOURS.text;
     const descStartY = y + CMD_TOP_PAD + CMD_PILL_H + CMD_GAP_AFTER_PILL + 14;
-    measured.descLines.forEach((line, i) => {
-        ctx.fillText(line, x + 16, descStartY + i * CMD_DESC_LINE_H);
-    });
+    for (let i = 0; i < measured.descLines.length; i++) {
+        ctx.fillText(measured.descLines[i], x + 16, descStartY + i * CMD_DESC_LINE_H);
+    }
 }
 
 export function planCommandPages(commands) {
@@ -336,7 +336,7 @@ export function planCommandPages(commands) {
     let current = [];
     let usedH = 0;
 
-    commands.forEach((cmd) => {
+    for (const cmd of commands) {
         const measured = measureCommandRow(ctx, CONTENT_W, cmd);
         const addedH = current.length === 0 ? measured.rowH : measured.rowH + CMD_ROW_GAP;
 
@@ -348,7 +348,7 @@ export function planCommandPages(commands) {
             current.push(cmd);
             usedH += addedH;
         }
-    });
+    }
 
     if (current.length > 0) pages.push(current);
     return pages;
@@ -363,11 +363,11 @@ export async function renderGuideCommands(category, commands, profile, page = 1,
     drawCardShell(ctx, accent);
 
     let rowY = CARD_Y + CARD_PAD_TOP;
-    commands.forEach((cmd) => {
+    for (const cmd of commands) {
         const measured = measureCommandRow(ctx, CONTENT_W, cmd);
         drawCommandRow(ctx, CONTENT_X, rowY, CONTENT_W, measured, accent);
         rowY += measured.rowH + CMD_ROW_GAP;
-    });
+    }
 
     drawGuideFooter(ctx, `< > required • [ ] optional`);
     return canvas.toBuffer('image/png');
@@ -398,9 +398,9 @@ function drawFeatureBullet(ctx, x, y, block, accent) {
     drawStarBullet(ctx, x + 22, y + 13, accent, 9);
     ctx.font = '17px FredokaOne';
     ctx.fillStyle = COLOURS.text;
-    block.lines.forEach((line, i) => {
-        ctx.fillText(line, x + 44, y + 18 + i * BULLET_LINE_H);
-    });
+    for (let i = 0; i < block.lines.length; i++) {
+        ctx.fillText(block.lines[i], x + 44, y + 18 + i * BULLET_LINE_H);
+    }
 }
 
 function measureTip(ctx, tips) {
@@ -524,24 +524,25 @@ export async function renderGuideFeature(feature, profile, page = 1, totalPages 
     ctx.font = '17px FredokaOne';
     ctx.fillStyle = COLOURS.subtitle;
     ctx.textAlign = 'center';
-    part.descLines.forEach((line, i) => {
-        ctx.fillText(line, centreX, cursorY + 15 + i * DESC_LINE_H);
-    });
+    for (let i = 0; i < part.descLines.length; i++) {
+        ctx.fillText(part.descLines[i], centreX, cursorY + 15 + i * DESC_LINE_H);
+    }
     ctx.textAlign = 'left';
     cursorY += part.descLines.length * DESC_LINE_H + DESC_GAP_AFTER;
 
     if (part.bullets.length > 0) {
-        part.bullets.forEach((block, i) => {
+        for (let i = 0; i < part.bullets.length; i++) {
+            const block = part.bullets[i];
             drawFeatureBullet(ctx, CONTENT_X, cursorY, block, accent);
             cursorY += block.h;
             if (i < part.bullets.length - 1) cursorY += BULLET_GAP;
-        });
+        }
     } else if (part.paraLines.length > 0) {
         ctx.font = '17px FredokaOne';
         ctx.fillStyle = COLOURS.text;
-        part.paraLines.forEach((line, i) => {
-            ctx.fillText(line, CONTENT_X, cursorY + 17 + i * PARA_LINE_H);
-        });
+        for (let i = 0; i < part.paraLines.length; i++) {
+            ctx.fillText(part.paraLines[i], CONTENT_X, cursorY + 17 + i * PARA_LINE_H);
+        }
         cursorY += part.paraLines.length * PARA_LINE_H;
     }
 
@@ -560,17 +561,17 @@ export async function renderGuideFeature(feature, profile, page = 1, totalPages 
         ctx.fillText(part.tipItems.length > 1 ? 'TIPS' : 'TIP', CONTENT_X + 16, tipY + 22);
 
         let tipCursorY = tipY + 42;
-        part.tipItems.forEach((item) => {
+        for (const item of part.tipItems) {
             ctx.fillStyle = COLOURS.tip;
             ctx.fillText('•', CONTENT_X + 16, tipCursorY);
 
             ctx.fillStyle = COLOURS.text;
-            item.lines.forEach((line, i) => {
-                ctx.fillText(line, CONTENT_X + 34, tipCursorY + i * 19);
-            });
+            for (let i = 0; i < item.lines.length; i++) {
+                ctx.fillText(item.lines[i], CONTENT_X + 34, tipCursorY + i * 19);
+            }
 
             tipCursorY += item.h + 8;
-        });
+        }
     }
 
     return canvas.toBuffer('image/png');
