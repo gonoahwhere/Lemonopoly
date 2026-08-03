@@ -103,8 +103,6 @@ export default {
 
                 switch (interaction.options.getString('type')) {
                     case 'recipe_market': {
-                        let page = 1;
-
                         const recipes = getMarketRecipes(profile);
                         const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
                         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
@@ -138,8 +136,6 @@ export default {
                     }
 
                     case 'ingredient_market': {
-                        let page = 1;
-
                         const totalPages = getIngredientMarketPageCount();
                         const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
 
