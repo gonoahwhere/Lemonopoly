@@ -5,6 +5,10 @@ import { renderIngredientMarket, getMarketIngredients, getIngredientMarketPageCo
 import { errorEmbed, successEmbed } from '../../utils/embed.js';
 import { RECIPES } from "../../data/recipes.js";
 import config from '../../../config.js';
+import { formatNumber } from '../../helpers/renderHelper.js';
+import { getStorageCapacity } from '../../data/upgrades.js';
+import { getLiveEvent, getIngredientCostMultiplier } from '../../helpers/eventEffects.js';
+import { getActiveIngredientDiscount } from '../../helpers/masteryDiscount.js';
 
 function toSchemaRarity(rarity) {
     return typeof rarity === 'string' ? rarity.toLocaleLowerCase() : 'common';
@@ -28,6 +32,12 @@ export default {
                     { name: 'Ingredients', value: 'ingredient_market' }
                 )
                 .setRequired(true)
+            )
+            .addIntegerOption((opt) => opt
+                .setName('page')
+                .setDescription('Jump to a specific page')
+                .setMinValue(1)
+                .setRequired(false)
             )
         )
         .addSubcommandGroup((group) => group
@@ -89,19 +99,23 @@ export default {
 
         switch (subcommand) {
             case 'view': {
+                const requestedPage = interaction.options.getInteger('page');
+
                 switch (interaction.options.getString('type')) {
                     case 'recipe_market': {
                         let page = 1;
 
                         const recipes = getMarketRecipes(profile);
                         const totalPages = Math.max(1, Math.ceil(recipes.length / 3));
-                        const buffer = renderRecipeMarket(profile);
+                        const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+
+                        const buffer = await renderRecipeMarket(profile, page);
                         const attachment = new AttachmentBuilder(buffer, { name: 'recipe-market.png' });
                         const components = [];
 
                         if (totalPages > 1) {
                             const previousPage = new ButtonBuilder()
-                                .setCustomId(`market_recipe_previous`)
+                                .setCustomId(`market_recipe_previous_${page}`)
                                 .setEmoji(config.emoji('misc', 'left_arrow'))
                                 .setStyle(ButtonStyle.Secondary)
                                 .setDisabled(page === 1);
@@ -113,7 +127,7 @@ export default {
                                 .setDisabled(true);
 
                             const nextPage = new ButtonBuilder()
-                                .setCustomId(`market_recipe_next`)
+                                .setCustomId(`market_recipe_next_${page}`)
                                 .setEmoji(config.emoji('misc', 'right_arrow'))
                                 .setStyle(ButtonStyle.Secondary)
                                 .setDisabled(page === totalPages);
@@ -127,13 +141,15 @@ export default {
                         let page = 1;
 
                         const totalPages = getIngredientMarketPageCount();
-                        const buffer = renderIngredientMarket(profile);
+                        const page = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
+
+                        const buffer = await renderIngredientMarket(profile, page);
                         const attachment = new AttachmentBuilder(buffer, { name: 'ingredient-market.png' });
                         const components = [];
 
                         if (totalPages > 1) {
                             const previousPage = new ButtonBuilder()
-                                .setCustomId(`market_ingredient_previous`)
+                                .setCustomId(`market_ingredient_previous_${page}`)
                                 .setEmoji(config.emoji('misc', 'left_arrow'))
                                 .setStyle(ButtonStyle.Secondary)
                                 .setDisabled(page === 1);
@@ -145,7 +161,7 @@ export default {
                                 .setDisabled(true);
 
                             const nextPage = new ButtonBuilder()
-                                .setCustomId(`market_ingredient_next`)
+                                .setCustomId(`market_ingredient_next_${page}`)
                                 .setEmoji(config.emoji('misc', 'right_arrow'))
                                 .setStyle(ButtonStyle.Secondary)
                                 .setDisabled(page === totalPages);
@@ -162,11 +178,13 @@ export default {
             case 'recipe': {
                 if (group === 'purchase') {
                     const id = interaction.options.getString('recipe', true);
-                    const recipe = RECIPES.find((r) => r.id === id);
+
+                    const marketRecipes = getMarketRecipes(profile);
+                    const recipe = marketRecipes.find((r) => r.id === id);
 
                     if (!recipe) {
                         return interaction.editReply({
-                            components: [errorEmbed('Invalid recipe!', `That recipe doesn't exist.`)],
+                            components: [errorEmbed('Invalid recipe!', `That recipe isn't currently available on the market.`)],
                             flags: MessageFlags.IsComponentsV2,
                         });
                     }
@@ -174,7 +192,7 @@ export default {
                     const price = recipe.marketPrice;
                     if (profile.economy.cash < price) {
                         return interaction.editReply({
-                            components: [errorEmbed('Insufficient funds!', `You need **$${price}** to purchase the recipe for **${recipe.name}**, but you only have **${profile.economy.cash}**.`)],
+                            components: [errorEmbed('Insufficient funds!', `You need **$${formatNumber(price)}** to purchase the recipe for **${recipe.name}**, but you only have **${formatNumber(profile.economy.cash)}**.`)],
                             flags: MessageFlags.IsComponentsV2,
                         });
                     }
@@ -189,7 +207,7 @@ export default {
 
                     await profile.save();
                     return interaction.editReply({
-                        components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${price}**! It's been added to \`/my-recipes\`.`)],
+                        components: [successEmbed('Recipe purchased', `You purchased **${recipe.name}** for **${formatNumber(price)}**! It's been added to \`/my-recipes\`.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
@@ -215,16 +233,22 @@ export default {
                     const stock = profile.ingredients.find((i) => i.key === ingredient.id);
 
                     const currentQuantity = stock?.quantity ?? 0;
-                    const capacity = stock?.capacity ?? 40;
+                    const capacity = getStorageCapacity(profile);
 
                     if (currentQuantity + amount > capacity) {
                         return interaction.editReply({
-                            components: [errorEmbed('Exceeds storage capacity!', `You can only purchase **${capacity - currentQuantity}** more **${ingredient.name}**.`)],
+                            components: [errorEmbed('Exceeds storage capacity!', `You currently have **${currentQuantity}/${capacity} ${ingredient.name}** so you can only purchase **${capacity - currentQuantity}** more. Upgrade storage with \`/upgrade buy\`.`)],
                             flags: MessageFlags.IsComponentsV2
                         });
                     }
 
-                    const totalPrice = ingredient.marketPrice * amount;
+                    const discount = getActiveIngredientDiscount(profile);
+                    const discountedUnitPrice = ingredient.marketPrice * (1 - discount);
+
+                    const costMultiplier = getIngredientCostMultiplier(getLiveEvent(profile));
+                    const finalUnitPrice = discountedUnitPrice * costMultiplier;
+
+                    const totalPrice = Math.round(finalUnitPrice * amount);
 
                     if (profile.economy.cash < totalPrice) {
                         return interaction.editReply({
@@ -242,14 +266,14 @@ export default {
                         profile.ingredients.push({
                             key: ingredient.id,
                             quantity: amount,
-                            capacity: 40,
+                            capacity,
                         });
                     }
 
                     await profile.save();
 
                     return interaction.editReply({
-                        components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${totalPrice}**! This has been added to \`/ingredient-stock\`.`)],
+                        components: [successEmbed('Ingredient purchased', `You purchased **${amount}x ${ingredient.name}** for a total of **$${formatNumber(totalPrice)}**! This has been added to \`/ingredient-stock\`.`)],
                         flags: MessageFlags.IsComponentsV2,
                     });
                 }
